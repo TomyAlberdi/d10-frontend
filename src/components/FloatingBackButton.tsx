@@ -1,15 +1,15 @@
-import { ChevronLeft } from "lucide-react";
+import { Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function FloatingBackButton() {
   const navigate = useNavigate();
   return (
     <button
-      onClick={() => navigate(-1)}
+      onClick={() => navigate("/")}
       aria-label="Go back"
       className="floating-back-button"
     >
-      <ChevronLeft className="bigger-icon" color="black" />
+      <Home className="bigger-icon" color="black" />
     </button>
   );
 }
