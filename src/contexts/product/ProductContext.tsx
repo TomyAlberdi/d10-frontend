@@ -1,5 +1,7 @@
 import type {
   CreateProduct,
+  PaginatedResult,
+  PartialProduct,
   Product,
   ProductStockRecord,
 } from "@/interfaces/ProductInterfaces";
@@ -11,7 +13,7 @@ export interface ProductContextType {
     query: string | null,
     page: number | null,
     size: number | null,
-  ) => Promise<Product[]>;
+  ) => Promise<PaginatedResult<PartialProduct>>;
   createProduct: (dto: CreateProduct) => Promise<void>;
   updateProduct: (id: string, dto: CreateProduct) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;

@@ -1,8 +1,12 @@
 import type {
   CreateProduct,
+  PaginatedResult,
+  PartialProduct,
+  Product,
   ProductStockRecord,
 } from "@/interfaces/ProductInterfaces";
 import type { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ProductContext, type ProductContextType } from "./ProductContext";
 
@@ -14,14 +18,16 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
   children,
 }) => {
   const API_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   const getProductById = async (id: string) => {
     const response = await fetch(`${API_URL}/${id}`);
+    if (response.status === 404) return null;
     if (!response.ok) {
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return await response.json();
+    return (await response.json()) as Product;
   };
 
   const listProducts = async (
@@ -40,7 +46,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return await response.json();
+    return (await response.json()) as PaginatedResult<PartialProduct>;
   };
 
   const createProduct = async (dto: CreateProduct) => {
@@ -55,7 +61,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return await response.json();
+    return;
   };
 
   const updateProduct = async (id: string, dto: CreateProduct) => {
@@ -70,7 +76,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return await response.json();
+    return;
   };
 
   const deleteProduct = async (id: string) => {
@@ -81,7 +87,8 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return await response.json();
+    navigate(-1);
+    return;
   };
 
   const updateProductDiscontinued = async (
@@ -98,7 +105,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return await response.json();
+    return;
   };
 
   const updateProductStock = async (id: string, record: ProductStockRecord) => {
@@ -113,7 +120,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return await response.json();
+    return;
   };
 
   const exportData: ProductContextType = {
