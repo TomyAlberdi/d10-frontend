@@ -1,10 +1,3 @@
-export interface PartialProduct {
-    id: string;
-    code: string;
-    name: string;
-    discontinued: boolean;
-}
-
 export interface ProductStock {
   quantity: number;
   measureUnitEquivalent: number;
@@ -18,11 +11,15 @@ export interface ProductStockRecord {
 }
 
 export interface ProductCharacteristic {
-  key: "COLOR" | "ORIGEN" | "BORDE" | "ASPECTO" | "TEXTURA" | "TRANSITO",
+  key: "COLOR" | "ORIGEN" | "BORDE" | "ASPECTO" | "TEXTURA" | "TRANSITO";
   value: string;
 }
 
-export interface Product extends PartialProduct {
+export interface Product {
+  id: string;
+  code: string;
+  name: string;
+  discontinued: boolean;
   stock: ProductStock;
   description: string;
   quality: "PRIMERA" | "SEGUNDA";

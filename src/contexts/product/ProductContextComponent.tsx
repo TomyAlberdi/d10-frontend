@@ -1,7 +1,6 @@
 import type {
   CreateProduct,
   PaginatedResult,
-  PartialProduct,
   Product,
   ProductStockRecord,
 } from "@/interfaces/ProductInterfaces";
@@ -46,7 +45,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return (await response.json()) as PaginatedResult<PartialProduct>;
+    return (await response.json()) as PaginatedResult<Product>;
   };
 
   const createProduct = async (dto: CreateProduct) => {
