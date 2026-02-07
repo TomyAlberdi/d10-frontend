@@ -66,18 +66,18 @@ const ProductTablePagination = ({
   return (
     <Card
       ref={tableRef}
-      className="h-4/6 flex flex-col overflow-y-scroll py-0"
+      className="h-4/6 flex flex-col overflow-y-scroll py-0 gap-0"
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-1/12">Código</TableHead>
-            <TableHead className="w-2/12">Fabricante</TableHead>
-            <TableHead className="w-4/12">Nombre</TableHead>
-            <TableHead className="w-3/12">Precio Unitario</TableHead>
-            <TableHead className="w-2/12">Dimensiones</TableHead>
+          <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
+            <TableHead className="w-1/12 bg-card">Código</TableHead>
+            <TableHead className="w-2/12 bg-card">Fabricante</TableHead>
+            <TableHead className="w-4/12 bg-card">Nombre</TableHead>
+            <TableHead className="w-3/12 bg-card">Precio Unitario</TableHead>
+            <TableHead className="w-2/12 bg-card">Dimensiones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

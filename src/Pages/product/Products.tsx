@@ -23,7 +23,7 @@ const Products = () => {
           Crear
         </Button>
       </section>
-      <section className="w-5/8 h-screen py-5 overflow-auto">
+      <section className="w-5/8 h-screen py-5">
         <Outlet />
       </section>
     </div>

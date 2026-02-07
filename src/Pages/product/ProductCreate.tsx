@@ -71,7 +71,7 @@ const ProductCreate = () => {
   const [measureType, setMeasureType] =
     useState<CreateProduct["measureType"]>("M2");
   const [saleUnitType, setSaleUnitType] =
-    useState<CreateProduct["saleUnitType"]>("UNIDAD");
+    useState<CreateProduct["saleUnitType"]>("CAJA");
   const [priceBySaleUnit, setPriceBySaleUnit] = useState<string>("");
   const [measurePerSaleUnit, setMeasurePerSaleUnit] = useState<string>("");
   const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(

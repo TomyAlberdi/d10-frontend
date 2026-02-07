@@ -26,7 +26,7 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
   return (
     <Card
       className={cn(
-        "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-0",
+        "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
         isDiscontinued &&
           "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60"
       )}
@@ -68,7 +68,19 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
           </div>
         )}
       </div>
-      <div className="row-start-3 row-span-4 col-span-2 flex flex-col justify-center gap-2 pl-5">
+      <div className="row-start-3 row-span-1 col-span-2 flex items-center gap-2">
+        {product.category && (
+          <div className="h-full flex items-center border-2 px-2 text-foreground">
+            {product.category}
+          </div>
+        )}
+        {product.subcategory && (
+          <div className="h-full flex items-center border-2 px-2 text-foreground">
+            {product.subcategory}
+          </div>
+        )}
+      </div>
+      <div className="row-start-4 row-span-3 col-span-2 flex flex-col justify-center gap-2 pl-5">
         {product.priceByMeasureUnit && (
           <div className="text-3xl alternate-font">
             $ {formatPrice(product.priceByMeasureUnit)} X {product.measureType}
