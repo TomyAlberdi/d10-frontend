@@ -44,6 +44,14 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
           <span className="text-muted-foreground">Código</span>
           <span className="text-foreground">{product.code}</span>
         </div>
+        {product.quality && (
+          <div className="h-full flex items-center gap-3 border-2 px-2">
+            <span className="text-foreground">
+              {product.quality === "PRIMERA" ? "1RA" : "2DA"}
+            </span>
+            <span className="text-muted-foreground">Calidad</span>
+          </div>
+        )}
         {product.dimensions && (
           <div className="h-full flex items-center gap-3 border-2 px-2">
             <span className="text-muted-foreground">Dimensiones</span>
