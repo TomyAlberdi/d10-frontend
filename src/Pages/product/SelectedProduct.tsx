@@ -1,11 +1,20 @@
 import { useNavigate } from "react-router-dom";
-import { Card, CardFooter } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/interfaces/ProductInterfaces";
+import { Eye, ShoppingCart } from "lucide-react";
 
 interface SelectedProductProps {
   product: Product | null;
+}
+
+/** Formats a number with European punctuation: thousands with period, decimals with comma (e.g. 10.130,53) */
+function formatPrice(value: number): string {
+  return value.toLocaleString("es-ES", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 const SelectedProduct = ({ product }: SelectedProductProps) => {
@@ -25,59 +34,82 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
   return (
     <Card
       className={cn(
-        "h-2/6 overflow-hidden flex flex-col",
+        "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-0",
         isDiscontinued &&
-          "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
+          "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60"
       )}
     >
-      <div className="flex flex-1 min-h-0 p-4 gap-4">
-        {firstImage && (
-          <div className="shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-muted">
-            <img
-              src={firstImage}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
+      <div className="col-span-2 flex items-center">
+        <span className="text-xl font-bold ml-1">{product.name}</span>
+        {isDiscontinued && (
+          <span className="ml-2 text-xs font-normal text-amber-700 dark:text-amber-300">
+            (Discontinuado)
+          </span>
+        )}
+      </div>
+      <div className="row-start-2 col-span-2 flex items-center gap-2">
+        <div className="h-full flex items-center gap-3 border-2 px-2">
+          <span className="text-muted-foreground">Código</span>
+          <span className="text-foreground">{product.code}</span>
+        </div>
+        {product.dimensions && (
+          <div className="h-full flex items-center gap-3 border-2 px-2">
+            <span className="text-muted-foreground">Dimensiones</span>
+            <span className="text-foreground">{product.dimensions}</span>
           </div>
         )}
-        <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-          <div className="col-span-2 font-medium">
-            <span
-              className={cn(
-                isDiscontinued && "text-amber-800 dark:text-amber-200",
-              )}
-            >
-              {product.name}
-            </span>
-            {isDiscontinued && (
-              <span className="ml-2 text-xs font-normal text-amber-700 dark:text-amber-300">
-                (Discontinued)
-              </span>
-            )}
+        {product.stock && (
+          <div className="h-full flex items-center gap-3 border-2 px-2">
+            <span className="text-muted-foreground">Stock</span>
+            <div className="text-foreground">
+              {product.stock.quantity} {product.saleUnitType} (
+              {product.stock.measureUnitEquivalent} {product.measureType})
+            </div>
           </div>
-          <span className="text-muted-foreground">Code</span>
-          <span className="text-foreground">{product.code}</span>
-          <span className="text-muted-foreground">Measure type</span>
-          <span className="text-foreground">{product.measureType}</span>
-          <span className="text-muted-foreground">Measure price</span>
-          <span className="text-foreground">{product.priceByMeasureUnit}</span>
-          <span className="text-muted-foreground">Sale unit type</span>
-          <span className="text-foreground">{product.saleUnitType}</span>
-          <span className="text-muted-foreground">Sale unit price</span>
-          <span className="text-foreground">{product.priceBySaleUnit}</span>
-          <span className="text-muted-foreground">Measure per sale unit</span>
-          <span className="text-foreground">{product.measurePerSaleUnit}</span>
-        </div>
+        )}
       </div>
-      <CardFooter className="p-4 pt-0 border-t shrink-0">
+      <div className="row-start-3 row-span-4 col-span-2 flex flex-col justify-center gap-2 pl-5">
+        {product.priceByMeasureUnit && (
+          <div className="text-3xl">
+            $ {formatPrice(product.priceByMeasureUnit)} X {product.measureType}
+          </div>
+        )}
+        {product.priceBySaleUnit && (
+          <div className="text-2xl">
+            $ {formatPrice(product.priceBySaleUnit)} X {product.saleUnitType} (
+            {product.measurePerSaleUnit} {product.measureType})
+          </div>
+        )}
+      </div>
+      <div
+        className="col-start-3 row-span-7 bg-secondary"
+        style={{
+          backgroundImage: `url(${firstImage})`,
+          backgroundSize: "contain",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      <div className="row-start-7 col-span-2 flex items-center gap-3">
         <Button
+          className="h-full"
           variant="outline"
           size="sm"
           onClick={() => navigate(`/product/${product.id}`)}
         >
-          View complete product page
+          <Eye />
+          Ver detalle del Producto
         </Button>
-      </CardFooter>
+        <Button
+          className="h-full"
+          variant="outline"
+          size="sm"
+          onClick={() => navigate(`/product/${product.id}`)}
+        >
+          <ShoppingCart />
+          Añadir al carrito
+        </Button>
+      </div>
     </Card>
   );
 };
