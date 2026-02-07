@@ -1,0 +1,28 @@
+{
+    "Pisos y Revestimientos": [
+        "Cerámicos",
+        "Porcelanatos",
+        "Porcelánicos",
+        "Refractarios"
+    ],
+    "Pegamentos": [
+        "Adhesivos",
+        "Pastinas"
+    ],
+    "Mallas, Lápices y Guardas": [
+        "Mallas",
+        "Lápices",
+        "Guardas"
+    ],
+    "Zócalos y Terminaciones": [
+        "Zócalos",
+        "Varillas",
+        "Separadores y Autonivelantes"
+    ],
+    "Baño": [
+        "Vanitory",
+        "Grifería",
+        "Losa",
+        "Bañeras e Hidromasajes"
+    ]
+}
