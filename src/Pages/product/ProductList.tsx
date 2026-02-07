@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ProductTablePagination from "./ProductTablePagination";
 import SelectedProduct from "./SelectedProduct";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 15;
 
 const ProductList = () => {
   const { listProducts } = useProductContext();

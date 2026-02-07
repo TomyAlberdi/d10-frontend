@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Product } from "@/interfaces/ProductInterfaces";
+import { formatPrice } from "@/lib/utils";
 import { useCallback, useRef } from "react";
 
 interface ProductTablePaginationProps {
@@ -46,7 +47,9 @@ const ProductTablePagination = ({
       if (e.key === "ArrowDown") {
         e.preventDefault();
         const nextIndex =
-          selectedIndex < 0 ? 0 : Math.min(selectedIndex + 1, products.length - 1);
+          selectedIndex < 0
+            ? 0
+            : Math.min(selectedIndex + 1, products.length - 1);
         onSelectProduct(products[nextIndex]);
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -57,7 +60,7 @@ const ProductTablePagination = ({
         onSelectProduct(products[prevIndex]);
       }
     },
-    [products, selectedIndex, onSelectProduct],
+    [products, selectedIndex, onSelectProduct]
   );
 
   return (
@@ -70,20 +73,35 @@ const ProductTablePagination = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Code</TableHead>
+            <TableHead className="w-1/12">Código</TableHead>
+            <TableHead className="w-2/12">Fabricante</TableHead>
+            <TableHead className="w-4/12">Nombre</TableHead>
+            <TableHead className="w-3/12">Precio Unitario</TableHead>
+            <TableHead className="w-2/12">Dimensiones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {products.map((product) => (
             <TableRow
               key={product.id}
-              data-state={selectedProduct?.id === product.id ? "selected" : undefined}
+              data-state={
+                selectedProduct?.id === product.id ? "selected" : undefined
+              }
               onClick={() => onSelectProduct(product)}
               className="cursor-pointer"
             >
-              <TableCell>{product.name}</TableCell>
               <TableCell>{product.code}</TableCell>
+              <TableCell>{product.providerName}</TableCell>
+              <TableCell>{product.name}</TableCell>
+              <TableCell>
+                {product.priceBySaleUnit && (
+                  <>
+                    $ {formatPrice(product.priceBySaleUnit)} X{" "}
+                    {product.saleUnitType}
+                  </>
+                )}
+              </TableCell>
+              <TableCell>{product.dimensions}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -101,11 +119,12 @@ const ProductTablePagination = ({
               className={
                 page <= 0 ? "pointer-events-none opacity-50" : "cursor-pointer"
               }
+              text=""
             />
           </PaginationItem>
           <PaginationItem>
             <span>
-              Page {page + 1} of {totalPages || 1}
+              {page + 1} de {totalPages || 1}
             </span>
           </PaginationItem>
           <PaginationItem>
@@ -121,6 +140,7 @@ const ProductTablePagination = ({
                   ? "pointer-events-none opacity-50"
                   : "cursor-pointer"
               }
+              text=""
             />
           </PaginationItem>
         </PaginationContent>

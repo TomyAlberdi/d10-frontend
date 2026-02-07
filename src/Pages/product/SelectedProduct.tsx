@@ -1,20 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { Eye, ShoppingCart } from "lucide-react";
 
 interface SelectedProductProps {
   product: Product | null;
-}
-
-/** Formats a number with European punctuation: thousands with period, decimals with comma (e.g. 10.130,53) */
-function formatPrice(value: number): string {
-  return value.toLocaleString("es-ES", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 }
 
 const SelectedProduct = ({ product }: SelectedProductProps) => {
@@ -70,12 +62,12 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
       </div>
       <div className="row-start-3 row-span-4 col-span-2 flex flex-col justify-center gap-2 pl-5">
         {product.priceByMeasureUnit && (
-          <div className="text-3xl">
+          <div className="text-3xl alternate-font">
             $ {formatPrice(product.priceByMeasureUnit)} X {product.measureType}
           </div>
         )}
         {product.priceBySaleUnit && (
-          <div className="text-2xl">
+          <div className="text-2xl alternate-font">
             $ {formatPrice(product.priceBySaleUnit)} X {product.saleUnitType} (
             {product.measurePerSaleUnit} {product.measureType})
           </div>
