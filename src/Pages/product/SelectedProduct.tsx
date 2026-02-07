@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn, formatPrice } from "@/lib/utils";
 import type { Product } from "@/interfaces/ProductInterfaces";
-import { Eye, ShoppingCart } from "lucide-react";
+import { Eye, PencilLine, ShoppingCart } from "lucide-react";
 
 interface SelectedProductProps {
   product: Product | null;
@@ -100,14 +100,18 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
           <Eye />
           Ver detalle del Producto
         </Button>
+        <Button className="h-full" variant="outline" size="sm">
+          <ShoppingCart />
+          Añadir al carrito
+        </Button>
         <Button
           className="h-full"
           variant="outline"
           size="sm"
-          onClick={() => navigate(`/product/${product.id}`)}
+          onClick={() => navigate(`/product/${product.id}/update`)}
         >
-          <ShoppingCart />
-          Añadir al carrito
+          <PencilLine />
+          Editar
         </Button>
       </div>
     </Card>
