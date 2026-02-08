@@ -123,6 +123,15 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     return (await response.json()) as Invoice[];
   };
 
+  const getRecentInvoices = async (): Promise<Invoice[]> => {
+    const response = await fetch(`${API_URL}/search`);
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as Invoice[];
+  };
+
   const updateInvoiceStatus = async (
     id: string,
     status: InvoiceStatus,
@@ -143,6 +152,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     updateInvoice,
     deleteInvoiceById,
     searchInvoices,
+    getRecentInvoices,
     updateInvoiceStatus,
   };
 

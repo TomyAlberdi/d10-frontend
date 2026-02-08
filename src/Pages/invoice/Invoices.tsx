@@ -26,28 +26,46 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const Invoices = () => {
-  const { searchInvoices } = useInvoiceContext();
+  const { searchInvoices, getRecentInvoices } = useInvoiceContext();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingRecent, setIsLoadingRecent] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
 
   const hasQuery = searchQuery.trim().length > 0;
   const displayInvoices = useMemo(
-    () => (hasQuery ? invoices : []),
-    [hasQuery, invoices]
+    () => (hasQuery ? invoices : recentInvoices),
+    [hasQuery, invoices, recentInvoices]
   );
   const displaySelected = useMemo(
     () =>
-      hasQuery &&
       selectedInvoice &&
-      invoices.some((i) => i.id === selectedInvoice.id)
+      displayInvoices.some((i) => i.id === selectedInvoice.id)
         ? selectedInvoice
         : null,
-    [hasQuery, invoices, selectedInvoice]
+    [displayInvoices, selectedInvoice]
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    getRecentInvoices()
+      .then((result) => {
+        if (!cancelled) {
+          setRecentInvoices(result);
+          setSelectedInvoice(result[0] ?? null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingRecent(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [getRecentInvoices]);
 
   useEffect(() => {
     if (!hasQuery) return;
@@ -73,6 +91,16 @@ const Invoices = () => {
     const t = setTimeout(() => setSearchQuery(searchInput), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(t);
   }, [searchInput]);
+
+  useEffect(() => {
+    if (!hasQuery && recentInvoices.length > 0 && selectedInvoice !== null) {
+      const inRecent = recentInvoices.some((i) => i.id === selectedInvoice.id);
+      if (!inRecent) {
+        const first = recentInvoices[0];
+        queueMicrotask(() => setSelectedInvoice(first));
+      }
+    }
+  }, [hasQuery, recentInvoices, selectedInvoice]);
 
   const selectedIndex = displaySelected
     ? displayInvoices.findIndex((i) => i.id === displaySelected.id)
@@ -142,7 +170,7 @@ const Invoices = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {displayInvoices.length === 0 && !isSearching && (
+                  {displayInvoices.length === 0 && !isSearching && !isLoadingRecent && (
                     <TableRow>
                       <TableCell
                         colSpan={6}
@@ -150,7 +178,17 @@ const Invoices = () => {
                       >
                         {hasQuery
                           ? "No se encontraron facturas"
-                          : "Escriba en la búsqueda para listar facturas"}
+                          : "No hay facturas recientes"}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {displayInvoices.length === 0 && isLoadingRecent && !hasQuery && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        className="text-center text-muted-foreground py-8"
+                      >
+                        Cargando facturas recientes…
                       </TableCell>
                     </TableRow>
                   )}

@@ -11,6 +11,7 @@ export interface InvoiceContextType {
   updateInvoice: (id: string, dto: CreateInvoiceDTO) => Promise<void>;
   deleteInvoiceById: (id: string) => Promise<void>;
   searchInvoices: (q: string) => Promise<Invoice[]>;
+  getRecentInvoices: () => Promise<Invoice[]>;
   updateInvoiceStatus: (id: string, status: InvoiceStatus) => Promise<void>;
 }
 
