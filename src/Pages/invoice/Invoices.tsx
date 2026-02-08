@@ -25,6 +25,14 @@ const STATUS_LABELS: Record<string, string> = {
   CANCELADO: "Cancelado",
 };
 
+const STATUS_ROW_CLASSES: Record<string, string> = {
+  PENDIENTE: "bg-amber-50 dark:bg-amber-950/30",
+  PAGO: "bg-green-50 dark:bg-green-950/30",
+  ENVIADO: "bg-blue-50 dark:bg-blue-950/30",
+  ENTREGADO: "bg-emerald-50 dark:bg-emerald-950/30",
+  CANCELADO: "bg-red-50 dark:bg-red-950/30",
+};
+
 const Invoices = () => {
   const { searchInvoices, getRecentInvoices } = useInvoiceContext();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -201,7 +209,7 @@ const Invoices = () => {
                           : undefined
                       }
                       onClick={() => setSelectedInvoice(invoice)}
-                      className="cursor-pointer"
+                      className={`cursor-pointer ${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}
                     >
                       <TableCell>{invoice.client.name}</TableCell>
                       <TableCell>
