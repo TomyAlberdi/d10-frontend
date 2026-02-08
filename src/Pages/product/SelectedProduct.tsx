@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn, formatPrice } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 import type { Product } from "@/interfaces/ProductInterfaces";
+import { cn, formatPrice } from "@/lib/utils";
 import { Eye, PackagePlus, PencilLine, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SelectedProductProps {
   product: Product | null;
@@ -105,6 +105,7 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
       <div className="row-start-7 col-span-2 flex items-center gap-3">
         <Button
           className="h-full"
+          disabled
           variant="outline"
           size="sm"
           onClick={() => navigate(`/product/${product.id}`)}

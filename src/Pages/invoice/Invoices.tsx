@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -7,11 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
+import { Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SelectedInvoice from "./SelectedInvoice";
 
@@ -209,10 +209,10 @@ const Invoices = () => {
                           : undefined
                       }
                       onClick={() => setSelectedInvoice(invoice)}
-                      className={`cursor-pointer ${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}
+                      className={`cursor-pointer`}
                     >
                       <TableCell>{invoice.client.name}</TableCell>
-                      <TableCell>
+                      <TableCell className={`${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}>
                         {STATUS_LABELS[invoice.status] ?? invoice.status}
                       </TableCell>
                       <TableCell>{invoice.products.length}</TableCell>
