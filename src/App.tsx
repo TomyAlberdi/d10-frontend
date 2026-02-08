@@ -3,6 +3,7 @@ import FloatingBackButton from "./components/FloatingBackButton";
 import { Toaster } from "./components/ui/sonner";
 import CartContextComponent from "./contexts/cart/CartContextComponent";
 import ClientContextComponent from "./contexts/client/ClientContextComponent";
+import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
 import Clients from "./Pages/Clients";
 import Home from "./Pages/Home";
@@ -23,19 +24,21 @@ export function App() {
       <ProductContextComponent>
         <CartContextComponent>
           <ClientContextComponent>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/product" element={<Products />}>
-                <Route index element={<ProductList />} />
-                <Route path="create" element={<ProductCreate />} />
-                <Route path=":id" element={<ProductDetail />} />
-                <Route path=":id/update" element={<ProductUpdate />} />
-              </Route>
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/client" element={<Clients />} />
-              <Route path="/invoice" element={<Invoices />} />
-              <Route path="/provider" element={<Providers />} />
-            </Routes>
+            <InvoiceContextComponent>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/product" element={<Products />}>
+                  <Route index element={<ProductList />} />
+                  <Route path="create" element={<ProductCreate />} />
+                  <Route path=":id" element={<ProductDetail />} />
+                  <Route path=":id/update" element={<ProductUpdate />} />
+                </Route>
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/client" element={<Clients />} />
+                <Route path="/invoice" element={<Invoices />} />
+                <Route path="/provider" element={<Providers />} />
+              </Routes>
+            </InvoiceContextComponent>
           </ClientContextComponent>
         </CartContextComponent>
       </ProductContextComponent>
