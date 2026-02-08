@@ -5,7 +5,8 @@ import CartContextComponent from "./contexts/cart/CartContextComponent";
 import ClientContextComponent from "./contexts/client/ClientContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
-import Clients from "./Pages/Clients";
+import ClientCreate from "./Pages/client/ClientCreate";
+import ClientUpdate from "./Pages/client/ClientUpdate";
 import Home from "./Pages/Home";
 import Invoices from "./Pages/Invoices";
 import ProductCreate from "./Pages/product/ProductCreate";
@@ -15,6 +16,8 @@ import Products from "./Pages/product/Products";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import Providers from "./Pages/Providers";
 import Cart from "./Pages/cart/Cart";
+import ClientsList from "./Pages/client/ClientsList";
+import Clients from "./Pages/client/Clients";
 
 export function App() {
   return (
@@ -33,8 +36,13 @@ export function App() {
                   <Route path=":id" element={<ProductDetail />} />
                   <Route path=":id/update" element={<ProductUpdate />} />
                 </Route>
+                <Route path="/client" element={<Clients />}>
+                  <Route index element={<ClientsList />} />
+                  <Route path="create" element={<ClientCreate />} />
+                  <Route path=":id/update" element={<ClientUpdate />} />
+                </Route>
                 <Route path="/cart" element={<Cart />} />
-                <Route path="/client" element={<Clients />} />
+                <Route path="/client/create" element={<ClientCreate />} />
                 <Route path="/invoice" element={<Invoices />} />
                 <Route path="/provider" element={<Providers />} />
               </Routes>

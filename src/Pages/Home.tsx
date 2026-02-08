@@ -23,13 +23,13 @@ const Home = () => {
             Clientes
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" className="h-25 w-64" disabled>
           <Link to="/invoice" className="flex items-center gap-3 text-xl">
             <FileText className='big-icon' />
             Presupuestos
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" className="h-25 w-64" disabled>
           <Link to="/provider" className="flex items-center gap-3 text-xl">
             <Truck className='big-icon' />
             Proveedores
