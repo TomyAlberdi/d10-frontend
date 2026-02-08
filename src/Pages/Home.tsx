@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { FileText, Package, Truck, Users } from 'lucide-react';
+import { FileText, Package, ShoppingCart, Truck, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 
@@ -33,6 +33,12 @@ const Home = () => {
           <Link to="/provider" className="flex items-center gap-3 text-xl">
             <Truck className='big-icon' />
             Proveedores
+          </Link>
+        </Button>
+        <Button size="lg" asChild className='h-20 w-132 col-span-2'>
+          <Link to="/cart" className='flex items-center gap-3 text-xl'>
+            <ShoppingCart className='big-icon' />
+            Carrito
           </Link>
         </Button>
       </div>
