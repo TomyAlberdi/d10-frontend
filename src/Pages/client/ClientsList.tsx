@@ -104,7 +104,7 @@ const ClientsList = () => {
           <Search className="size-4 text-muted-foreground shrink-0" />
           <Input
             type="search"
-            placeholder="Buscar por nombre, CUIT/DNI, email..."
+            placeholder="Buscar por nombre o CUIT/DNI"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="flex-1"
