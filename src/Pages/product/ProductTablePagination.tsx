@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
+import { Search } from "lucide-react";
 import { useCallback, useRef } from "react";
 
 interface ProductTablePaginationProps {
@@ -25,6 +27,9 @@ interface ProductTablePaginationProps {
   onPageChange: (page: number) => void;
   selectedProduct: Product | null;
   onSelectProduct: (product: Product) => void;
+  searchInput: string;
+  onSearchChange: (value: string) => void;
+  isSearching?: boolean;
 }
 
 const ProductTablePagination = ({
@@ -34,6 +39,9 @@ const ProductTablePagination = ({
   onPageChange,
   selectedProduct,
   onSelectProduct,
+  searchInput,
+  onSearchChange,
+  isSearching = false,
 }: ProductTablePaginationProps) => {
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -66,22 +74,37 @@ const ProductTablePagination = ({
   return (
     <Card
       ref={tableRef}
-      className="h-4/6 flex flex-col overflow-y-scroll py-0 gap-0"
+      className="h-4/6 flex flex-col overflow-hidden py-0 gap-0"
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
-      <Table>
-        <TableHeader>
-          <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
-            <TableHead className="w-1/12 bg-card">Código</TableHead>
-            <TableHead className="w-2/12 bg-card">Fabricante</TableHead>
-            <TableHead className="w-4/12 bg-card">Nombre</TableHead>
-            <TableHead className="w-3/12 bg-card">Precio Unitario</TableHead>
-            <TableHead className="w-2/12 bg-card">Dimensiones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {products.map((product) => (
+      <div className="p-3 border-b shrink-0 flex items-center gap-2">
+        <Search className="size-4 text-muted-foreground shrink-0" />
+        <Input
+          type="search"
+          placeholder="Buscar por código, nombre o fabricante"
+          value={searchInput}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="flex-1"
+          aria-label="Buscar productos"
+        />
+        {isSearching && (
+          <span className="text-sm text-muted-foreground">Buscando…</span>
+        )}
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
+              <TableHead className="w-1/12 bg-card">Código</TableHead>
+              <TableHead className="w-2/12 bg-card">Fabricante</TableHead>
+              <TableHead className="w-4/12 bg-card">Nombre</TableHead>
+              <TableHead className="w-3/12 bg-card">Precio Unitario</TableHead>
+              <TableHead className="w-2/12 bg-card">Dimensiones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((product) => (
             <TableRow
               key={product.id}
               data-state={
@@ -106,7 +129,8 @@ const ProductTablePagination = ({
           ))}
         </TableBody>
       </Table>
-      <Pagination className="mt-auto">
+      </div>
+      <Pagination className="mt-auto shrink-0">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
