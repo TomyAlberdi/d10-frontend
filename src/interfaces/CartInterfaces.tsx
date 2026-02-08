@@ -1,5 +1,3 @@
-import type { Client } from "@/interfaces/ClientInterfaces";
-
 export interface CartProduct {
   id: string;
   name: string;
@@ -11,12 +9,4 @@ export interface CartProduct {
   saleUnitQuantity: number;
   individualDiscount: number;
   subtotal: number;
-}
-
-export interface Cart {
-  client: Client | null;
-  products: CartProduct[];
-  status: string;
-  discount: number;
-  total: number;
 }

@@ -1,5 +1,6 @@
-import type { Cart, CartProduct } from "@/interfaces/CartInterfaces";
+import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Client } from "@/interfaces/ClientInterfaces";
+import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
 import { useCallback, useMemo, useState } from "react";
 import { CartContext, type CartContextType } from "./CartContext";
@@ -9,10 +10,21 @@ function computeTotal(products: CartProduct[], discount: number): number {
   return Math.max(0, subtotalSum - discount);
 }
 
-const initialCart: Cart = {
-  client: null,
+const placeholderClient: Client = {
+  id: "",
+  type: "",
+  name: "",
+  address: null,
+  phone: null,
+  email: null,
+  cuitDni: "",
+};
+
+const initialCart: Invoice = {
+  id: "",
+  client: placeholderClient,
   products: [],
-  status: "BORRADOR",
+  status: "PENDIENTE",
   discount: 0,
   total: 0,
 };
@@ -24,7 +36,7 @@ interface CartContextComponentProps {
 const CartContextComponent: React.FC<CartContextComponentProps> = ({
   children,
 }) => {
-  const [cart, setCart] = useState<Cart>(initialCart);
+  const [cart, setCart] = useState<Invoice>(initialCart);
 
   const setCartClient = useCallback((client: Client) => {
     setCart((prev) => ({

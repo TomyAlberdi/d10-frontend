@@ -1,9 +1,10 @@
-import type { Cart, CartProduct } from "@/interfaces/CartInterfaces";
+import type { CartProduct } from "@/interfaces/CartInterfaces";
+import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import type { Client } from "@/interfaces/ClientInterfaces";
 import { createContext } from "react";
 
 export interface CartContextType {
-  cart: Cart;
+  cart: Invoice;
   setCartClient: (client: Client) => void;
   addProduct: (product: CartProduct) => void;
   removeProduct: (productId: string) => void;
