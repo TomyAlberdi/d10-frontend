@@ -16,6 +16,7 @@ import ProductDetail from "./Pages/product/ProductDetail";
 import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
 import ProductUpdate from "./Pages/product/ProductUpdate";
+import UpdateProductStock from "./Pages/product/UpdateProductStock";
 import Cart from "./Pages/cart/Cart";
 import ClientsList from "./Pages/client/ClientsList";
 import Clients from "./Pages/client/Clients";
@@ -37,6 +38,7 @@ export function App() {
                   <Route path="add/:productId" element={<ProductAddToCart />} />
                   <Route path=":id" element={<ProductDetail />} />
                   <Route path=":id/update" element={<ProductUpdate />} />
+                  <Route path=":id/stock" element={<UpdateProductStock />} />
                 </Route>
                 <Route path="/client" element={<Clients />}>
                   <Route index element={<ClientsList />} />

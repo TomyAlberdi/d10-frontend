@@ -18,5 +18,5 @@ export interface CreateInvoiceDTO {
 
 export interface Invoice extends CreateInvoiceDTO {
   id: string;
-  date: string;
+  date?: string;
 }

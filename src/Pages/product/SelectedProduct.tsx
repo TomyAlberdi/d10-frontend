@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn, formatPrice } from "@/lib/utils";
 import type { Product } from "@/interfaces/ProductInterfaces";
-import { Eye, PencilLine, ShoppingCart } from "lucide-react";
+import { Eye, PackagePlus, PencilLine, ShoppingCart } from "lucide-react";
 
 interface SelectedProductProps {
   product: Product | null;
@@ -28,7 +28,7 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
       className={cn(
         "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
         isDiscontinued &&
-          "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60"
+          "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
     >
       <div className="col-span-2 flex items-center">
@@ -129,6 +129,15 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
         >
           <PencilLine />
           Editar
+        </Button>
+        <Button
+          className="h-full"
+          variant="outline"
+          size="sm"
+          onClick={() => navigate(`/product/${product.id}/stock`)}
+        >
+          <PackagePlus />
+          Actualizar stock
         </Button>
       </div>
     </Card>

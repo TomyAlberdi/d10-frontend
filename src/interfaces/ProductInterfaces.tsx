@@ -7,7 +7,6 @@ export interface ProductStock {
 export interface ProductStockRecord {
   type: "IN" | "OUT";
   quantity: number;
-  date: string;
 }
 
 export interface ProductCharacteristic {

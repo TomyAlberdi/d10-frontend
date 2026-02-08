@@ -134,12 +134,11 @@ const Invoices = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
-                    <TableHead className="w-2/12 bg-card">ID</TableHead>
-                    <TableHead className="w-3/12 bg-card">Cliente</TableHead>
+                    <TableHead className="w-4/12 bg-card">Cliente</TableHead>
                     <TableHead className="w-2/12 bg-card">Estado</TableHead>
                     <TableHead className="w-2/12 bg-card">Productos</TableHead>
                     <TableHead className="w-2/12 bg-card">Descuento</TableHead>
-                    <TableHead className="w-2/12 bg-card">Total</TableHead>
+                    <TableHead className="w-3/12 bg-card">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -166,9 +165,6 @@ const Invoices = () => {
                       onClick={() => setSelectedInvoice(invoice)}
                       className="cursor-pointer"
                     >
-                      <TableCell className="font-mono text-sm">
-                        {invoice.id}
-                      </TableCell>
                       <TableCell>{invoice.client.name}</TableCell>
                       <TableCell>
                         {STATUS_LABELS[invoice.status] ?? invoice.status}

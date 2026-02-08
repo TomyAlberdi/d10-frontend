@@ -32,6 +32,21 @@ const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "CANCELADO", label: "Cancelado" },
 ];
 
+const LOCKED_STATUSES: InvoiceStatus[] = ["CANCELADO", "ENVIADO", "ENTREGADO"];
+
+function isStatusOptionDisabled(
+  optionValue: InvoiceStatus,
+  currentStatus: InvoiceStatus,
+): boolean {
+  if (LOCKED_STATUSES.includes(currentStatus)) {
+    return optionValue !== currentStatus;
+  }
+  if (currentStatus === "PAGO") {
+    return optionValue === "PENDIENTE" || optionValue === "CANCELADO";
+  }
+  return false;
+}
+
 function computeTotal(products: CartProduct[], discount: number): number {
   const subtotalSum = products.reduce((sum, p) => sum + p.subtotal, 0);
   return Math.max(0, subtotalSum - discount);
@@ -242,7 +257,11 @@ const UpdateInvoice = () => {
               </SelectTrigger>
               <SelectContent>
                 {INVOICE_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
+                  <SelectItem
+                    key={opt.value}
+                    value={opt.value}
+                    disabled={isStatusOptionDisabled(opt.value, status)}
+                  >
                     {opt.label}
                   </SelectItem>
                 ))}
