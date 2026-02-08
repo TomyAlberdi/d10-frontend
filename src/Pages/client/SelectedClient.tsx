@@ -29,7 +29,12 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
 
   const handleSetAsCartClient = () => {
     setCartClient(client);
-    toast.success("Cliente asignado al carrito");
+    toast.success("Cliente asignado al carrito", {
+      action: {
+        label: "Ver carrito",
+        onClick: () => navigate("/cart"),
+      },
+    });
   };
 
   return (

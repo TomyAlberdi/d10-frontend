@@ -75,7 +75,12 @@ const ProductAddToCart = () => {
     setIsSubmitting(true);
     try {
       addProduct(cartProduct);
-      toast.success("Producto añadido al carrito");
+      toast("Producto añadido al carrito", {
+        action: {
+          "label": "Ver carrito",
+          "onClick": () => navigate("/cart"),
+        }
+      });
       navigate("/product");
     } finally {
       setIsSubmitting(false);

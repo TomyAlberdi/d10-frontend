@@ -1,6 +1,6 @@
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Client } from "@/interfaces/ClientInterfaces";
-import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import type { Invoice, InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CartContext, type CartContextType } from "./CartContext";
@@ -31,6 +31,14 @@ const initialCart: Invoice = {
   total: 0,
 };
 
+const VALID_STATUSES: InvoiceStatus[] = [
+  "PENDIENTE",
+  "PAGO",
+  "ENVIADO",
+  "ENTREGADO",
+  "CANCELADO",
+];
+
 function loadCartFromStorage(): Invoice {
   try {
     const raw = localStorage.getItem(CART_STORAGE_KEY);
@@ -43,7 +51,9 @@ function loadCartFromStorage(): Invoice {
       id: parsed.id ?? "",
       client: parsed.client ?? placeholderClient,
       products: Array.isArray(parsed.products) ? parsed.products : [],
-      status: parsed.status ?? "PENDIENTE",
+      status: VALID_STATUSES.includes(parsed.status as InvoiceStatus)
+        ? (parsed.status as InvoiceStatus)
+        : "PENDIENTE",
       discount: Number.isFinite(discount) ? discount : 0,
       total: Number.isFinite(total) ? total : 0,
     };
@@ -65,6 +75,13 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
     setCart((prev) => ({
       ...prev,
       client,
+    }));
+  }, []);
+
+  const setCartStatus = useCallback((status: InvoiceStatus) => {
+    setCart((prev) => ({
+      ...prev,
+      status,
     }));
   }, []);
 
@@ -103,6 +120,15 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
     });
   }, []);
 
+  const clearCart = useCallback(() => {
+    setCart(initialCart);
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(initialCart));
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
@@ -115,11 +141,21 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
     () => ({
       cart,
       setCartClient,
+      setCartStatus,
       addProduct,
       removeProduct,
       setDiscount,
+      clearCart,
     }),
-    [cart, setCartClient, addProduct, removeProduct, setDiscount],
+    [
+      cart,
+      setCartClient,
+      setCartStatus,
+      addProduct,
+      removeProduct,
+      setDiscount,
+      clearCart,
+    ],
   );
 
   return (

@@ -1,8 +1,6 @@
-
-import { Button } from '@/components/ui/button';
-import { FileText, Package, ShoppingCart, Truck, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
+import { Button } from "@/components/ui/button";
+import { FileText, Package, ShoppingCart, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -13,31 +11,25 @@ const Home = () => {
       <div className="grid grid-cols-2 gap-4">
         <Button size="lg" asChild className="h-25 w-64">
           <Link to="/product" className="flex items-center gap-3 text-xl">
-            <Package className='big-icon' />
+            <Package className="big-icon" />
             Productos
           </Link>
         </Button>
         <Button size="lg" asChild className="h-25 w-64">
           <Link to="/client" className="flex items-center gap-3 text-xl">
-            <Users className='big-icon' />
+            <Users className="big-icon" />
             Clientes
           </Link>
         </Button>
-        <Button size="lg" className="h-25 w-64" disabled>
+        <Button size="lg" asChild className="h-25 w-64">
           <Link to="/invoice" className="flex items-center gap-3 text-xl">
-            <FileText className='big-icon' />
+            <FileText className="big-icon" />
             Presupuestos
           </Link>
         </Button>
-        <Button size="lg" className="h-25 w-64" disabled>
-          <Link to="/provider" className="flex items-center gap-3 text-xl">
-            <Truck className='big-icon' />
-            Proveedores
-          </Link>
-        </Button>
-        <Button size="lg" asChild className='h-20 w-132 col-span-2'>
-          <Link to="/cart" className='flex items-center gap-3 text-xl'>
-            <ShoppingCart className='big-icon' />
+        <Button size="lg" asChild className="h-25 w-64">
+          <Link to="/cart" className="flex items-center gap-3 text-xl">
+            <ShoppingCart className="big-icon" />
             Carrito
           </Link>
         </Button>

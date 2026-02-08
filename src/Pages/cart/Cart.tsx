@@ -1,8 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -14,11 +22,21 @@ import {
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 import { useState } from "react";
-import { UserPlus, Trash2, FileText } from "lucide-react";
+import { flushSync } from "react-dom";
+import { UserPlus, Trash2, FileText, PackagePlus } from "lucide-react";
+
+const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
+  { value: "PENDIENTE", label: "Pendiente" },
+  { value: "PAGO", label: "Pago" },
+  { value: "ENVIADO", label: "Enviado" },
+  { value: "ENTREGADO", label: "Entregado" },
+  { value: "CANCELADO", label: "Cancelado" },
+];
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { cart, setDiscount, removeProduct } = useCartContext();
+  const { cart, setDiscount, setCartStatus, removeProduct, clearCart } =
+    useCartContext();
   const { createInvoice } = useInvoiceContext();
   const [isCreating, setIsCreating] = useState(false);
 
@@ -30,7 +48,7 @@ const Cart = () => {
     hasClient && cart.products.length > 0 && cart.total >= 0;
 
   const handleDiscountPercentChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const percent = Number(e.target.value);
     if (Number.isFinite(percent) && percent >= 0 && percent <= 100) {
@@ -45,9 +63,12 @@ const Cart = () => {
       await createInvoice({
         client: cart.client,
         products: cart.products,
-        status: "PENDIENTE",
+        status: cart.status,
         discount: cart.discount,
         total: cart.total,
+      });
+      flushSync(() => {
+        clearCart();
       });
       toast.success("Factura creada correctamente");
       navigate("/invoice");
@@ -100,16 +121,24 @@ const Cart = () => {
       <Card className="p-4 overflow-hidden">
         <h2 className="text-lg font-semibold mb-3">Productos</h2>
         {cart.products.length === 0 ? (
-          <p className="text-muted-foreground text-sm py-4">
-            No hay productos en el carrito
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="text-muted-foreground text-sm py-4">
+              No hay productos en el carrito
+            </p>
+            <Button onClick={() => navigate("/product")}>
+              <PackagePlus className="size-4 mr-1" />
+              Agregar productos
+            </Button>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Producto</TableHead>
-                  <TableHead className="text-right">Cantidad (unidad venta)</TableHead>
+                  <TableHead className="text-right">
+                    Cantidad (unidad venta)
+                  </TableHead>
                   <TableHead className="text-right">Medida total</TableHead>
                   <TableHead className="text-right">Desc. individual</TableHead>
                   <TableHead className="text-right">Subtotal</TableHead>
@@ -170,6 +199,26 @@ const Cart = () => {
           </div>
           <div className="text-xl font-semibold pt-2">
             Total: $ {formatPrice(cart.total)}
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Estado de la factura
+            </label>
+            <Select
+              value={cart.status}
+              onValueChange={(value) => setCartStatus(value as InvoiceStatus)}
+            >
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                {INVOICE_STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <Button
             onClick={handleCreateInvoice}

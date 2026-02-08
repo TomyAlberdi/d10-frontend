@@ -15,7 +15,6 @@ import ProductDetail from "./Pages/product/ProductDetail";
 import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
 import ProductUpdate from "./Pages/product/ProductUpdate";
-import Providers from "./Pages/Providers";
 import Cart from "./Pages/cart/Cart";
 import ClientsList from "./Pages/client/ClientsList";
 import Clients from "./Pages/client/Clients";
@@ -46,7 +45,6 @@ export function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/client/create" element={<ClientCreate />} />
                 <Route path="/invoice" element={<Invoices />} />
-                <Route path="/provider" element={<Providers />} />
               </Routes>
             </InvoiceContextComponent>
           </ClientContextComponent>
