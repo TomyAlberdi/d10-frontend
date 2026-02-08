@@ -19,7 +19,8 @@ const ProductAddToCart = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [saleUnitQuantity, setSaleUnitQuantity] = useState<string>("1");
-  const [individualDiscount, setIndividualDiscount] = useState<string>("0");
+  const [individualDiscountPercent, setIndividualDiscountPercent] =
+    useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const ProductAddToCart = () => {
         if (!cancelled && p) {
           setProduct(p);
           setSaleUnitQuantity("1");
-          setIndividualDiscount("0");
+          setIndividualDiscountPercent(0);
         }
       })
       .finally(() => {
@@ -46,22 +47,17 @@ const ProductAddToCart = () => {
     if (!product || !productId) return;
 
     const qty = Number(saleUnitQuantity);
-    const discount = Number(individualDiscount);
+    const percent = Math.min(100, Math.max(0, individualDiscountPercent));
 
     if (!Number.isFinite(qty) || qty <= 0) {
       toast.error("La cantidad debe ser un número mayor que 0");
       return;
     }
-    if (!Number.isFinite(discount) || discount < 0) {
-      toast.error("El descuento debe ser un número mayor o igual a 0");
-      return;
-    }
 
+    const rawSubtotal = qty * product.priceBySaleUnit;
+    const individualDiscount = rawSubtotal * (percent / 100);
     const measureUnitQuantity = qty * product.measurePerSaleUnit;
-    const subtotal = Math.max(
-      0,
-      qty * product.priceBySaleUnit - discount
-    );
+    const subtotal = Math.max(0, rawSubtotal - individualDiscount);
 
     const cartProduct: CartProduct = {
       id: product.id,
@@ -72,7 +68,7 @@ const ProductAddToCart = () => {
       saleUnitType: product.saleUnitType,
       priceBySaleUnit: product.priceBySaleUnit,
       saleUnitQuantity: qty,
-      individualDiscount: discount,
+      individualDiscount,
       subtotal,
     };
 
@@ -106,12 +102,12 @@ const ProductAddToCart = () => {
   }
 
   const qty = Number(saleUnitQuantity);
-  const discount = Number(individualDiscount);
+  const percent = Math.min(100, Math.max(0, individualDiscountPercent));
   const isValidQty = Number.isFinite(qty) && qty > 0;
-  const isValidDiscount = Number.isFinite(discount) && discount >= 0;
+  const rawSubtotalPreview = isValidQty ? qty * product.priceBySaleUnit : 0;
   const subtotalPreview =
-    isValidQty && isValidDiscount
-      ? Math.max(0, qty * product.priceBySaleUnit - discount)
+    isValidQty && rawSubtotalPreview >= 0
+      ? Math.max(0, rawSubtotalPreview * (1 - percent / 100))
       : null;
   const measureTotalPreview = isValidQty
     ? qty * product.measurePerSaleUnit
@@ -147,13 +143,17 @@ const ProductAddToCart = () => {
             />
           </Field>
           <Field>
-            <FieldLabel>Descuento individual ($)</FieldLabel>
-            <Input
-              type="number"
+            <FieldLabel>Descuento sobre subtotal: {percent}%</FieldLabel>
+            <input
+              type="range"
               min={0}
-              step="0.01"
-              value={individualDiscount}
-              onChange={(e) => setIndividualDiscount(e.target.value)}
+              max={100}
+              step={1}
+              value={percent}
+              onChange={(e) =>
+                setIndividualDiscountPercent(Number(e.target.value))
+              }
+              className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-primary"
             />
           </Field>
           {measureTotalPreview !== null && (
