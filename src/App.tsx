@@ -8,7 +8,8 @@ import ProductContextComponent from "./contexts/product/ProductContextComponent"
 import ClientCreate from "./Pages/client/ClientCreate";
 import ClientUpdate from "./Pages/client/ClientUpdate";
 import Home from "./Pages/Home";
-import Invoices from "./Pages/Invoices";
+import Invoices from "./Pages/invoice/Invoices";
+import UpdateInvoice from "./Pages/invoice/UpdateInvoice";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
 import ProductDetail from "./Pages/product/ProductDetail";
@@ -45,6 +46,7 @@ export function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/client/create" element={<ClientCreate />} />
                 <Route path="/invoice" element={<Invoices />} />
+                <Route path="/invoice/:id/update" element={<UpdateInvoice />} />
               </Routes>
             </InvoiceContextComponent>
           </ClientContextComponent>

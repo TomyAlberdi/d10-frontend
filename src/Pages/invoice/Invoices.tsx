@@ -1,0 +1,195 @@
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import { formatPrice } from "@/lib/utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import SelectedInvoice from "./SelectedInvoice";
+
+const SEARCH_DEBOUNCE_MS = 300;
+
+const STATUS_LABELS: Record<string, string> = {
+  PENDIENTE: "Pendiente",
+  PAGO: "Pago",
+  ENVIADO: "Enviado",
+  ENTREGADO: "Entregado",
+  CANCELADO: "Cancelado",
+};
+
+const Invoices = () => {
+  const { searchInvoices } = useInvoiceContext();
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  const hasQuery = searchQuery.trim().length > 0;
+  const displayInvoices = useMemo(
+    () => (hasQuery ? invoices : []),
+    [hasQuery, invoices]
+  );
+  const displaySelected = useMemo(
+    () =>
+      hasQuery &&
+      selectedInvoice &&
+      invoices.some((i) => i.id === selectedInvoice.id)
+        ? selectedInvoice
+        : null,
+    [hasQuery, invoices, selectedInvoice]
+  );
+
+  useEffect(() => {
+    if (!hasQuery) return;
+    let cancelled = false;
+    const timeoutId = setTimeout(() => setIsSearching(true), 0);
+    searchInvoices(searchQuery.trim())
+      .then((result) => {
+        if (!cancelled) {
+          setInvoices(result);
+          setSelectedInvoice(result[0] ?? null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsSearching(false);
+      });
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [hasQuery, searchQuery, searchInvoices]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setSearchQuery(searchInput), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  const selectedIndex = displaySelected
+    ? displayInvoices.findIndex((i) => i.id === displaySelected.id)
+    : -1;
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (displayInvoices.length === 0) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const nextIndex =
+          selectedIndex < 0
+            ? 0
+            : Math.min(selectedIndex + 1, displayInvoices.length - 1);
+        setSelectedInvoice(displayInvoices[nextIndex]);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prevIndex =
+          selectedIndex < 0
+            ? displayInvoices.length - 1
+            : Math.max(selectedIndex - 1, 0);
+        setSelectedInvoice(displayInvoices[prevIndex]);
+      }
+    },
+    [displayInvoices, selectedIndex]
+  );
+
+  return (
+    <div className="min-h-screen flex items-center justify-center gap-5">
+      <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
+        {/* Single view, no routing buttons needed */}
+      </section>
+      <section className="w-5/8 h-screen py-5">
+        <div className="px-5 h-full flex flex-col gap-4">
+          <SelectedInvoice invoice={displaySelected} />
+          <Card
+            ref={tableRef}
+            className="h-4/6 flex flex-col overflow-hidden py-0 gap-0"
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+          >
+            <div className="p-3 border-b shrink-0 flex items-center gap-2">
+              <Search className="size-4 text-muted-foreground shrink-0" />
+              <Input
+                type="search"
+                placeholder="Buscar facturas por cliente, ID..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="flex-1"
+                aria-label="Buscar facturas"
+              />
+              {isSearching && (
+                <span className="text-sm text-muted-foreground">
+                  Buscando…
+                </span>
+              )}
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
+                    <TableHead className="w-2/12 bg-card">ID</TableHead>
+                    <TableHead className="w-3/12 bg-card">Cliente</TableHead>
+                    <TableHead className="w-2/12 bg-card">Estado</TableHead>
+                    <TableHead className="w-2/12 bg-card">Productos</TableHead>
+                    <TableHead className="w-2/12 bg-card">Descuento</TableHead>
+                    <TableHead className="w-2/12 bg-card">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {displayInvoices.length === 0 && !isSearching && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        className="text-center text-muted-foreground py-8"
+                      >
+                        {hasQuery
+                          ? "No se encontraron facturas"
+                          : "Escriba en la búsqueda para listar facturas"}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {displayInvoices.map((invoice) => (
+                    <TableRow
+                      key={invoice.id}
+                      data-state={
+                        displaySelected?.id === invoice.id
+                          ? "selected"
+                          : undefined
+                      }
+                      onClick={() => setSelectedInvoice(invoice)}
+                      className="cursor-pointer"
+                    >
+                      <TableCell className="font-mono text-sm">
+                        {invoice.id}
+                      </TableCell>
+                      <TableCell>{invoice.client.name}</TableCell>
+                      <TableCell>
+                        {STATUS_LABELS[invoice.status] ?? invoice.status}
+                      </TableCell>
+                      <TableCell>{invoice.products.length}</TableCell>
+                      <TableCell>
+                        $ {formatPrice(invoice.discount)}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        $ {formatPrice(invoice.total)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Invoices;

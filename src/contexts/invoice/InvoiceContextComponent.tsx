@@ -76,7 +76,28 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
       body: JSON.stringify(dto),
     });
     if (!response.ok) {
-      toast.error(`Error: ${response.status}`);
+      let message: string | null = null;
+      try {
+        const contentType = response.headers.get("content-type");
+        const text = await response.text();
+        if (contentType?.includes("application/json")) {
+          const body = JSON.parse(text) as {
+            message?: string;
+            error?: string;
+            detail?: string;
+          };
+          message = body.message ?? body.error ?? body.detail ?? null;
+        } else if (text && /stock\s*insuficiente|insuficiente/i.test(text)) {
+          message = text;
+        }
+      } catch {
+        // ignore parse errors
+      }
+      if (message && /stock\s*insuficiente|insuficiente/i.test(message)) {
+        toast.error(message);
+      } else {
+        toast.error(message ?? `Error: ${response.status}`);
+      }
       throw new Error(`HTTP Error: ${response.status}`);
     }
   };
