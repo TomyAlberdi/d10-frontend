@@ -7,3 +7,12 @@ export interface Client {
   email: string | null;
   cuitDni: string;
 }
+
+export interface CreateClientDTO {
+  type: string;
+  name: string;
+  address: string;
+  cuitDni: string;
+  email: string;
+  phone: string;
+}
