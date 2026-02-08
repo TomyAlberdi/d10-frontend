@@ -112,7 +112,12 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
           <Eye />
           Ver detalle del Producto
         </Button>
-        <Button className="h-full" variant="outline" size="sm">
+        <Button
+          className="h-full"
+          variant="outline"
+          size="sm"
+          onClick={() => navigate(`/product/add/${product.id}`)}
+        >
           <ShoppingCart />
           Añadir al carrito
         </Button>

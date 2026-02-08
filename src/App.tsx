@@ -9,6 +9,7 @@ import ClientCreate from "./Pages/client/ClientCreate";
 import ClientUpdate from "./Pages/client/ClientUpdate";
 import Home from "./Pages/Home";
 import Invoices from "./Pages/Invoices";
+import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
 import ProductDetail from "./Pages/product/ProductDetail";
 import ProductList from "./Pages/product/ProductList";
@@ -33,6 +34,7 @@ export function App() {
                 <Route path="/product" element={<Products />}>
                   <Route index element={<ProductList />} />
                   <Route path="create" element={<ProductCreate />} />
+                  <Route path="add/:productId" element={<ProductAddToCart />} />
                   <Route path=":id" element={<ProductDetail />} />
                   <Route path=":id/update" element={<ProductUpdate />} />
                 </Route>
