@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ClientContext, type ClientContextType } from "./ClientContext";
 
-const API_URL = "http://localhost:8082/client";
+const API_URL = `${import.meta.env.VITE_BASE_API_URL}/client`;
 
 interface ClientContextComponentProps {
   children: ReactNode;

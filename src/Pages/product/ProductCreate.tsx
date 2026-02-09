@@ -26,7 +26,7 @@ import { useEffect, useState } from "react";
 import categoriesData from "./categories.json";
 import providersList from "./providers.json";
 
-const BASE_URL = "http://localhost:8082";
+const BASE_URL = import.meta.env.VITE_BASE_API_URL;
 const PROVIDERS = providersList as string[];
 
 const CATEGORIES = Object.keys(categoriesData) as string[];

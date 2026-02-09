@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { InvoiceContext, type InvoiceContextType } from "./InvoiceContext";
 
-const API_URL = "http://localhost:8082/invoice";
+const API_URL = `${import.meta.env.VITE_BASE_API_URL}/invoice`;
 
 interface InvoiceContextComponentProps {
   children: ReactNode;
