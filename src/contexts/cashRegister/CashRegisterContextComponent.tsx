@@ -113,12 +113,11 @@ const CashRegisterContextComponent: React.FC<
         }
         toast.success("Monto agregado a la caja");
         await fetchCurrentAmount();
-        await fetchTransactions();
       } catch (error) {
         // Error already handled
       }
     },
-    [fetchCurrentAmount, fetchTransactions],
+    [fetchCurrentAmount],
   );
 
   const removeCash = useCallback(
@@ -163,12 +162,11 @@ const CashRegisterContextComponent: React.FC<
         }
         toast.success("Monto retirado de la caja");
         await fetchCurrentAmount();
-        await fetchTransactions();
       } catch (error) {
         // Error already handled
       }
     },
-    [fetchCurrentAmount, fetchTransactions],
+    [fetchCurrentAmount],
   );
 
   const updateTransaction = useCallback(
@@ -337,4 +335,3 @@ const CashRegisterContextComponent: React.FC<
 };
 
 export default CashRegisterContextComponent;
-

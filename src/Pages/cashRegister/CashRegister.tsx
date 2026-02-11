@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CirclePlus, Wallet } from "lucide-react";
+import { CirclePlus, ReceiptText, Wallet } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const CashRegister = () => {
@@ -21,6 +21,13 @@ const CashRegister = () => {
         >
           <CirclePlus className="medium-icon" />
           Ajustar saldo
+        </Button>
+        <Button
+          onClick={() => navigate("/cash-register/transactions")}
+          className="text-lg h-16"
+        >
+          <ReceiptText className="medium-icon" />
+          Transacciones
         </Button>
       </section>
       <section className="w-5/8 h-screen py-5">
