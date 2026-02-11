@@ -28,7 +28,7 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
       className={cn(
         "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
         isDiscontinued &&
-          "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
+        "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
     >
       <div className="col-span-2 flex items-center">
@@ -61,10 +61,18 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
         {product.stock && (
           <div className="h-full flex items-center gap-3 border-2 px-2">
             <span className="text-muted-foreground">Stock</span>
-            <div className="text-foreground">
-              {product.stock.quantity} {product.saleUnitType} (
-              {product.stock.measureUnitEquivalent} {product.measureType})
-            </div>
+            {
+              product.measureType === "UNIDAD" && product.saleUnitType === "UNIDAD" ? (
+                <div className="text-foreground">
+                  {product.stock.quantity} {product.measureType}
+                </div>
+              ) : (
+                <div className="text-foreground">
+                  {product.stock.quantity} {product.saleUnitType} (
+                  {product.stock.measureUnitEquivalent} {product.measureType})
+                </div>
+              )
+            }
           </div>
         )}
       </div>
@@ -111,7 +119,7 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
           onClick={() => navigate(`/product/${product.id}`)}
         >
           <Eye />
-          Ver detalle del Producto
+          Ver detalle
         </Button>
         <Button
           className="h-full"

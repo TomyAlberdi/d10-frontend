@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FileText, Package, ShoppingCart, Users } from "lucide-react";
+import { FileText, Package, ShoppingCart, Users, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -31,6 +31,15 @@ const Home = () => {
           <Link to="/cart" className="flex items-center gap-3 text-xl">
             <ShoppingCart className="big-icon" />
             Carrito
+          </Link>
+        </Button>
+        <Button size="lg" asChild className="h-25 w-64">
+          <Link
+            to="/cash-register"
+            className="flex items-center gap-3 text-xl"
+          >
+            <Wallet className="big-icon" />
+            Caja
           </Link>
         </Button>
       </div>
