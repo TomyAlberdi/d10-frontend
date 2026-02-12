@@ -8,7 +8,7 @@ const PAGE_SIZE = 15;
 const SEARCH_DEBOUNCE_MS = 300;
 
 const ProductList = () => {
-  const { listProducts } = useProductContext();
+  const { listProducts, updateProductDiscontinued } = useProductContext();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -16,6 +16,13 @@ const ProductList = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+
+  const updateProductDiscontinuedLocal = (discontinued: boolean) => {
+    if (!selectedProduct) return;
+    updateProductDiscontinued(selectedProduct.id, discontinued).then(() => {
+      setSelectedProduct({ ...selectedProduct, discontinued });
+    });
+  };
 
   useEffect(() => {
     const t = setTimeout(() => setSearchQuery(searchInput), SEARCH_DEBOUNCE_MS);
@@ -48,7 +55,10 @@ const ProductList = () => {
 
   return (
     <div className="px-5 h-full flex flex-col gap-4">
-      <SelectedProduct product={selectedProduct} />
+      <SelectedProduct
+        product={selectedProduct}
+        updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}
+      />
       <ProductTablePagination
         products={products}
         page={page}

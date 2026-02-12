@@ -2,14 +2,24 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { cn, formatPrice } from "@/lib/utils";
-import { Eye, PackagePlus, PencilLine, ShoppingCart } from "lucide-react";
+import {
+  PackagePlus,
+  PencilLine,
+  Route,
+  RouteOff,
+  ShoppingCart,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SelectedProductProps {
   product: Product | null;
+  updateProductDiscontinuedLocal: (discontinued: boolean) => void;
 }
 
-const SelectedProduct = ({ product }: SelectedProductProps) => {
+const SelectedProduct = ({
+  product,
+  updateProductDiscontinuedLocal,
+}: SelectedProductProps) => {
   const navigate = useNavigate();
 
   if (!product) {
@@ -61,10 +71,17 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
         {product.stock && (
           <div className="h-full flex items-center gap-3 border-2 px-2">
             <span className="text-muted-foreground">Stock</span>
-            <div className="text-foreground">
-              {product.stock.quantity} {product.saleUnitType} (
-              {product.stock.measureUnitEquivalent} {product.measureType})
-            </div>
+            {product.measureType === "UNIDAD" &&
+            product.saleUnitType === "UNIDAD" ? (
+              <div className="text-foreground">
+                {product.stock.quantity} {product.measureType}
+              </div>
+            ) : (
+              <div className="text-foreground">
+                {product.stock.quantity} {product.saleUnitType} (
+                {product.stock.measureUnitEquivalent} {product.measureType})
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -103,7 +120,7 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
         }}
       />
       <div className="row-start-7 col-span-2 flex items-center gap-3">
-        <Button
+        {/*         <Button
           className="h-full"
           disabled
           variant="outline"
@@ -111,8 +128,8 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
           onClick={() => navigate(`/product/${product.id}`)}
         >
           <Eye />
-          Ver detalle del Producto
-        </Button>
+          Ver detalle
+        </Button> */}
         <Button
           className="h-full"
           variant="outline"
@@ -139,6 +156,26 @@ const SelectedProduct = ({ product }: SelectedProductProps) => {
         >
           <PackagePlus />
           Actualizar stock
+        </Button>
+        <Button
+          className="h-full"
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            updateProductDiscontinuedLocal(!product.discontinued);
+          }}
+        >
+          {product.discontinued ? (
+            <>
+              <Route />
+              Reactivar
+            </>
+          ) : (
+            <>
+              <RouteOff />
+              Discontinuar
+            </>
+          )}
         </Button>
       </div>
     </Card>
