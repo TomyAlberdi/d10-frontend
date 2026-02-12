@@ -69,7 +69,12 @@ const SelectedProduct = ({
           </div>
         )}
         {product.stock && (
-          <div className="h-full flex items-center gap-3 border-2 px-2">
+          <div
+            className={
+              "h-full flex items-center gap-3 border-2 px-2" +
+              (product.stock.quantity > 0 ? "" : " border border-red-500")
+            }
+          >
             <span className="text-muted-foreground">Stock</span>
             {product.measureType === "UNIDAD" &&
             product.saleUnitType === "UNIDAD" ? (
