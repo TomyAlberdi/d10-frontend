@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ const Cart = () => {
   const { cart, setDiscount, setCartStatus, removeProduct, clearCart } =
     useCartContext();
   const { createInvoice } = useInvoiceContext();
+  const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [isCreating, setIsCreating] = useState(false);
 
   const hasClient = cart.client.id.length > 0;
@@ -66,6 +68,14 @@ const Cart = () => {
         status: cart.status,
         discount: cart.discount,
         total: cart.total,
+      });
+      // Apply cash register rule for newly created invoices.
+      await applyInvoiceStatusChange({
+        invoiceId: undefined,
+        previousStatus: null,
+        nextStatus: cart.status,
+        total: cart.total,
+        stockDecreasedInitially: false,
       });
       flushSync(() => {
         clearCart();

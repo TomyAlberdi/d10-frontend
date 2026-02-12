@@ -1,6 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
-import type { CreateInvoiceDTO, InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
+import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
+import type {
+  CreateInvoiceDTO,
+  InvoiceStatus,
+  Invoice,
+} from "@/interfaces/InvoiceInterfaces";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,11 +61,13 @@ const UpdateInvoice = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getInvoiceById, updateInvoice } = useInvoiceContext();
+  const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [initialInvoice, setInitialInvoice] = useState<Invoice | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -69,6 +76,7 @@ const UpdateInvoice = () => {
     getInvoiceById(id)
       .then((inv) => {
         if (!cancelled && inv) {
+          setInitialInvoice(inv);
           setInvoice({
             client: inv.client,
             products: inv.products,
@@ -124,6 +132,15 @@ const UpdateInvoice = () => {
         discount,
         total,
       });
+      if (initialInvoice) {
+        await applyInvoiceStatusChange({
+          invoiceId: initialInvoice.id,
+          previousStatus: initialInvoice.status,
+          nextStatus: status,
+          total,
+          stockDecreasedInitially: initialInvoice.stockDecreased ?? false,
+        });
+      }
       toast.success("Factura actualizada correctamente");
       navigate("/invoice");
     } catch {
