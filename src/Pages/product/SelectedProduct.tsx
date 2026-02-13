@@ -68,6 +68,18 @@ const SelectedProduct = ({
             <span className="text-foreground">{product.dimensions}</span>
           </div>
         )}
+      </div>
+      <div className="row-start-3 row-span-1 col-span-2 flex items-center gap-2">
+        {product.category && (
+          <div className="h-full flex items-center border-2 px-2 text-foreground">
+            {product.category}
+          </div>
+        )}
+        {product.subcategory && (
+          <div className="h-full flex items-center border-2 px-2 text-foreground">
+            {product.subcategory}
+          </div>
+        )}
         {product.stock && (
           <div
             className={
@@ -84,21 +96,12 @@ const SelectedProduct = ({
             ) : (
               <div className="text-foreground">
                 {product.stock.quantity} {product.saleUnitType} (
-                {product.stock.measureUnitEquivalent} {product.measureType})
+                {(
+                  Math.round(product.stock.measureUnitEquivalent * 100) / 100
+                ).toFixed(2)}{" "}
+                {product.measureType})
               </div>
             )}
-          </div>
-        )}
-      </div>
-      <div className="row-start-3 row-span-1 col-span-2 flex items-center gap-2">
-        {product.category && (
-          <div className="h-full flex items-center border-2 px-2 text-foreground">
-            {product.category}
-          </div>
-        )}
-        {product.subcategory && (
-          <div className="h-full flex items-center border-2 px-2 text-foreground">
-            {product.subcategory}
           </div>
         )}
       </div>
