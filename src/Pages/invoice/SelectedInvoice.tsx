@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
-import { PencilLine } from "lucide-react";
+import { Eye, PencilLine } from "lucide-react";
 
 interface SelectedInvoiceProps {
   invoice: Invoice | null;
@@ -82,6 +82,15 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
         </span>
       </div>
       <div className="h-1/6 flex items-center gap-3 flex-wrap">
+        <Button
+          className="h-full"
+          variant="secondary"
+          size="sm"
+          onClick={() => navigate(`/invoice/${invoice.id}`)}
+        >
+          <Eye />
+          Ver detalle
+        </Button>
         <Button
           className="h-full"
           variant="outline"
