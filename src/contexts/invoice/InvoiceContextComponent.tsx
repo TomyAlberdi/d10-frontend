@@ -102,6 +102,32 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     }
   };
 
+  const registerInvoicePayment = async (
+    id: string,
+    amount: number,
+  ): Promise<void> => {
+    const endpoints = [`${API_URL}/${id}/payment`, `${API_URL}/${id}/payments`];
+
+    for (const endpoint of endpoints) {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (response.ok) return;
+      if (response.status === 404) continue;
+
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+
+    toast.error("No se encontró el endpoint para registrar pagos parciales");
+    throw new Error("Partial payment endpoint not found");
+  };
+
   const deleteInvoiceById = async (id: string): Promise<void> => {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
@@ -150,6 +176,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     createInvoice,
     getInvoiceById,
     updateInvoice,
+    registerInvoicePayment,
     deleteInvoiceById,
     searchInvoices,
     getRecentInvoices,

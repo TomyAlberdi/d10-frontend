@@ -31,6 +31,7 @@ import { FileText, Trash2 } from "lucide-react";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Pendiente" },
+  { value: "PAGO_PARCIAL", label: "Pago parcial" },
   { value: "PAGO", label: "Pago" },
   { value: "ENVIADO", label: "Enviado" },
   { value: "ENTREGADO", label: "Entregado" },
@@ -60,7 +61,7 @@ function computeTotal(products: CartProduct[], discount: number): number {
 const UpdateInvoice = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getInvoiceById, updateInvoice } = useInvoiceContext();
+  const { getInvoiceById, updateInvoice, registerInvoicePayment } = useInvoiceContext();
   const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
@@ -68,6 +69,8 @@ const UpdateInvoice = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [initialInvoice, setInitialInvoice] = useState<Invoice | null>(null);
+  const [newPaymentAmount, setNewPaymentAmount] = useState(0);
+  const [isRegisteringPayment, setIsRegisteringPayment] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -83,6 +86,7 @@ const UpdateInvoice = () => {
             status: inv.status,
             discount: inv.discount,
             total: inv.total,
+            paidAmount: inv.paidAmount,
           });
           setDiscount(inv.discount);
           setStatus(inv.status);
@@ -101,6 +105,11 @@ const UpdateInvoice = () => {
   const discountPercent =
     subtotalSum > 0 ? (discount / subtotalSum) * 100 : 0;
   const total = computeTotal(products, discount);
+  const paidAmount =
+    initialInvoice?.paidAmount ??
+    initialInvoice?.payments?.reduce((sum, payment) => sum + payment.amount, 0) ??
+    0;
+  const remainingAmount = Math.max(0, total - paidAmount);
 
   const handleDiscountPercentChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -131,6 +140,7 @@ const UpdateInvoice = () => {
         status,
         discount,
         total,
+        paidAmount,
       });
       if (initialInvoice) {
         await applyInvoiceStatusChange({
@@ -147,6 +157,22 @@ const UpdateInvoice = () => {
       // Error handled in context
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleRegisterPartialPayment = async () => {
+    if (!id || newPaymentAmount <= 0 || newPaymentAmount > remainingAmount) return;
+    setIsRegisteringPayment(true);
+    try {
+      await registerInvoicePayment(id, newPaymentAmount);
+      const refreshed = await getInvoiceById(id);
+      if (refreshed) {
+        setInitialInvoice(refreshed);
+      }
+      setNewPaymentAmount(0);
+      toast.success("Pago parcial registrado");
+    } finally {
+      setIsRegisteringPayment(false);
     }
   };
 
@@ -263,6 +289,42 @@ const UpdateInvoice = () => {
           </div>
           <div className="text-xl font-semibold pt-2">
             Total: $ {formatPrice(total)}
+          </div>
+          <div className="text-sm space-y-1">
+            <p>Monto pagado: $ {formatPrice(paidAmount)}</p>
+            <p>Saldo pendiente: $ {formatPrice(remainingAmount)}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Registrar pago parcial
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="number"
+                min={0}
+                max={remainingAmount}
+                step={0.01}
+                value={newPaymentAmount}
+                onChange={(e) =>
+                  setNewPaymentAmount(
+                    Math.max(0, Math.min(remainingAmount, Number(e.target.value))),
+                  )
+                }
+                className="w-full max-w-xs border rounded-md px-3 py-2"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleRegisterPartialPayment}
+                disabled={
+                  isRegisteringPayment ||
+                  newPaymentAmount <= 0 ||
+                  newPaymentAmount > remainingAmount
+                }
+              >
+                {isRegisteringPayment ? "Registrando…" : "Registrar pago"}
+              </Button>
+            </div>
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">

@@ -19,6 +19,7 @@ const SEARCH_DEBOUNCE_MS = 300;
 
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Pendiente",
+  PAGO_PARCIAL: "Pago parcial",
   PAGO: "Pago",
   ENVIADO: "Enviado",
   ENTREGADO: "Entregado",
@@ -27,6 +28,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_ROW_CLASSES: Record<string, string> = {
   PENDIENTE: "bg-amber-50 dark:bg-amber-950/30",
+  PAGO_PARCIAL: "bg-yellow-50 dark:bg-yellow-950/30",
   PAGO: "bg-green-50 dark:bg-green-950/30",
   ENVIADO: "bg-blue-50 dark:bg-blue-950/30",
   ENTREGADO: "bg-emerald-50 dark:bg-emerald-950/30",

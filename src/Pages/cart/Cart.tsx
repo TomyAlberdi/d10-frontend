@@ -28,6 +28,7 @@ import { UserPlus, Trash2, FileText, PackagePlus } from "lucide-react";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Pendiente" },
+  { value: "PAGO_PARCIAL", label: "Pago parcial" },
   { value: "PAGO", label: "Pago" },
   { value: "ENVIADO", label: "Enviado" },
   { value: "ENTREGADO", label: "Entregado" },
@@ -41,6 +42,7 @@ const Cart = () => {
   const { createInvoice } = useInvoiceContext();
   const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [isCreating, setIsCreating] = useState(false);
+  const [paidAmount, setPaidAmount] = useState(0);
 
   const hasClient = cart.client.id.length > 0;
   const subtotalSum = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
@@ -68,6 +70,7 @@ const Cart = () => {
         status: cart.status,
         discount: cart.discount,
         total: cart.total,
+        paidAmount,
       });
       // Apply cash register rule for newly created invoices.
       await applyInvoiceStatusChange({
@@ -209,6 +212,30 @@ const Cart = () => {
           </div>
           <div className="text-xl font-semibold pt-2">
             Total: $ {formatPrice(cart.total)}
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Pago inicial (parcial)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={cart.total}
+              step="0.01"
+              value={paidAmount}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (!Number.isFinite(value)) {
+                  setPaidAmount(0);
+                  return;
+                }
+                setPaidAmount(Math.max(0, Math.min(cart.total, value)));
+              }}
+              className="w-full max-w-xs border rounded-md px-3 py-2"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Saldo pendiente: $ {formatPrice(Math.max(0, cart.total - paidAmount))}
+            </p>
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">

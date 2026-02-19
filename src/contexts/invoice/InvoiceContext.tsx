@@ -9,6 +9,7 @@ export interface InvoiceContextType {
   createInvoice: (dto: CreateInvoiceDTO) => Promise<void>;
   getInvoiceById: (id: string) => Promise<Invoice | null>;
   updateInvoice: (id: string, dto: CreateInvoiceDTO) => Promise<void>;
+  registerInvoicePayment: (id: string, amount: number) => Promise<void>;
   deleteInvoiceById: (id: string) => Promise<void>;
   searchInvoices: (q: string) => Promise<Invoice[]>;
   getRecentInvoices: () => Promise<Invoice[]>;
