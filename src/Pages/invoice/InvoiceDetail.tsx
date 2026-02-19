@@ -9,11 +9,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Pendiente",
@@ -78,11 +78,6 @@ const InvoiceDetail = () => {
     };
   }, [getInvoiceById, id]);
 
-  const dateFormatted = useMemo(() => {
-    if (!invoice?.date) return "—";
-    return formatLocalDateToSpanish(invoice.date);
-  }, [invoice?.date]);
-
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-6xl mx-auto flex flex-col gap-4">
@@ -99,41 +94,76 @@ const InvoiceDetail = () => {
         </div>
 
         <Card className="p-6 flex flex-col gap-4">
-          {isLoading && <p className="text-muted-foreground">Cargando factura…</p>}
+          {isLoading && (
+            <p className="text-muted-foreground">Cargando factura…</p>
+          )}
 
           {!isLoading && !invoice && (
-            <p className="text-muted-foreground">No se encontró la factura solicitada.</p>
+            <p className="text-muted-foreground">
+              No se encontró la factura solicitada.
+            </p>
           )}
 
           {!isLoading && invoice && (
             <>
-              <h1 className="text-2xl font-bold">Detalle de factura #{invoice.id}</h1>
+              <h1 className="text-2xl font-bold">
+                Detalle de factura #{invoice.id}
+              </h1>
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Fecha</p>
-                  <p className="font-medium">{dateFormatted}</p>
+                  <p className="font-medium">
+                    {formatLocalDateToSpanish(invoice?.date ?? "")}
+                  </p>
                 </div>
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Estado</p>
-                  <p className="font-medium">{STATUS_LABELS[invoice.status] ?? invoice.status}</p>
+                  <p className="font-medium">
+                    {STATUS_LABELS[invoice.status] ?? invoice.status}
+                  </p>
                 </div>
                 <div className="border rounded-md p-3">
-                  <p className="text-sm text-muted-foreground">Stock descontado</p>
-                  <p className="font-medium">{invoice.stockDecreased ? "Sí" : "No"}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Stock descontado
+                  </p>
+                  <p className="font-medium">
+                    {invoice.stockDecreased ? "Sí" : "No"}
+                  </p>
                 </div>
               </div>
 
               <Card className="p-4">
                 <h2 className="font-semibold mb-2">Cliente</h2>
                 <div className="grid grid-cols-3 gap-3 text-sm">
-                  <p><span className="text-muted-foreground">ID:</span> {invoice.client.id}</p>
-                  <p><span className="text-muted-foreground">Nombre:</span> {invoice.client.name}</p>
-                  <p><span className="text-muted-foreground">Tipo:</span> {invoice.client.type}</p>
-                  <p><span className="text-muted-foreground">CUIT/DNI:</span> {invoice.client.cuitDni}</p>
-                  <p><span className="text-muted-foreground">Teléfono:</span> {invoice.client.phone ?? "—"}</p>
-                  <p><span className="text-muted-foreground">Email:</span> {invoice.client.email ?? "—"}</p>
-                  <p className="col-span-3"><span className="text-muted-foreground">Dirección:</span> {invoice.client.address ?? "—"}</p>
+                  <p>
+                    <span className="text-muted-foreground">ID:</span>{" "}
+                    {invoice.client.id}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Nombre:</span>{" "}
+                    {invoice.client.name}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Tipo:</span>{" "}
+                    {invoice.client.type}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">CUIT/DNI:</span>{" "}
+                    {invoice.client.cuitDni}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Teléfono:</span>{" "}
+                    {invoice.client.phone ?? "—"}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Email:</span>{" "}
+                    {invoice.client.email ?? "—"}
+                  </p>
+                  <p className="col-span-3">
+                    <span className="text-muted-foreground">Dirección:</span>{" "}
+                    {invoice.client.address ?? "—"}
+                  </p>
                 </div>
               </Card>
 
@@ -158,31 +188,51 @@ const InvoiceDetail = () => {
                       <TableRow key={product.id}>
                         <TableCell>{product.name}</TableCell>
                         <TableCell>{product.measureType}</TableCell>
-                        <TableCell>$ {formatPrice(product.priceByMeasureUnit)}</TableCell>
+                        <TableCell>
+                          $ {formatPrice(product.priceByMeasureUnit)}
+                        </TableCell>
                         <TableCell>{product.measureUnitQuantity}</TableCell>
                         <TableCell>{product.saleUnitType}</TableCell>
-                        <TableCell>$ {formatPrice(product.priceBySaleUnit)}</TableCell>
+                        <TableCell>
+                          $ {formatPrice(product.priceBySaleUnit)}
+                        </TableCell>
                         <TableCell>{product.saleUnitQuantity}</TableCell>
-                        <TableCell>$ {formatPrice(product.individualDiscount)}</TableCell>
-                        <TableCell className="font-medium">$ {formatPrice(product.subtotal)}</TableCell>
+                        <TableCell>
+                          $ {formatPrice(product.individualDiscount)}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          $ {formatPrice(product.subtotal)}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </Card>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 <div className="border rounded-md p-3">
-                  <p className="text-sm text-muted-foreground">Total productos</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total productos
+                  </p>
                   <p className="font-medium">{invoice.products.length}</p>
                 </div>
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Descuento</p>
-                  <p className="font-medium">$ {formatPrice(invoice.discount)}</p>
+                  <p className="font-medium">
+                    $ {formatPrice(invoice.discount)}
+                  </p>
                 </div>
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Total factura</p>
-                  <p className="text-lg font-bold">$ {formatPrice(invoice.total)}</p>
+                  <p className="text-lg font-bold">
+                    $ {formatPrice(invoice.total)}
+                  </p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <p className="text-sm text-muted-foreground">Pago parcial</p>
+                  <p className="font-medium">
+                    $ {formatPrice(invoice.paidAmount ?? 0)}
+                  </p>
                 </div>
               </div>
             </>
