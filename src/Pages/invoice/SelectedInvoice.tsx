@@ -104,6 +104,15 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
         </Button>
         <Button
           className="h-full"
+          variant="secondary"
+          size="sm"
+          onClick={() => navigate(`/invoice/${invoice.id}`)}
+        >
+          <Eye />
+          Ver detalle
+        </Button>
+        <Button
+          className="h-full"
           variant="outline"
           size="sm"
           onClick={() => navigate(`/invoice/${invoice.id}/update`)}

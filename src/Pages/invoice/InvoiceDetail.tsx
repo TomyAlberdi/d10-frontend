@@ -11,7 +11,7 @@ import {
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import { formatPrice } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 
@@ -49,12 +49,17 @@ const InvoiceDetail = () => {
   const { id } = useParams();
   const { getInvoiceById } = useInvoiceContext();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
-  const [isLoading, setIsLoading] = useState(Boolean(id));
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setInvoice(null);
+      setIsLoading(false);
+      return;
+    }
 
     let cancelled = false;
+    setIsLoading(true);
 
     getInvoiceById(id)
       .then((result) => {
@@ -73,13 +78,10 @@ const InvoiceDetail = () => {
     };
   }, [getInvoiceById, id]);
 
-  const dateFormatted = invoice?.date
-    ? formatLocalDateToSpanish(invoice.date)
-    : "—";
-
-  const paidAmount = invoice?.paidAmount ?? 0;
-
-  const remainingAmount = invoice ? Math.max(0, invoice.total - paidAmount) : 0;
+  const dateFormatted = useMemo(() => {
+    if (!invoice?.date) return "—";
+    return formatLocalDateToSpanish(invoice.date);
+  }, [invoice?.date]);
 
   return (
     <div className="min-h-screen p-6">
@@ -119,14 +121,6 @@ const InvoiceDetail = () => {
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Stock descontado</p>
                   <p className="font-medium">{invoice.stockDecreased ? "Sí" : "No"}</p>
-                </div>
-                <div className="border rounded-md p-3">
-                  <p className="text-sm text-muted-foreground">Monto pagado</p>
-                  <p className="font-medium">$ {formatPrice(paidAmount)}</p>
-                </div>
-                <div className="border rounded-md p-3">
-                  <p className="text-sm text-muted-foreground">Saldo pendiente</p>
-                  <p className="font-medium">$ {formatPrice(remainingAmount)}</p>
                 </div>
               </div>
 
