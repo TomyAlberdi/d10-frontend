@@ -14,6 +14,7 @@ export interface CreateInvoiceDTO {
   status: InvoiceStatus;
   discount: number;
   total: number;
+  paidAmount?: number;
 }
 
 export interface Invoice extends CreateInvoiceDTO {

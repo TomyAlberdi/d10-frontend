@@ -13,7 +13,7 @@ import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import SelectedInvoice from "./SelectedInvoice";
+import { useNavigate } from "react-router-dom";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -34,6 +34,7 @@ const STATUS_ROW_CLASSES: Record<string, string> = {
 };
 
 const Invoices = () => {
+  const navigate = useNavigate();
   const { searchInvoices, getRecentInvoices } = useInvoiceContext();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
@@ -47,7 +48,7 @@ const Invoices = () => {
   const hasQuery = searchQuery.trim().length > 0;
   const displayInvoices = useMemo(
     () => (hasQuery ? invoices : recentInvoices),
-    [hasQuery, invoices, recentInvoices]
+    [hasQuery, invoices, recentInvoices],
   );
   const displaySelected = useMemo(
     () =>
@@ -55,7 +56,7 @@ const Invoices = () => {
       displayInvoices.some((i) => i.id === selectedInvoice.id)
         ? selectedInvoice
         : null,
-    [displayInvoices, selectedInvoice]
+    [displayInvoices, selectedInvoice],
   );
 
   useEffect(() => {
@@ -133,7 +134,7 @@ const Invoices = () => {
         setSelectedInvoice(displayInvoices[prevIndex]);
       }
     },
-    [displayInvoices, selectedIndex]
+    [displayInvoices, selectedIndex],
   );
 
   return (
@@ -143,10 +144,9 @@ const Invoices = () => {
       </section>
       <section className="w-5/8 h-screen py-5">
         <div className="px-5 h-full flex flex-col gap-4">
-          <SelectedInvoice invoice={displaySelected} />
           <Card
             ref={tableRef}
-            className="h-4/6 flex flex-col overflow-hidden py-0 gap-0"
+            className="h-full flex flex-col overflow-hidden py-0 gap-0"
             tabIndex={0}
             onKeyDown={handleKeyDown}
           >
@@ -161,9 +161,7 @@ const Invoices = () => {
                 aria-label="Buscar facturas"
               />
               {isSearching && (
-                <span className="text-sm text-muted-foreground">
-                  Buscando…
-                </span>
+                <span className="text-sm text-muted-foreground">Buscando…</span>
               )}
             </div>
             <div className="flex-1 overflow-y-auto">
@@ -172,34 +170,40 @@ const Invoices = () => {
                   <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableHead className="w-4/12 bg-card">Cliente</TableHead>
                     <TableHead className="w-2/12 bg-card">Estado</TableHead>
-                    <TableHead className="w-2/12 bg-card">Productos</TableHead>
                     <TableHead className="w-2/12 bg-card">Descuento</TableHead>
+                    <TableHead className="w-2/12 bg-card">
+                      Pago Parcial
+                    </TableHead>
                     <TableHead className="w-3/12 bg-card">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {displayInvoices.length === 0 && !isSearching && !isLoadingRecent && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center text-muted-foreground py-8"
-                      >
-                        {hasQuery
-                          ? "No se encontraron facturas"
-                          : "No hay facturas recientes"}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {displayInvoices.length === 0 && isLoadingRecent && !hasQuery && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center text-muted-foreground py-8"
-                      >
-                        Cargando facturas recientes…
-                      </TableCell>
-                    </TableRow>
-                  )}
+                  {displayInvoices.length === 0 &&
+                    !isSearching &&
+                    !isLoadingRecent && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="text-center text-muted-foreground py-8"
+                        >
+                          {hasQuery
+                            ? "No se encontraron facturas"
+                            : "No hay facturas recientes"}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  {displayInvoices.length === 0 &&
+                    isLoadingRecent &&
+                    !hasQuery && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="text-center text-muted-foreground py-8"
+                        >
+                          Cargando facturas recientes…
+                        </TableCell>
+                      </TableRow>
+                    )}
                   {displayInvoices.map((invoice) => (
                     <TableRow
                       key={invoice.id}
@@ -208,16 +212,20 @@ const Invoices = () => {
                           ? "selected"
                           : undefined
                       }
-                      onClick={() => setSelectedInvoice(invoice)}
+                      onClick={() => navigate(`/invoice/${invoice.id}`)}
                       className={`cursor-pointer`}
                     >
                       <TableCell>{invoice.client.name}</TableCell>
-                      <TableCell className={`${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}>
+                      <TableCell
+                        className={`${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}
+                      >
                         {STATUS_LABELS[invoice.status] ?? invoice.status}
                       </TableCell>
-                      <TableCell>{invoice.products.length}</TableCell>
+
+                      <TableCell>$ {formatPrice(invoice.discount)}</TableCell>
                       <TableCell>
-                        $ {formatPrice(invoice.discount)}
+                        {" "}
+                        $ {formatPrice(invoice.paidAmount ?? 0)}
                       </TableCell>
                       <TableCell className="font-medium">
                         $ {formatPrice(invoice.total)}
