@@ -83,6 +83,7 @@ const UpdateInvoice = () => {
             status: inv.status,
             discount: inv.discount,
             total: inv.total,
+            paidAmount: inv.paidAmount,
           });
           setDiscount(inv.discount);
           setStatus(inv.status);
@@ -101,6 +102,9 @@ const UpdateInvoice = () => {
   const discountPercent =
     subtotalSum > 0 ? (discount / subtotalSum) * 100 : 0;
   const total = computeTotal(products, discount);
+  const paidAmount =
+    invoice?.paidAmount ?? initialInvoice?.paidAmount ?? 0;
+  const remainingAmount = Math.max(0, total - paidAmount);
 
   const handleDiscountPercentChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -131,6 +135,7 @@ const UpdateInvoice = () => {
         status,
         discount,
         total,
+        paidAmount,
       });
       if (initialInvoice) {
         await applyInvoiceStatusChange({
@@ -263,6 +268,35 @@ const UpdateInvoice = () => {
           </div>
           <div className="text-xl font-semibold pt-2">
             Total: $ {formatPrice(total)}
+          </div>
+          <div className="text-sm space-y-1">
+            <p>Monto pagado: $ {formatPrice(paidAmount)}</p>
+            <p>Saldo pendiente: $ {formatPrice(remainingAmount)}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Pago parcial
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={total}
+              step={0.01}
+              value={invoice.paidAmount ?? 0}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (!Number.isFinite(value)) return;
+                setInvoice((prev) =>
+                  prev
+                    ? {
+                      ...prev,
+                      paidAmount: Math.max(0, Math.min(total, value)),
+                    }
+                    : prev,
+                );
+              }}
+              className="w-full max-w-xs border rounded-md px-3 py-2"
+            />
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
