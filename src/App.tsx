@@ -11,6 +11,7 @@ import ClientCreate from "./Pages/client/ClientCreate";
 import ClientUpdate from "./Pages/client/ClientUpdate";
 import Home from "./Pages/Home";
 import Invoices from "./Pages/invoice/Invoices";
+import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
 import UpdateInvoice from "./Pages/invoice/UpdateInvoice";
 import Cart from "./Pages/cart/Cart";
 import ClientsList from "./Pages/client/ClientsList";
@@ -93,6 +94,7 @@ export function App() {
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/client/create" element={<ClientCreate />} />
                   <Route path="/invoice" element={<Invoices />} />
+                  <Route path="/invoice/:id" element={<InvoiceDetail />} />
                   <Route path="/invoice/:id/update" element={<UpdateInvoice />} />
                   <Route path="/cash-register" element={<CashRegister />}>
                     <Route index element={<CashRegisterOverview />} />
