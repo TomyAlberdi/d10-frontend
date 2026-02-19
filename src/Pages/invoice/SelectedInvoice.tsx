@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import { formatPrice } from "@/lib/utils";
 import { Eye, PencilLine } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SelectedInvoiceProps {
   invoice: Invoice | null;
@@ -47,9 +47,9 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
   const dateFormatted = invoice.date
     ? formatLocalDateToSpanish(invoice.date)
     : "—";
-  const paidAmount =
-    invoice.paidAmount ?? 0;
-  const remainingAmount = Math.max(0, invoice.total - paidAmount);
+  const partialPayment =
+    invoice.partialPayment ?? 0;
+  const remainingAmount = Math.max(0, invoice.total - partialPayment);
 
   return (
     <Card className="overflow-hidden flex flex-col gap-1 p-2">
@@ -86,7 +86,7 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
       </div>
       <div className="py-1 flex items-center gap-3 border-2 px-2">
         <span className="text-muted-foreground">Pagado</span>
-        <span className="text-foreground">$ {formatPrice(paidAmount)}</span>
+        <span className="text-foreground">$ {formatPrice(partialPayment)}</span>
       </div>
       <div className="py-1 flex items-center gap-3 border-2 px-2">
         <span className="text-muted-foreground">Saldo pendiente</span>

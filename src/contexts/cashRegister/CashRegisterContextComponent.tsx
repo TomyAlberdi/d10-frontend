@@ -236,6 +236,7 @@ const CashRegisterContextComponent: React.FC<
       nextStatus,
       total,
       stockDecreasedInitially,
+      clientName,
     }: CashRegisterStatusChangePayload) => {
       // Respect business rule:
       // - Only when status is set to PAGO / ENVIADO / ENTREGADO
@@ -253,7 +254,7 @@ const CashRegisterContextComponent: React.FC<
         const dto: CreateCashRegisterTransactionDTO = {
           amount: total,
           type: "IN",
-          description: `Factura pagada/entregada/enviada - Total: $${total.toFixed(2)}`,
+          description: `Pago ${clientName}`,
         };
         const response = await fetch(`${API_URL}/transactions`, {
           method: "POST",
@@ -282,7 +283,7 @@ const CashRegisterContextComponent: React.FC<
           }
           toast.error(
             message ??
-            `Error al registrar pago de factura en caja: ${response.status}`,
+              `Error al registrar pago de factura en caja: ${response.status}`,
           );
           throw new Error(`HTTP Error: ${response.status}`);
         }
