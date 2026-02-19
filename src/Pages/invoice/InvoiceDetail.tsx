@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
@@ -231,7 +231,7 @@ const InvoiceDetail = () => {
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Pago parcial</p>
                   <p className="font-medium">
-                    $ {formatPrice(invoice.paidAmount ?? 0)}
+                    $ {formatPrice(invoice.partialPayment ?? 0)}
                   </p>
                 </div>
               </div>

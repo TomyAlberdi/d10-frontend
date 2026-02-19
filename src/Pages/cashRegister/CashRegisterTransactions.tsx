@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { formatPrice } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   IN: "Ingreso",
@@ -43,7 +43,10 @@ const CashRegisterTransactions = () => {
         </div>
 
         <div className="max-w-sm">
-          <label className="block text-sm font-medium mb-1" htmlFor="transaction-date">
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="transaction-date"
+          >
             Fecha
           </label>
           <Input
@@ -93,10 +96,11 @@ const CashRegisterTransactions = () => {
                   className={TRANSACTION_ROW_CLASSES[transaction.type] ?? ""}
                 >
                   <TableCell>
-                    {new Date(transaction.createdAt).toLocaleString()}
+                    {new Date(transaction.dateTime).toLocaleString()}
                   </TableCell>
                   <TableCell>
-                    {TRANSACTION_TYPE_LABELS[transaction.type] ?? transaction.type}
+                    {TRANSACTION_TYPE_LABELS[transaction.type] ??
+                      transaction.type}
                   </TableCell>
                   <TableCell className="font-medium">
                     $ {formatPrice(transaction.amount)}

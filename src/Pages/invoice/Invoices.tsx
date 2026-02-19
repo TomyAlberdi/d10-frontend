@@ -168,7 +168,8 @@ const Invoices = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
-                    <TableHead className="w-4/12 bg-card">Cliente</TableHead>
+                    <TableHead className="w-1/12 bg-card">Fecha</TableHead>
+                    <TableHead className="w-3/12 bg-card">Cliente</TableHead>
                     <TableHead className="w-2/12 bg-card">Estado</TableHead>
                     <TableHead className="w-2/12 bg-card">Descuento</TableHead>
                     <TableHead className="w-2/12 bg-card">
@@ -215,6 +216,7 @@ const Invoices = () => {
                       onClick={() => navigate(`/invoice/${invoice.id}`)}
                       className={`cursor-pointer`}
                     >
+                      <TableCell>{invoice.date}</TableCell>
                       <TableCell>{invoice.client.name}</TableCell>
                       <TableCell
                         className={`${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}
@@ -225,7 +227,7 @@ const Invoices = () => {
                       <TableCell>$ {formatPrice(invoice.discount)}</TableCell>
                       <TableCell>
                         {" "}
-                        $ {formatPrice(invoice.paidAmount ?? 0)}
+                        $ {formatPrice(invoice.partialPayment ?? 0)}
                       </TableCell>
                       <TableCell className="font-medium">
                         $ {formatPrice(invoice.total)}

@@ -1,14 +1,5 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
-import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
-import type {
-  CreateInvoiceDTO,
-  InvoiceStatus,
-  Invoice,
-} from "@/interfaces/InvoiceInterfaces";
-import type { CartProduct } from "@/interfaces/CartInterfaces";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -24,10 +15,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
+import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import type { CartProduct } from "@/interfaces/CartInterfaces";
+import type {
+  CreateInvoiceDTO,
+  Invoice,
+  InvoiceStatus,
+} from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { toast } from "sonner";
-import { useState, useEffect } from "react";
 import { FileText, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Pendiente" },
@@ -83,7 +83,7 @@ const UpdateInvoice = () => {
             status: inv.status,
             discount: inv.discount,
             total: inv.total,
-            paidAmount: inv.paidAmount,
+            partialPayment: inv.partialPayment,
           });
           setDiscount(inv.discount);
           setStatus(inv.status);
@@ -102,9 +102,9 @@ const UpdateInvoice = () => {
   const discountPercent =
     subtotalSum > 0 ? (discount / subtotalSum) * 100 : 0;
   const total = computeTotal(products, discount);
-  const paidAmount =
-    invoice?.paidAmount ?? initialInvoice?.paidAmount ?? 0;
-  const remainingAmount = Math.max(0, total - paidAmount);
+  const partialPayment =
+    invoice?.partialPayment ?? initialInvoice?.partialPayment ?? 0;
+  const remainingAmount = Math.max(0, total - partialPayment);
 
   const handleDiscountPercentChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -135,7 +135,7 @@ const UpdateInvoice = () => {
         status,
         discount,
         total,
-        paidAmount,
+        partialPayment,
       });
       if (initialInvoice) {
         await applyInvoiceStatusChange({
@@ -143,6 +143,7 @@ const UpdateInvoice = () => {
           previousStatus: initialInvoice.status,
           nextStatus: status,
           total,
+          clientName: initialInvoice.client.name,
           stockDecreasedInitially: initialInvoice.stockDecreased ?? false,
         });
       }
@@ -270,7 +271,7 @@ const UpdateInvoice = () => {
             Total: $ {formatPrice(total)}
           </div>
           <div className="text-sm space-y-1">
-            <p>Monto pagado: $ {formatPrice(paidAmount)}</p>
+            <p>Monto pagado: $ {formatPrice(partialPayment)}</p>
             <p>Saldo pendiente: $ {formatPrice(remainingAmount)}</p>
           </div>
           <div>
@@ -282,7 +283,7 @@ const UpdateInvoice = () => {
               min={0}
               max={total}
               step={0.01}
-              value={invoice.paidAmount ?? 0}
+              value={invoice.partialPayment ?? 0}
               onChange={(e) => {
                 const value = Number(e.target.value);
                 if (!Number.isFinite(value)) return;
@@ -290,7 +291,7 @@ const UpdateInvoice = () => {
                   prev
                     ? {
                       ...prev,
-                      paidAmount: Math.max(0, Math.min(total, value)),
+                      partialPayment: Math.max(0, Math.min(total, value)),
                     }
                     : prev,
                 );

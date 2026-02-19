@@ -1,10 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { useCartContext } from "@/contexts/cart/UseCartContext";
-import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
-import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
-import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -20,11 +15,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCartContext } from "@/contexts/cart/UseCartContext";
+import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
+import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { toast } from "sonner";
+import { FileText, PackagePlus, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { flushSync } from "react-dom";
-import { UserPlus, Trash2, FileText, PackagePlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Pendiente" },
@@ -41,7 +41,7 @@ const Cart = () => {
   const { createInvoice } = useInvoiceContext();
   const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [isCreating, setIsCreating] = useState(false);
-  const [paidAmount, setPaidAmount] = useState(0);
+  const [partialPayment, setpartialPayment] = useState(0);
 
   const hasClient = cart.client.id.length > 0;
   const subtotalSum = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
@@ -69,7 +69,7 @@ const Cart = () => {
         status: cart.status,
         discount: cart.discount,
         total: cart.total,
-        paidAmount,
+        partialPayment,
       });
       // Apply cash register rule for newly created invoices.
       await applyInvoiceStatusChange({
@@ -78,6 +78,7 @@ const Cart = () => {
         nextStatus: cart.status,
         total: cart.total,
         stockDecreasedInitially: false,
+        clientName: cart.client.name,
       });
       flushSync(() => {
         clearCart();
@@ -221,19 +222,19 @@ const Cart = () => {
               min={0}
               max={cart.total}
               step="0.01"
-              value={paidAmount}
+              value={partialPayment}
               onChange={(e) => {
                 const value = Number(e.target.value);
                 if (!Number.isFinite(value)) {
-                  setPaidAmount(0);
+                  setpartialPayment(0);
                   return;
                 }
-                setPaidAmount(Math.max(0, Math.min(cart.total, value)));
+                setpartialPayment(Math.max(0, Math.min(cart.total, value)));
               }}
               className="w-full max-w-xs border rounded-md px-3 py-2"
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Saldo pendiente: $ {formatPrice(Math.max(0, cart.total - paidAmount))}
+              Saldo pendiente: $ {formatPrice(Math.max(0, cart.total - partialPayment))}
             </p>
           </div>
           <div>

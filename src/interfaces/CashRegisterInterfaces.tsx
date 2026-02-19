@@ -17,10 +17,11 @@ export interface CashRegisterTransaction {
   amount: number;
   type: CashRegisterTransactionType;
   description?: string;
-  createdAt: string; // ISO string from backend
+  dateTime: string; // ISO string from backend
 }
 
 export interface CashRegisterStatusChangePayload {
+  clientName?: string;
   invoiceId?: string;
   previousStatus: InvoiceStatus | null;
   nextStatus: InvoiceStatus;
@@ -79,4 +80,3 @@ export interface CashRegisterContextType {
     payload: CashRegisterStatusChangePayload,
   ) => Promise<void>;
 }
-

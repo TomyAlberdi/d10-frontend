@@ -1,5 +1,5 @@
-import type { Client } from "@/interfaces/ClientInterfaces";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
+import type { Client } from "@/interfaces/ClientInterfaces";
 
 export type InvoiceStatus =
   | "PENDIENTE"
@@ -14,7 +14,7 @@ export interface CreateInvoiceDTO {
   status: InvoiceStatus;
   discount: number;
   total: number;
-  paidAmount?: number;
+  partialPayment?: number;
 }
 
 export interface Invoice extends CreateInvoiceDTO {
