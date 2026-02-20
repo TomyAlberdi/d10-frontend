@@ -121,7 +121,7 @@ const InvoiceDetail = () => {
           {!isLoading && invoice && (
             <>
               <h1 className="text-2xl font-bold">
-                Detalle de factura #{invoice.id}
+                Detalle de factura #{invoice.invoiceNumber ?? invoice.id}
               </h1>
 
               <div className="grid grid-cols-3 gap-3">
