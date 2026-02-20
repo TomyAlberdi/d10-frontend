@@ -18,8 +18,18 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const SPANISH_MONTHS = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 /** Formats a Java LocalDate string (yyyy-MM-dd) to Spanish "13 de Julio de 2026". */
@@ -47,14 +57,15 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
   const dateFormatted = invoice.date
     ? formatLocalDateToSpanish(invoice.date)
     : "—";
-  const partialPayment =
-    invoice.partialPayment ?? 0;
+  const partialPayment = invoice.partialPayment ?? 0;
   const remainingAmount = Math.max(0, invoice.total - partialPayment);
 
   return (
     <Card className="overflow-hidden flex flex-col gap-1 p-2">
       <div className="col-span-2 flex items-center py-1">
-        <span className="text-xl font-bold ml-1">Factura #{invoice.id}</span>
+        <span className="text-xl font-bold ml-1">
+          Factura #{invoice.invoiceNumber ?? invoice.id}
+        </span>
       </div>
       <div className="py-1 flex items-center gap-3 border-2 px-2">
         <span className="text-muted-foreground">Fecha</span>
@@ -90,7 +101,9 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
       </div>
       <div className="py-1 flex items-center gap-3 border-2 px-2">
         <span className="text-muted-foreground">Saldo pendiente</span>
-        <span className="text-foreground font-semibold">$ {formatPrice(remainingAmount)}</span>
+        <span className="text-foreground font-semibold">
+          $ {formatPrice(remainingAmount)}
+        </span>
       </div>
       <div className="py-1 flex items-center gap-3 flex-wrap">
         <Button

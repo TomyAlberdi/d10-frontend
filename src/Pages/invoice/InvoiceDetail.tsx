@@ -1,19 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft, ReceiptText } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { generatePDF } from "./CreateInvoiceDetail";
 
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Pendiente",
@@ -53,14 +54,9 @@ const InvoiceDetail = () => {
 
   useEffect(() => {
     if (!id) {
-      setInvoice(null);
-      setIsLoading(false);
       return;
     }
-
     let cancelled = false;
-    setIsLoading(true);
-
     getInvoiceById(id)
       .then((result) => {
         if (!cancelled) {
@@ -72,11 +68,14 @@ const InvoiceDetail = () => {
           setIsLoading(false);
         }
       });
-
     return () => {
       cancelled = true;
     };
   }, [getInvoiceById, id]);
+
+  const InvoiceDetail = useMemo(() => {
+    return invoice ? generatePDF(invoice) : undefined;
+  }, [invoice]);
 
   return (
     <div className="min-h-screen p-6">
@@ -86,11 +85,26 @@ const InvoiceDetail = () => {
             <ArrowLeft />
             Volver
           </Button>
-          {invoice && (
-            <Button onClick={() => navigate(`/invoice/${invoice.id}/update`)}>
-              Editar factura
+          <div className="flex gap-4">
+            <Button
+              disabled={!invoice}
+              onClick={() => {
+                if (InvoiceDetail) {
+                  InvoiceDetail.save(
+                    `Presupuesto_${invoice?.invoiceNumber ?? invoice?.id}.pdf`,
+                  );
+                }
+              }}
+            >
+              <ReceiptText />
+              Descargar Detalle
             </Button>
-          )}
+            {invoice && (
+              <Button onClick={() => navigate(`/invoice/${invoice.id}/update`)}>
+                Editar factura
+              </Button>
+            )}
+          </div>
         </div>
 
         <Card className="p-6 flex flex-col gap-4">

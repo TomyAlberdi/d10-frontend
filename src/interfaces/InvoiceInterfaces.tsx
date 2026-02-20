@@ -19,6 +19,7 @@ export interface CreateInvoiceDTO {
 
 export interface Invoice extends CreateInvoiceDTO {
   id: string;
+  invoiceNumber?: string;
   date?: string;
   stockDecreased?: boolean;
 }
