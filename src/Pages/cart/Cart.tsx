@@ -36,8 +36,14 @@ const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { cart, setDiscount, setCartStatus, removeProduct, clearCart } =
-    useCartContext();
+  const {
+    cart,
+    setDiscount,
+    setCartStatus,
+    setPaymentMethod,
+    removeProduct,
+    clearCart,
+  } = useCartContext();
   const { createInvoice } = useInvoiceContext();
   const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [isCreating, setIsCreating] = useState(false);
@@ -70,6 +76,7 @@ const Cart = () => {
         discount: cart.discount,
         total: cart.total,
         partialPayment,
+        paymentMethod: cart.paymentMethod,
       });
       // Apply cash register rule for newly created invoices.
       await applyInvoiceStatusChange({
@@ -79,6 +86,7 @@ const Cart = () => {
         total: cart.total,
         stockDecreasedInitially: false,
         clientName: cart.client.name,
+        paymentMethod: cart.paymentMethod,
       });
       flushSync(() => {
         clearCart();
@@ -234,7 +242,8 @@ const Cart = () => {
               className="w-full max-w-xs border rounded-md px-3 py-2"
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Saldo pendiente: $ {formatPrice(Math.max(0, cart.total - partialPayment))}
+              Saldo pendiente: ${" "}
+              {formatPrice(Math.max(0, cart.total - partialPayment))}
             </p>
           </div>
           <div>
@@ -257,6 +266,29 @@ const Cart = () => {
               </SelectContent>
             </Select>
           </div>
+          {(cart.status === "PAGO" ||
+            cart.status === "ENVIADO" ||
+            cart.status === "ENTREGADO") && (
+            <div>
+              <label className="text-sm font-medium text-muted-foreground block mb-2">
+                Método de pago
+              </label>
+              <Select
+                value={cart.paymentMethod || "CASH"}
+                onValueChange={(value) =>
+                  setPaymentMethod(value as "CASH" | "DIGITAL")
+                }
+              >
+                <SelectTrigger className="w-full max-w-xs">
+                  <SelectValue placeholder="Método de pago" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CASH">Efectivo</SelectItem>
+                  <SelectItem value="DIGITAL">Transferencia</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <Button
             onClick={handleCreateInvoice}
             disabled={!canCreateInvoice || isCreating}

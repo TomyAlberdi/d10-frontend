@@ -3,6 +3,7 @@ import type {
   CashRegisterDTO,
   CashRegisterStatusChangePayload,
   CashRegisterTransaction,
+  CashRegisterType,
   CreateCashRegisterTransactionDTO,
 } from "@/interfaces/CashRegisterInterfaces";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
@@ -22,24 +23,31 @@ interface CashRegisterContextComponentProps {
 const CashRegisterContextComponent: React.FC<
   CashRegisterContextComponentProps
 > = ({ children }) => {
-  const [currentAmount, setCurrentAmount] = useState<number>(0);
+  const [paperAmount, setPaperAmount] = useState<number>(0);
+  const [digitalAmount, setDigitalAmount] = useState<number>(0);
   const [isLoadingAmount, setIsLoadingAmount] = useState<boolean>(true);
   const [transactions, setTransactions] = useState<CashRegisterTransaction[]>(
     [],
   );
   const [isLoadingTransactions, setIsLoadingTransactions] =
     useState<boolean>(false);
+  const [selectedType, setSelectedType] = useState<CashRegisterType>("PAPER");
 
-  const fetchCurrentAmount = useCallback(async () => {
+  const fetchCurrentAmounts = useCallback(async () => {
     setIsLoadingAmount(true);
     try {
-      const response = await fetch(`${API_URL}`);
-      if (!response.ok) {
-        toast.error(`Error al obtener el monto actual: ${response.status}`);
-        throw new Error(`HTTP Error: ${response.status}`);
+      const [paperResponse, digitalResponse] = await Promise.all([
+        fetch(`${API_URL}?type=PAPER`),
+        fetch(`${API_URL}?type=DIGITAL`),
+      ]);
+      if (!paperResponse.ok || !digitalResponse.ok) {
+        toast.error(`Error al obtener los montos actuales`);
+        throw new Error(`HTTP Error`);
       }
-      const amount = (await response.json()) as CashRegisterDTO;
-      setCurrentAmount(amount.currentAmount);
+      const paperData = (await paperResponse.json()) as CashRegisterDTO;
+      const digitalData = (await digitalResponse.json()) as CashRegisterDTO;
+      setPaperAmount(paperData.currentAmount);
+      setDigitalAmount(digitalData.currentAmount);
     } catch (error) {
       // Error already handled
     } finally {
@@ -51,12 +59,8 @@ const CashRegisterContextComponent: React.FC<
     setIsLoadingTransactions(true);
     try {
       const params = new URLSearchParams();
-      if (date) {
-        params.append("date", date);
-      }
-      const url = params.toString()
-        ? `${API_URL}/transactions?${params.toString()}`
-        : `${API_URL}/transactions`;
+      params.append("date", date || new Date().toISOString().split('T')[0]);
+      const url = `${API_URL}/transactions?${params.toString()}`;
       const response = await fetch(url);
       if (!response.ok) {
         toast.error(`Error al obtener transacciones: ${response.status}`);
@@ -82,6 +86,7 @@ const CashRegisterContextComponent: React.FC<
           amount,
           type: "IN",
           description: description || "Ingreso manual de caja",
+          registerType: selectedType,
         };
         const response = await fetch(`${API_URL}/transactions`, {
           method: "POST",
@@ -112,12 +117,12 @@ const CashRegisterContextComponent: React.FC<
           throw new Error(`HTTP Error: ${response.status}`);
         }
         toast.success("Monto agregado a la caja");
-        await fetchCurrentAmount();
+        await fetchCurrentAmounts();
       } catch (error) {
         // Error already handled
       }
     },
-    [fetchCurrentAmount],
+    [fetchCurrentAmounts, selectedType],
   );
 
   const removeCash = useCallback(
@@ -131,6 +136,7 @@ const CashRegisterContextComponent: React.FC<
           amount,
           type: "OUT",
           description: description || "Egreso manual de caja",
+          registerType: selectedType,
         };
         const response = await fetch(`${API_URL}/transactions`, {
           method: "POST",
@@ -161,12 +167,12 @@ const CashRegisterContextComponent: React.FC<
           throw new Error(`HTTP Error: ${response.status}`);
         }
         toast.success("Monto retirado de la caja");
-        await fetchCurrentAmount();
+        await fetchCurrentAmounts();
       } catch (error) {
         // Error already handled
       }
     },
-    [fetchCurrentAmount],
+    [fetchCurrentAmounts, selectedType],
   );
 
   const updateTransaction = useCallback(
@@ -201,13 +207,13 @@ const CashRegisterContextComponent: React.FC<
           throw new Error(`HTTP Error: ${response.status}`);
         }
         toast.success("Transacción actualizada");
-        await fetchCurrentAmount();
+        await fetchCurrentAmounts();
         await fetchTransactions();
       } catch (error) {
         // Error already handled
       }
     },
-    [fetchCurrentAmount, fetchTransactions],
+    [fetchCurrentAmounts, fetchTransactions],
   );
 
   const deleteTransaction = useCallback(
@@ -221,13 +227,13 @@ const CashRegisterContextComponent: React.FC<
           throw new Error(`HTTP Error: ${response.status}`);
         }
         toast.success("Transacción eliminada");
-        await fetchCurrentAmount();
+        await fetchCurrentAmounts();
         await fetchTransactions();
       } catch (error) {
         // Error already handled
       }
     },
-    [fetchCurrentAmount, fetchTransactions],
+    [fetchCurrentAmounts, fetchTransactions],
   );
 
   const applyInvoiceStatusChange = useCallback(
@@ -237,6 +243,7 @@ const CashRegisterContextComponent: React.FC<
       total,
       stockDecreasedInitially,
       clientName,
+      paymentMethod,
     }: CashRegisterStatusChangePayload) => {
       // Respect business rule:
       // - Only when status is set to PAGO / ENVIADO / ENTREGADO
@@ -250,11 +257,16 @@ const CashRegisterContextComponent: React.FC<
       if (!isNextPaid || wasAlreadyPaid) return;
       if (!Number.isFinite(total) || total <= 0) return;
 
+      if (!paymentMethod) return;
+
+      const registerType: CashRegisterType = paymentMethod === "CASH" ? "PAPER" : "DIGITAL";
+
       try {
         const dto: CreateCashRegisterTransactionDTO = {
           amount: total,
           type: "IN",
           description: `Pago ${clientName}`,
+          registerType,
         };
         const response = await fetch(`${API_URL}/transactions`, {
           method: "POST",
@@ -287,25 +299,28 @@ const CashRegisterContextComponent: React.FC<
           );
           throw new Error(`HTTP Error: ${response.status}`);
         }
-        await fetchCurrentAmount();
+        await fetchCurrentAmounts();
       } catch (error) {
         // Error already handled
       }
     },
-    [fetchCurrentAmount],
+    [fetchCurrentAmounts],
   );
 
   useEffect(() => {
-    fetchCurrentAmount();
-  }, [fetchCurrentAmount]);
+    fetchCurrentAmounts();
+  }, [fetchCurrentAmounts]);
 
   const exportData: CashRegisterContextType = useMemo(
     () => ({
-      currentAmount,
+      paperAmount,
+      digitalAmount,
       isLoadingAmount,
       transactions,
       isLoadingTransactions,
-      fetchCurrentAmount,
+      selectedType,
+      setSelectedType,
+      fetchCurrentAmounts,
       addCash,
       removeCash,
       fetchTransactions,
@@ -314,11 +329,14 @@ const CashRegisterContextComponent: React.FC<
       applyInvoiceStatusChange,
     }),
     [
-      currentAmount,
+      paperAmount,
+      digitalAmount,
       isLoadingAmount,
       transactions,
       isLoadingTransactions,
-      fetchCurrentAmount,
+      selectedType,
+      setSelectedType,
+      fetchCurrentAmounts,
       addCash,
       removeCash,
       fetchTransactions,

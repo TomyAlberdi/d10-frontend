@@ -65,6 +65,7 @@ const UpdateInvoice = () => {
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
+  const [paymentMethod, setPaymentMethod] = useState<"CASH" | "DIGITAL" | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [initialInvoice, setInitialInvoice] = useState<Invoice | null>(null);
@@ -84,9 +85,11 @@ const UpdateInvoice = () => {
             discount: inv.discount,
             total: inv.total,
             partialPayment: inv.partialPayment,
+            paymentMethod: inv.paymentMethod,
           });
           setDiscount(inv.discount);
           setStatus(inv.status);
+          setPaymentMethod(inv.paymentMethod);
         }
       })
       .finally(() => {
@@ -136,6 +139,7 @@ const UpdateInvoice = () => {
         discount,
         total,
         partialPayment,
+        paymentMethod,
       });
       if (initialInvoice) {
         await applyInvoiceStatusChange({
@@ -145,6 +149,7 @@ const UpdateInvoice = () => {
           total,
           clientName: initialInvoice.client.name,
           stockDecreasedInitially: initialInvoice.stockDecreased ?? false,
+          paymentMethod,
         });
       }
       toast.success("Factura actualizada correctamente");
@@ -320,6 +325,25 @@ const UpdateInvoice = () => {
               </SelectContent>
             </Select>
           </div>
+          {status === "PAGO" && (
+            <div>
+              <label className="text-sm font-medium text-muted-foreground block mb-2">
+                Método de pago
+              </label>
+              <Select
+                value={paymentMethod || ""}
+                onValueChange={(value) => setPaymentMethod(value as "CASH" | "DIGITAL")}
+              >
+                <SelectTrigger className="w-full max-w-xs">
+                  <SelectValue placeholder="Método de pago" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CASH">Efectivo</SelectItem>
+                  <SelectItem value="DIGITAL">Transferencia</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <Button
             onClick={handleUpdateInvoice}
             disabled={!hasProducts || isUpdating}

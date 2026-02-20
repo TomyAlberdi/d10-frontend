@@ -1,15 +1,19 @@
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 
+export type CashRegisterType = "PAPER" | "DIGITAL";
+
 export type CashRegisterTransactionType = "IN" | "OUT";
 
 export interface CashRegisterDTO {
   currentAmount: number;
+  type: CashRegisterType;
 }
 
 export interface CreateCashRegisterTransactionDTO {
   amount: number;
   type: CashRegisterTransactionType;
   description?: string;
+  registerType: CashRegisterType;
 }
 
 export interface CashRegisterTransaction {
@@ -18,6 +22,7 @@ export interface CashRegisterTransaction {
   type: CashRegisterTransactionType;
   description?: string;
   dateTime: string; // ISO string from backend
+  registerType: CashRegisterType;
 }
 
 export interface CashRegisterStatusChangePayload {
@@ -26,6 +31,7 @@ export interface CashRegisterStatusChangePayload {
   previousStatus: InvoiceStatus | null;
   nextStatus: InvoiceStatus;
   total: number;
+  paymentMethod?: "CASH" | "DIGITAL";
   /**
    * Whether the invoice had `stockDecreased` set to true
    * in the first version we received from the backend.
@@ -34,18 +40,24 @@ export interface CashRegisterStatusChangePayload {
 }
 
 export interface CashRegisterContextType {
-  /** Current amount of cash in the register. */
-  currentAmount: number;
-  /** Whether the current amount is being loaded. */
+  /** Current amount of cash in the paper register. */
+  paperAmount: number;
+  /** Current amount of cash in the digital register. */
+  digitalAmount: number;
+  /** Whether the amounts are being loaded. */
   isLoadingAmount: boolean;
   /** Transactions list. */
   transactions: CashRegisterTransaction[];
   /** Whether transactions are being loaded. */
   isLoadingTransactions: boolean;
+  /** Selected cash register type */
+  selectedType: CashRegisterType;
+  /** Set selected type */
+  setSelectedType: (type: CashRegisterType) => void;
   /**
-   * Fetch the current amount from the backend.
+   * Fetch the current amounts from the backend.
    */
-  fetchCurrentAmount: () => Promise<void>;
+  fetchCurrentAmounts: () => Promise<void>;
   /**
    * Add cash to the register (e.g. manual correction, opening cash, etc.).
    */

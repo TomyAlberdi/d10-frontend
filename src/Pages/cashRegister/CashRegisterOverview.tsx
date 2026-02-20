@@ -1,11 +1,11 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { formatPrice } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 const CashRegisterOverview = () => {
-  const { currentAmount, isLoadingAmount, fetchCurrentAmount } =
+  const { paperAmount, digitalAmount, isLoadingAmount, fetchCurrentAmounts } =
     useCashRegisterContext();
   const navigate = useNavigate();
 
@@ -15,21 +15,36 @@ const CashRegisterOverview = () => {
         <div>
           <h1 className="text-2xl font-bold mb-2">Caja</h1>
           <p className="text-sm text-muted-foreground">
-            Monto actual registrado en la caja desde el backend.
+            Montos actuales registrados en las cajas.
           </p>
         </div>
 
-        <div className="flex items-baseline gap-3">
-          <span className="text-muted-foreground text-lg">Monto actual</span>
-          {isLoadingAmount ? (
-            <span className="text-4xl font-extrabold tracking-tight text-muted-foreground">
-              Cargando...
-            </span>
-          ) : (
-            <span className="text-4xl font-extrabold tracking-tight">
-              $ {formatPrice(currentAmount)}
-            </span>
-          )}
+        <div className="space-y-4">
+          <div className="flex items-baseline gap-3">
+            <span className="text-muted-foreground text-lg">Caja Efectivo:</span>
+            {isLoadingAmount ? (
+              <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
+                Cargando...
+              </span>
+            ) : (
+              <span className="text-2xl font-extrabold tracking-tight">
+                $ {formatPrice(paperAmount)}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-baseline gap-3">
+            <span className="text-muted-foreground text-lg">Caja Transferencia:</span>
+            {isLoadingAmount ? (
+              <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
+                Cargando...
+              </span>
+            ) : (
+              <span className="text-2xl font-extrabold tracking-tight">
+                $ {formatPrice(digitalAmount)}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -39,8 +54,8 @@ const CashRegisterOverview = () => {
           >
             Ajustar saldo
           </Button>
-          <Button variant="outline" onClick={fetchCurrentAmount}>
-            Actualizar monto
+          <Button variant="outline" onClick={fetchCurrentAmounts}>
+            Actualizar montos
           </Button>
         </div>
       </Card>

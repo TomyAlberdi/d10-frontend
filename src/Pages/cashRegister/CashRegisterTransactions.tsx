@@ -63,15 +63,16 @@ const CashRegisterTransactions = () => {
               <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                 <TableHead className="w-2/12 bg-card">Fecha y hora</TableHead>
                 <TableHead className="w-2/12 bg-card">Tipo</TableHead>
+                <TableHead className="w-2/12 bg-card">Caja</TableHead>
                 <TableHead className="w-2/12 bg-card">Monto</TableHead>
-                <TableHead className="w-6/12 bg-card">Descripción</TableHead>
+                <TableHead className="w-4/12 bg-card">Descripción</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {transactions.length === 0 && !isLoadingTransactions && (
                 <TableRow>
                   <TableCell
-                    colSpan={4}
+                    colSpan={5}
                     className="text-center text-muted-foreground py-8"
                   >
                     {selectedDate
@@ -83,7 +84,7 @@ const CashRegisterTransactions = () => {
               {isLoadingTransactions && (
                 <TableRow>
                   <TableCell
-                    colSpan={4}
+                    colSpan={5}
                     className="text-center text-muted-foreground py-8"
                   >
                     Cargando transacciones...
@@ -101,6 +102,13 @@ const CashRegisterTransactions = () => {
                   <TableCell>
                     {TRANSACTION_TYPE_LABELS[transaction.type] ??
                       transaction.type}
+                  </TableCell>
+                  <TableCell>
+                    {transaction.registerType === "PAPER"
+                      ? "Efectivo"
+                      : transaction.registerType === "DIGITAL"
+                        ? "Transferencia"
+                        : "—"}
                   </TableCell>
                   <TableCell className="font-medium">
                     $ {formatPrice(transaction.amount)}

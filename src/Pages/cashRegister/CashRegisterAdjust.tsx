@@ -1,15 +1,17 @@
-import { useState } from "react";
-import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { formatPrice } from "@/lib/utils";
+import { useState } from "react";
 
 const CashRegisterAdjust = () => {
   const {
-    currentAmount,
-    isLoadingAmount,
+    paperAmount,
+    digitalAmount,
+    selectedType,
+    setSelectedType,
     addCash,
     removeCash,
   } = useCashRegisterContext();
@@ -20,6 +22,8 @@ const CashRegisterAdjust = () => {
   const parsedAmount = Number(amount.replace(",", "."));
   const isValidAmount = Number.isFinite(parsedAmount) && parsedAmount > 0;
   const isDisabled = !isValidAmount || isProcessing;
+
+  const currentAmount = selectedType === "PAPER" ? paperAmount : digitalAmount;
 
   const handleAdd = async () => {
     if (!isValidAmount) return;
@@ -56,17 +60,29 @@ const CashRegisterAdjust = () => {
           </p>
         </div>
 
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Tipo de caja:</span>
+          <Button
+            variant={selectedType === "PAPER" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedType("PAPER")}
+          >
+            Efectivo
+          </Button>
+          <Button
+            variant={selectedType === "DIGITAL" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedType("DIGITAL")}
+          >
+            Transferencia
+          </Button>
+        </div>
+
         <div>
           <p className="text-sm text-muted-foreground mb-1">Monto actual</p>
-          {isLoadingAmount ? (
-            <p className="text-2xl font-semibold text-muted-foreground">
-              Cargando...
-            </p>
-          ) : (
-            <p className="text-2xl font-semibold">
-              $ {formatPrice(currentAmount)}
-            </p>
-          )}
+          <p className="text-2xl font-semibold">
+            $ {formatPrice(currentAmount)}
+          </p>
         </div>
 
         <div className="space-y-3">

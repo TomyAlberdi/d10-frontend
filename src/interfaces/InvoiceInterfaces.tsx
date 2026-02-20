@@ -8,6 +8,8 @@ export type InvoiceStatus =
   | "ENTREGADO"
   | "CANCELADO";
 
+export type PaymentMethod = "CASH" | "DIGITAL";
+
 export interface CreateInvoiceDTO {
   client: Client;
   products: CartProduct[];
@@ -15,6 +17,7 @@ export interface CreateInvoiceDTO {
   discount: number;
   total: number;
   partialPayment?: number;
+  paymentMethod?: PaymentMethod;
 }
 
 export interface Invoice extends CreateInvoiceDTO {

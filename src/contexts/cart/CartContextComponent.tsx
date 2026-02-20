@@ -1,6 +1,6 @@
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Client } from "@/interfaces/ClientInterfaces";
-import type { Invoice, InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
+import type { Invoice, InvoiceStatus, PaymentMethod } from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CartContext, type CartContextType } from "./CartContext";
@@ -29,6 +29,7 @@ const initialCart: Invoice = {
   status: "PENDIENTE",
   discount: 0,
   total: 0,
+  paymentMethod: undefined,
 };
 
 const VALID_STATUSES: InvoiceStatus[] = [
@@ -56,6 +57,7 @@ function loadCartFromStorage(): Invoice {
         : "PENDIENTE",
       discount: Number.isFinite(discount) ? discount : 0,
       total: Number.isFinite(total) ? total : 0,
+      paymentMethod: parsed.paymentMethod,
     };
   } catch {
     return initialCart;
@@ -82,6 +84,13 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
     setCart((prev) => ({
       ...prev,
       status,
+    }));
+  }, []);
+
+  const setPaymentMethod = useCallback((paymentMethod: PaymentMethod | undefined) => {
+    setCart((prev) => ({
+      ...prev,
+      paymentMethod,
     }));
   }, []);
 
@@ -142,6 +151,7 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
       cart,
       setCartClient,
       setCartStatus,
+      setPaymentMethod,
       addProduct,
       removeProduct,
       setDiscount,
@@ -151,6 +161,7 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
       cart,
       setCartClient,
       setCartStatus,
+      setPaymentMethod,
       addProduct,
       removeProduct,
       setDiscount,
