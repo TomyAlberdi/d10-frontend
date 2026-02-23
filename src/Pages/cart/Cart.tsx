@@ -223,7 +223,7 @@ const Cart = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Pago inicial (parcial)
+              Pago parcial (IMPORTANTE: Los pagos parciales no se registran en caja)
             </label>
             <input
               type="number"
@@ -266,29 +266,25 @@ const Cart = () => {
               </SelectContent>
             </Select>
           </div>
-          {(cart.status === "PAGO" ||
-            cart.status === "ENVIADO" ||
-            cart.status === "ENTREGADO") && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground block mb-2">
-                Método de pago
-              </label>
-              <Select
-                value={cart.paymentMethod || "CASH"}
-                onValueChange={(value) =>
-                  setPaymentMethod(value as "CASH" | "DIGITAL")
-                }
-              >
-                <SelectTrigger className="w-full max-w-xs">
-                  <SelectValue placeholder="Método de pago" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CASH">Efectivo</SelectItem>
-                  <SelectItem value="DIGITAL">Transferencia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Método de pago
+            </label>
+            <Select
+              value={cart.paymentMethod || "CASH"}
+              onValueChange={(value) =>
+                setPaymentMethod(value as "CASH" | "DIGITAL")
+              }
+            >
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue placeholder="Método de pago" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CASH">Efectivo</SelectItem>
+                <SelectItem value="DIGITAL">Transferencia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button
             onClick={handleCreateInvoice}
             disabled={!canCreateInvoice || isCreating}

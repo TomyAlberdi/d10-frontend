@@ -65,7 +65,9 @@ const UpdateInvoice = () => {
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
-  const [paymentMethod, setPaymentMethod] = useState<"CASH" | "DIGITAL" | undefined>(undefined);
+  const [paymentMethod, setPaymentMethod] = useState<
+    "CASH" | "DIGITAL" | undefined
+  >(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [initialInvoice, setInitialInvoice] = useState<Invoice | null>(null);
@@ -89,7 +91,7 @@ const UpdateInvoice = () => {
           });
           setDiscount(inv.discount);
           setStatus(inv.status);
-          setPaymentMethod(inv.paymentMethod);
+          setPaymentMethod(inv.paymentMethod || "CASH");
         }
       })
       .finally(() => {
@@ -102,8 +104,7 @@ const UpdateInvoice = () => {
 
   const products = invoice?.products ?? [];
   const subtotalSum = products.reduce((sum, p) => sum + p.subtotal, 0);
-  const discountPercent =
-    subtotalSum > 0 ? (discount / subtotalSum) * 100 : 0;
+  const discountPercent = subtotalSum > 0 ? (discount / subtotalSum) * 100 : 0;
   const total = computeTotal(products, discount);
   const partialPayment =
     invoice?.partialPayment ?? initialInvoice?.partialPayment ?? 0;
@@ -281,7 +282,7 @@ const UpdateInvoice = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Pago parcial
+              Pago parcial (IMPORTANTE: Los pagos parciales no se registran en caja)
             </label>
             <input
               type="number"
@@ -295,9 +296,9 @@ const UpdateInvoice = () => {
                 setInvoice((prev) =>
                   prev
                     ? {
-                      ...prev,
-                      partialPayment: Math.max(0, Math.min(total, value)),
-                    }
+                        ...prev,
+                        partialPayment: Math.max(0, Math.min(total, value)),
+                      }
                     : prev,
                 );
               }}
@@ -325,25 +326,25 @@ const UpdateInvoice = () => {
               </SelectContent>
             </Select>
           </div>
-          {status === "PAGO" && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground block mb-2">
-                Método de pago
-              </label>
-              <Select
-                value={paymentMethod || ""}
-                onValueChange={(value) => setPaymentMethod(value as "CASH" | "DIGITAL")}
-              >
-                <SelectTrigger className="w-full max-w-xs">
-                  <SelectValue placeholder="Método de pago" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CASH">Efectivo</SelectItem>
-                  <SelectItem value="DIGITAL">Transferencia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Método de pago
+            </label>
+            <Select
+              value={paymentMethod || "CASH"}
+              onValueChange={(value) =>
+                setPaymentMethod(value as "CASH" | "DIGITAL")
+              }
+            >
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue placeholder="Método de pago" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CASH">Efectivo</SelectItem>
+                <SelectItem value="DIGITAL">Transferencia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button
             onClick={handleUpdateInvoice}
             disabled={!hasProducts || isUpdating}
