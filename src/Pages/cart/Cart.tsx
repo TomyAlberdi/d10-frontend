@@ -157,7 +157,12 @@ const Cart = () => {
               <TableBody>
                 {cart.products.map((p) => (
                   <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.name}</TableCell>
+                    <TableCell
+                      className="font-medium cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => navigate(`/product/${p.id}`)}
+                    >
+                      {p.name}
+                    </TableCell>
                     <TableCell className="text-right">
                       {p.saleUnitQuantity} {p.saleUnitType}
                     </TableCell>

@@ -7,24 +7,24 @@ import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterCo
 import ClientContextComponent from "./contexts/client/ClientContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
+import Cart from "./Pages/cart/Cart";
+import CashRegister from "./Pages/cashRegister/CashRegister";
+import CashRegisterAdjust from "./Pages/cashRegister/CashRegisterAdjust";
+import CashRegisterOverview from "./Pages/cashRegister/CashRegisterOverview";
 import ClientCreate from "./Pages/client/ClientCreate";
+import Clients from "./Pages/client/Clients";
+import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
 import Home from "./Pages/Home";
-import Invoices from "./Pages/invoice/Invoices";
 import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
+import Invoices from "./Pages/invoice/Invoices";
 import UpdateInvoice from "./Pages/invoice/UpdateInvoice";
-import Cart from "./Pages/cart/Cart";
-import ClientsList from "./Pages/client/ClientsList";
-import Clients from "./Pages/client/Clients";
-import CashRegister from "./Pages/cashRegister/CashRegister";
-import CashRegisterOverview from "./Pages/cashRegister/CashRegisterOverview";
-import CashRegisterAdjust from "./Pages/cashRegister/CashRegisterAdjust";
-import CashRegisterTransactions from "./Pages/cashRegister/CashRegisterTransactions";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
 import ProductDetail from "./Pages/product/ProductDetail";
 import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
+import ProductStockList from "./Pages/product/ProductStockList";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
 
@@ -85,6 +85,7 @@ export function App() {
                     <Route path=":id" element={<ProductDetail />} />
                     <Route path=":id/update" element={<ProductUpdate />} />
                     <Route path=":id/stock" element={<UpdateProductStock />} />
+                    <Route path="stock" element={<ProductStockList />} />
                   </Route>
                   <Route path="/client" element={<Clients />}>
                     <Route index element={<ClientsList />} />
@@ -99,7 +100,6 @@ export function App() {
                   <Route path="/cash-register" element={<CashRegister />}>
                     <Route index element={<CashRegisterOverview />} />
                     <Route path="adjust" element={<CashRegisterAdjust />} />
-                    <Route path="transactions" element={<CashRegisterTransactions />} />
                   </Route>
                 </Routes>
               </CashRegisterContextComponent>

@@ -200,7 +200,12 @@ const InvoiceDetail = () => {
                   <TableBody>
                     {invoice.products.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell>{product.name}</TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => navigate(`/product/${product.id}`)}
+                        >
+                          {product.name}
+                        </TableCell>
                         <TableCell>{product.measureType}</TableCell>
                         <TableCell>
                           $ {formatPrice(product.priceByMeasureUnit)}

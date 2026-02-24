@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Product } from "@/interfaces/ProductInterfaces";
@@ -41,43 +42,19 @@ const SelectedProduct = ({
           "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
     >
-      <div className="col-span-2 flex items-center">
+      <div className="col-span-2 flex items-center gap-3">
         <span className="text-xl font-bold ml-1">{product.name}</span>
-        {isDiscontinued && (
-          <span className="ml-2 text-xs font-normal text-amber-700 dark:text-amber-300">
-            (Discontinuado)
-          </span>
-        )}
-      </div>
-      <div className="row-start-2 col-span-2 flex items-center gap-2">
-        <div className="h-full flex items-center gap-3 border-2 px-2">
-          <span className="text-muted-foreground">Código</span>
-          <span className="text-foreground">{product.code}</span>
-        </div>
+        <Badge>Código {product.code}</Badge>
         {product.quality && (
-          <div className="h-full flex items-center gap-3 border-2 px-2">
-            <span className="text-foreground">
-              {product.quality === "PRIMERA" ? "1RA" : "2DA"}
-            </span>
-            <span className="text-muted-foreground">Calidad</span>
-          </div>
+          <Badge variant={"secondary"}>{product.quality}</Badge>
         )}
+        {isDiscontinued && <Badge variant="destructive">Discontinuado</Badge>}
+      </div>
+      <div className="row-start-2 row-span-1 col-span-2 flex items-center gap-2">
         {product.dimensions && (
           <div className="h-full flex items-center gap-3 border-2 px-2">
             <span className="text-muted-foreground">Dimensiones</span>
             <span className="text-foreground">{product.dimensions}</span>
-          </div>
-        )}
-      </div>
-      <div className="row-start-3 row-span-1 col-span-2 flex items-center gap-2">
-        {product.category && (
-          <div className="h-full flex items-center border-2 px-2 text-foreground">
-            {product.category}
-          </div>
-        )}
-        {product.subcategory && (
-          <div className="h-full flex items-center border-2 px-2 text-foreground">
-            {product.subcategory}
           </div>
         )}
         {product.stock && (
@@ -105,7 +82,7 @@ const SelectedProduct = ({
           </div>
         )}
       </div>
-      <div className="row-start-4 row-span-3 col-span-2 flex flex-col justify-center gap-2 pl-5">
+      <div className="row-start-3 row-span-3 col-span-2 flex flex-col justify-center gap-2 pl-5">
         {product.priceByMeasureUnit && (
           <div className="text-3xl alternate-font">
             $ {formatPrice(product.priceByMeasureUnit)} X {product.measureType}
@@ -119,15 +96,17 @@ const SelectedProduct = ({
         )}
       </div>
       <div
-        className="col-start-3 row-span-7 bg-secondary"
+        className="col-start-3 row-span-7 bg-secondary cursor-pointer hover:bg-secondary/80 transition-colors"
         style={{
           backgroundImage: `url(${firstImage})`,
           backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
+        onClick={() => navigate(`/product/${product.id}`)}
+        title="Ver detalles del producto"
       />
-      <div className="row-start-7 col-span-2 flex items-center gap-3">
+      <div className="row-start-6 row-span-2 col-span-2 flex items-center gap-3">
         {/*         <Button
           className="h-full"
           disabled

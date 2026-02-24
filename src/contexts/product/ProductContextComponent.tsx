@@ -143,9 +143,19 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     return;
   };
 
+  const getProductsWithStock = async () => {
+    const response = await fetch(`${API_URL}/stock/list`);
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as Product[];
+  };
+
   const exportData: ProductContextType = {
     getProductById,
     listProducts,
+    getProductsWithStock,
     createProduct,
     updateProduct,
     deleteProduct,

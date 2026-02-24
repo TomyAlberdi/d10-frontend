@@ -1,4 +1,4 @@
-import { CirclePlus, ListOrdered } from "lucide-react";
+import { CirclePlus, ListOrdered, Package } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 
@@ -14,6 +14,13 @@ const Products = () => {
         >
           <ListOrdered className="medium-icon" />
           Listar
+        </Button>
+        <Button
+          onClick={() => navigate("/product/stock")}
+          className="text-lg h-16"
+        >
+          <Package className="medium-icon" />
+          Listar Stock
         </Button>
         <Button
           onClick={() => navigate("/product/create")}

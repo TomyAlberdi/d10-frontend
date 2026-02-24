@@ -13,6 +13,7 @@ export interface ProductContextType {
     page: number | null,
     size: number | null,
   ) => Promise<PaginatedResult<Product>>;
+  getProductsWithStock: () => Promise<Product[]>;
   createProduct: (dto: CreateProduct) => Promise<void>;
   updateProduct: (id: string, dto: CreateProduct) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
