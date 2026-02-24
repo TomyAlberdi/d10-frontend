@@ -15,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type {
@@ -61,7 +60,6 @@ const UpdateInvoice = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getInvoiceById, updateInvoice } = useInvoiceContext();
-  const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
@@ -142,17 +140,6 @@ const UpdateInvoice = () => {
         partialPayment,
         paymentMethod,
       });
-      if (initialInvoice) {
-        await applyInvoiceStatusChange({
-          invoiceId: initialInvoice.id,
-          previousStatus: initialInvoice.status,
-          nextStatus: status,
-          total,
-          clientName: initialInvoice.client.name,
-          stockDecreasedInitially: initialInvoice.stockDecreased ?? false,
-          paymentMethod,
-        });
-      }
       toast.success("Factura actualizada correctamente");
       navigate("/invoice");
     } catch {
@@ -218,7 +205,7 @@ const UpdateInvoice = () => {
                   <TableHead className="text-right">Medida total</TableHead>
                   <TableHead className="text-right">Desc. individual</TableHead>
                   <TableHead className="text-right">Subtotal</TableHead>
-                  <TableHead className="w-[80px]" />
+                  <TableHead className="w-20" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -282,7 +269,8 @@ const UpdateInvoice = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Pago parcial (IMPORTANTE: Los pagos parciales no se registran en caja)
+              Pago parcial (IMPORTANTE: Los pagos parciales no se registran en
+              caja)
             </label>
             <input
               type="number"

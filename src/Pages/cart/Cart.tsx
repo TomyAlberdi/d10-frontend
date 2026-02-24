@@ -16,7 +16,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
-import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
@@ -45,7 +44,6 @@ const Cart = () => {
     clearCart,
   } = useCartContext();
   const { createInvoice } = useInvoiceContext();
-  const { applyInvoiceStatusChange } = useCashRegisterContext();
   const [isCreating, setIsCreating] = useState(false);
   const [partialPayment, setpartialPayment] = useState(0);
 
@@ -76,16 +74,6 @@ const Cart = () => {
         discount: cart.discount,
         total: cart.total,
         partialPayment,
-        paymentMethod: cart.paymentMethod,
-      });
-      // Apply cash register rule for newly created invoices.
-      await applyInvoiceStatusChange({
-        invoiceId: undefined,
-        previousStatus: null,
-        nextStatus: cart.status,
-        total: cart.total,
-        stockDecreasedInitially: false,
-        clientName: cart.client.name,
         paymentMethod: cart.paymentMethod,
       });
       flushSync(() => {
@@ -163,7 +151,7 @@ const Cart = () => {
                   <TableHead className="text-right">Medida total</TableHead>
                   <TableHead className="text-right">Desc. individual</TableHead>
                   <TableHead className="text-right">Subtotal</TableHead>
-                  <TableHead className="w-[80px]" />
+                  <TableHead className="w-20" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -223,7 +211,8 @@ const Cart = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Pago parcial (IMPORTANTE: Los pagos parciales no se registran en caja)
+              Pago parcial (IMPORTANTE: Los pagos parciales no se registran en
+              caja)
             </label>
             <input
               type="number"
