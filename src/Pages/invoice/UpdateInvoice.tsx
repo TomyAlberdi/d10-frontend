@@ -131,7 +131,7 @@ const UpdateInvoice = () => {
     if (!id || !invoice) return;
     setIsUpdating(true);
     try {
-      await updateInvoice(id, {
+      const updatedInvoice = await updateInvoice(id, {
         client: invoice.client,
         products: invoice.products,
         status,
@@ -141,7 +141,13 @@ const UpdateInvoice = () => {
         paymentMethod,
       });
       toast.success("Factura actualizada correctamente");
-      navigate("/invoice");
+
+      // Check if we need to register cash transaction
+      if (["PAGO", "ENVIADO", "ENTREGADO"].includes(status)) {
+        navigate("/cash-register/invoice-transaction", { state: { invoice: updatedInvoice } });
+      } else {
+        navigate("/invoice");
+      }
     } catch {
       // Error handled in context
     } finally {

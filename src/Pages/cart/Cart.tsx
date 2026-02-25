@@ -67,7 +67,7 @@ const Cart = () => {
     if (!canCreateInvoice) return;
     setIsCreating(true);
     try {
-      await createInvoice({
+      const createdInvoice = await createInvoice({
         client: cart.client,
         products: cart.products,
         status: cart.status,
@@ -80,7 +80,13 @@ const Cart = () => {
         clearCart();
       });
       toast.success("Factura creada correctamente");
-      navigate("/invoice");
+
+      // Check if we need to register cash transaction
+      if (["PAGO", "ENVIADO", "ENTREGADO"].includes(cart.status)) {
+        navigate("/cash-register/invoice-transaction", { state: { invoice: createdInvoice } });
+      } else {
+        navigate("/invoice");
+      }
     } catch {
       // Error handled in context
     } finally {

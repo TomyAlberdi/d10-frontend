@@ -19,7 +19,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const createInvoice = async (dto: CreateInvoiceDTO): Promise<void> => {
+  const createInvoice = async (dto: CreateInvoiceDTO): Promise<Invoice> => {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
@@ -52,6 +52,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
       }
       throw new Error(`HTTP Error: ${response.status}`);
     }
+    return (await response.json()) as Invoice;
   };
 
   const getInvoiceById = async (id: string): Promise<Invoice | null> => {
@@ -67,7 +68,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
   const updateInvoice = async (
     id: string,
     dto: CreateInvoiceDTO,
-  ): Promise<void> => {
+  ): Promise<Invoice> => {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: {
@@ -100,6 +101,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
       }
       throw new Error(`HTTP Error: ${response.status}`);
     }
+    return (await response.json()) as Invoice;
   };
 
   const deleteInvoiceById = async (id: string): Promise<void> => {

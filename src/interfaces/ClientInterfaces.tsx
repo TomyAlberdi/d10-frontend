@@ -1,6 +1,6 @@
 export interface Client {
   id: string;
-  type: string;
+  type: ClientType;
   name: string;
   address: string | null;
   phone: string | null;
@@ -9,10 +9,12 @@ export interface Client {
 }
 
 export interface CreateClientDTO {
-  type: string;
+  type: ClientType;
   name: string;
   address: string;
   cuitDni: string;
   email: string;
   phone: string;
 }
+
+export type ClientType = "CONSUMIDOR_FINAL" | "RESPONSABLE_INSCRIPTO";

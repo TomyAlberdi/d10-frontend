@@ -10,6 +10,7 @@ import ProductContextComponent from "./contexts/product/ProductContextComponent"
 import Cart from "./Pages/cart/Cart";
 import CashRegister from "./Pages/cashRegister/CashRegister";
 import CashRegisterAdjust from "./Pages/cashRegister/CashRegisterAdjust";
+import CashRegisterInvoiceTransaction from "./Pages/cashRegister/CashRegisterInvoiceTransaction";
 import CashRegisterOverview from "./Pages/cashRegister/CashRegisterOverview";
 import ClientCreate from "./Pages/client/ClientCreate";
 import Clients from "./Pages/client/Clients";
@@ -100,6 +101,7 @@ export function App() {
                   <Route path="/cash-register" element={<CashRegister />}>
                     <Route index element={<CashRegisterOverview />} />
                     <Route path="adjust" element={<CashRegisterAdjust />} />
+                    <Route path="invoice-transaction" element={<CashRegisterInvoiceTransaction />} />
                   </Route>
                 </Routes>
               </CashRegisterContextComponent>
