@@ -1,3 +1,4 @@
+import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -140,7 +141,7 @@ const Invoices = () => {
   return (
     <div className="min-h-screen flex items-center justify-center gap-5">
       <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
-        {/* Single view, no routing buttons needed */}
+        <FloatingGenericMenu />
       </section>
       <section className="w-5/8 h-screen py-5">
         <div className="px-5 h-full flex flex-col gap-4">

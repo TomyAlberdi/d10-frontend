@@ -33,7 +33,7 @@ const Home = () => {
             Carrito
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 col-span-2">
           <Link
             to="/cash-register"
             className="flex items-center gap-3 text-xl"

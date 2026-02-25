@@ -1,5 +1,5 @@
-import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/select";
 import { useClientContext } from "@/contexts/client/UseClientContext";
 import type { CreateClientDTO } from "@/interfaces/ClientInterfaces";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useState } from "react";
 
 const CLIENT_TYPE_OPTIONS: CreateClientDTO["type"][] = [
   "CONSUMIDOR_FINAL",
@@ -71,7 +71,9 @@ const ClientCreate = () => {
               <SelectContent>
                 {CLIENT_TYPE_OPTIONS.map((t) => (
                   <SelectItem key={t} value={t}>
-                    {t === "CONSUMIDOR_FINAL" ? "Persona física" : "Responsable inscripto"}
+                    {t === "CONSUMIDOR_FINAL"
+                      ? "Consumidor Final"
+                      : "Responsable Inscripto"}
                   </SelectItem>
                 ))}
               </SelectContent>

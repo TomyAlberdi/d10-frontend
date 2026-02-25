@@ -1,3 +1,4 @@
+import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -83,7 +84,9 @@ const Cart = () => {
 
       // Check if we need to register cash transaction
       if (["PAGO", "ENVIADO", "ENTREGADO"].includes(cart.status)) {
-        navigate("/cash-register/invoice-transaction", { state: { invoice: createdInvoice } });
+        navigate("/cash-register/invoice-transaction", {
+          state: { invoice: createdInvoice },
+        });
       } else {
         navigate("/invoice");
       }
@@ -96,8 +99,12 @@ const Cart = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Carrito</h1>
-
+      <div className="w-full flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Carrito</h1>
+        <div className="w-1/6">
+          <FloatingGenericMenu />
+        </div>
+      </div>
       {/* Card 1: Client */}
       <Card className="p-4">
         <h2 className="text-lg font-semibold mb-3">Cliente</h2>

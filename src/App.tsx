@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import FloatingBackButton from "./components/FloatingBackButton";
 import { Toaster } from "./components/ui/sonner";
 import CartContextComponent from "./contexts/cart/CartContextComponent";
 import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterContextComponent";
@@ -54,7 +53,9 @@ function MobileTabletMessage() {
 
 export function App() {
   const [isDesktop, setIsDesktop] = useState(
-    () => typeof window !== "undefined" && window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH}px)`).matches
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH}px)`).matches,
   );
 
   useEffect(() => {
@@ -70,7 +71,6 @@ export function App() {
 
   return (
     <Router>
-      <FloatingBackButton />
       <Toaster />
       <ProductContextComponent>
         <CartContextComponent>
@@ -82,7 +82,10 @@ export function App() {
                   <Route path="/product" element={<Products />}>
                     <Route index element={<ProductList />} />
                     <Route path="create" element={<ProductCreate />} />
-                    <Route path="add/:productId" element={<ProductAddToCart />} />
+                    <Route
+                      path="add/:productId"
+                      element={<ProductAddToCart />}
+                    />
                     <Route path=":id" element={<ProductDetail />} />
                     <Route path=":id/update" element={<ProductUpdate />} />
                     <Route path=":id/stock" element={<UpdateProductStock />} />
@@ -97,11 +100,17 @@ export function App() {
                   <Route path="/client/create" element={<ClientCreate />} />
                   <Route path="/invoice" element={<Invoices />} />
                   <Route path="/invoice/:id" element={<InvoiceDetail />} />
-                  <Route path="/invoice/:id/update" element={<UpdateInvoice />} />
+                  <Route
+                    path="/invoice/:id/update"
+                    element={<UpdateInvoice />}
+                  />
                   <Route path="/cash-register" element={<CashRegister />}>
                     <Route index element={<CashRegisterOverview />} />
                     <Route path="adjust" element={<CashRegisterAdjust />} />
-                    <Route path="invoice-transaction" element={<CashRegisterInvoiceTransaction />} />
+                    <Route
+                      path="invoice-transaction"
+                      element={<CashRegisterInvoiceTransaction />}
+                    />
                   </Route>
                 </Routes>
               </CashRegisterContextComponent>

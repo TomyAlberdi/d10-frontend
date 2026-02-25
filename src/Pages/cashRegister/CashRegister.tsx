@@ -1,3 +1,4 @@
+import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, Wallet } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ const CashRegister = () => {
   return (
     <div className="min-h-screen flex items-center justify-center gap-5">
       <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
+        <FloatingGenericMenu />
         <Button
           onClick={() => navigate("/cash-register")}
           className="text-lg h-16"
@@ -31,4 +33,3 @@ const CashRegister = () => {
 };
 
 export default CashRegister;
-

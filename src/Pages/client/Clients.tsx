@@ -1,3 +1,4 @@
+import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, ListOrdered } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -8,13 +9,17 @@ const Clients = () => {
   return (
     <div className="min-h-screen flex items-center justify-center gap-5">
       <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
-        <Button onClick={() => navigate("/client")} className="text-lg h-16">
+        <FloatingGenericMenu />
+        <Button
+          onClick={() => navigate("/client")}
+          className="text-lg h-16 min-w-min"
+        >
           <ListOrdered className="medium-icon" />
           Listar
         </Button>
         <Button
           onClick={() => navigate("/client/create")}
-          className="text-lg h-16"
+          className="text-lg h-16 min-w-min"
         >
           <CirclePlus className="medium-icon" />
           Crear
