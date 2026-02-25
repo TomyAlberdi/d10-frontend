@@ -44,6 +44,9 @@ const Invoices = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isLoadingRecent, setIsLoadingRecent] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState<
+    Invoice["status"] | null
+  >(null);
   const tableRef = useRef<HTMLDivElement>(null);
 
   const hasQuery = searchQuery.trim().length > 0;
@@ -62,7 +65,7 @@ const Invoices = () => {
 
   useEffect(() => {
     let cancelled = false;
-    getRecentInvoices()
+    getRecentInvoices(selectedStatus || undefined)
       .then((result) => {
         if (!cancelled) {
           setRecentInvoices(result);
@@ -75,13 +78,13 @@ const Invoices = () => {
     return () => {
       cancelled = true;
     };
-  }, [getRecentInvoices]);
+  }, [getRecentInvoices, selectedStatus]);
 
   useEffect(() => {
     if (!hasQuery) return;
     let cancelled = false;
     const timeoutId = setTimeout(() => setIsSearching(true), 0);
-    searchInvoices(searchQuery.trim())
+    searchInvoices(searchQuery.trim(), selectedStatus || undefined)
       .then((result) => {
         if (!cancelled) {
           setInvoices(result);
@@ -95,7 +98,7 @@ const Invoices = () => {
       cancelled = true;
       clearTimeout(timeoutId);
     };
-  }, [hasQuery, searchQuery, searchInvoices]);
+  }, [hasQuery, searchQuery, searchInvoices, selectedStatus]);
 
   useEffect(() => {
     const t = setTimeout(() => setSearchQuery(searchInput), SEARCH_DEBOUNCE_MS);
@@ -142,6 +145,36 @@ const Invoices = () => {
     <div className="min-h-screen flex items-center justify-center gap-5">
       <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
         <FloatingGenericMenu />
+        <Card className="p-4 gap-0">
+          <h3 className="text-sm font-medium mb-3">Filtrar por Estado</h3>
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedStatus === null}
+                onChange={() => setSelectedStatus(null)}
+                className="w-4 h-4"
+              />
+              <span className="text-sm">Todos</span>
+            </label>
+            {Object.entries(STATUS_LABELS).map(([status, label]) => (
+              <label
+                key={status}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedStatus === status}
+                  onChange={() =>
+                    setSelectedStatus(status as Invoice["status"])
+                  }
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">{label}</span>
+              </label>
+            ))}
+          </div>
+        </Card>
       </section>
       <section className="w-5/8 h-screen py-5">
         <div className="px-5 h-full flex flex-col gap-4">

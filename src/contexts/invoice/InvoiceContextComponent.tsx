@@ -115,8 +115,9 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     navigate(-1);
   };
 
-  const searchInvoices = async (q: string): Promise<Invoice[]> => {
+  const searchInvoices = async (q: string, status?: InvoiceStatus): Promise<Invoice[]> => {
     const params = new URLSearchParams({ q });
+    if (status) params.append('status', status);
     const response = await fetch(`${API_URL}/search?${params.toString()}`);
     if (!response.ok) {
       toast.error(`Error: ${response.status}`);
@@ -125,8 +126,10 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     return (await response.json()) as Invoice[];
   };
 
-  const getRecentInvoices = async (): Promise<Invoice[]> => {
-    const response = await fetch(`${API_URL}/search`);
+  const getRecentInvoices = async (status?: InvoiceStatus): Promise<Invoice[]> => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    const response = await fetch(`${API_URL}/search?${params.toString()}`);
     if (!response.ok) {
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
