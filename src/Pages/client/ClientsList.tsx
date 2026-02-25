@@ -1,7 +1,5 @@
-import { useClientContext } from "@/contexts/client/UseClientContext";
-import type { Client } from "@/interfaces/ClientInterfaces";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -10,8 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { useClientContext } from "@/contexts/client/UseClientContext";
+import type { Client } from "@/interfaces/ClientInterfaces";
 import { Search } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SelectedClient from "./SelectedClient";
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -28,7 +28,7 @@ const ClientsList = () => {
   const hasQuery = searchQuery.trim().length > 0;
   const displayClients = useMemo(
     () => (hasQuery ? clients : []),
-    [hasQuery, clients]
+    [hasQuery, clients],
   );
   const displaySelected = useMemo(
     () =>
@@ -37,7 +37,7 @@ const ClientsList = () => {
       clients.some((c) => c.id === selectedClient.id)
         ? selectedClient
         : null,
-    [hasQuery, clients, selectedClient]
+    [hasQuery, clients, selectedClient],
   );
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const ClientsList = () => {
         setSelectedClient(displayClients[prevIndex]);
       }
     },
-    [displayClients, selectedIndex]
+    [displayClients, selectedIndex],
   );
 
   return (
@@ -148,9 +148,9 @@ const ClientsList = () => {
                   className="cursor-pointer"
                 >
                   <TableCell>
-                    {client.type === "FISICA"
-                      ? "Persona física"
-                      : "Persona jurídica"}
+                    {client.type === "CONSUMIDOR_FINAL"
+                      ? "Consumidor Final"
+                      : "Responsable Inscripto"}
                   </TableCell>
                   <TableCell>{client.name}</TableCell>
                   <TableCell>{client.cuitDni}</TableCell>

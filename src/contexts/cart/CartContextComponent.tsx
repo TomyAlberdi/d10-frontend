@@ -1,6 +1,10 @@
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Client } from "@/interfaces/ClientInterfaces";
-import type { Invoice, InvoiceStatus, PaymentMethod } from "@/interfaces/InvoiceInterfaces";
+import type {
+  Invoice,
+  InvoiceStatus,
+  PaymentMethod,
+} from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CartContext, type CartContextType } from "./CartContext";
@@ -14,7 +18,7 @@ function computeTotal(products: CartProduct[], discount: number): number {
 
 const placeholderClient: Client = {
   id: "",
-  type: "",
+  type: "CONSUMIDOR_FINAL",
   name: "",
   address: null,
   phone: null,
@@ -87,12 +91,15 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
     }));
   }, []);
 
-  const setPaymentMethod = useCallback((paymentMethod: PaymentMethod | undefined) => {
-    setCart((prev) => ({
-      ...prev,
-      paymentMethod,
-    }));
-  }, []);
+  const setPaymentMethod = useCallback(
+    (paymentMethod: PaymentMethod | undefined) => {
+      setCart((prev) => ({
+        ...prev,
+        paymentMethod,
+      }));
+    },
+    [],
+  );
 
   const addProduct = useCallback((product: CartProduct) => {
     setCart((prev) => {
