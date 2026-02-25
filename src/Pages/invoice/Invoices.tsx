@@ -167,14 +167,11 @@ const Invoices = () => {
             <div className="flex-1 overflow-y-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
-                    <TableHead className="w-1/12 bg-card">Fecha</TableHead>
+                  <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))] py-4">
+                    <TableHead className="w-2/12 bg-card">Número</TableHead>
+                    <TableHead className="w-2/12 bg-card">Fecha</TableHead>
                     <TableHead className="w-3/12 bg-card">Cliente</TableHead>
                     <TableHead className="w-2/12 bg-card">Estado</TableHead>
-                    <TableHead className="w-2/12 bg-card">Descuento</TableHead>
-                    <TableHead className="w-2/12 bg-card">
-                      Pago Parcial
-                    </TableHead>
                     <TableHead className="w-3/12 bg-card">Total</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -184,7 +181,7 @@ const Invoices = () => {
                     !isLoadingRecent && (
                       <TableRow>
                         <TableCell
-                          colSpan={6}
+                          colSpan={5}
                           className="text-center text-muted-foreground py-8"
                         >
                           {hasQuery
@@ -198,7 +195,7 @@ const Invoices = () => {
                     !hasQuery && (
                       <TableRow>
                         <TableCell
-                          colSpan={6}
+                          colSpan={5}
                           className="text-center text-muted-foreground py-8"
                         >
                           Cargando facturas recientes…
@@ -214,20 +211,15 @@ const Invoices = () => {
                           : undefined
                       }
                       onClick={() => navigate(`/invoice/${invoice.id}`)}
-                      className={`cursor-pointer`}
+                      className={`cursor-pointer py-4`}
                     >
+                      <TableCell>{invoice.invoiceNumber ?? "-"}</TableCell>
                       <TableCell>{invoice.date}</TableCell>
                       <TableCell>{invoice.client.name}</TableCell>
                       <TableCell
                         className={`${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}
                       >
                         {STATUS_LABELS[invoice.status] ?? invoice.status}
-                      </TableCell>
-
-                      <TableCell>$ {formatPrice(invoice.discount)}</TableCell>
-                      <TableCell>
-                        {" "}
-                        $ {formatPrice(invoice.partialPayment ?? 0)}
                       </TableCell>
                       <TableCell className="font-medium">
                         $ {formatPrice(invoice.total)}
