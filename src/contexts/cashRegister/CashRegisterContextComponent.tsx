@@ -1,5 +1,6 @@
 import type {
   CashRegisterContextType,
+  CashRegisterDailyTotals,
   CashRegisterDTO,
   CashRegisterStatusChangePayload,
   CashRegisterTransaction,
@@ -33,6 +34,13 @@ const CashRegisterContextComponent: React.FC<
     useState<boolean>(false);
   const [selectedType, setSelectedType] = useState<CashRegisterType>("PAPER");
 
+  const [dailyTotals, setDailyTotals] = useState<CashRegisterDailyTotals>({
+    inTotal: 0,
+    outTotal: 0,
+  });
+  const [isLoadingDailyTotals, setIsLoadingDailyTotals] =
+    useState<boolean>(false);
+
   const fetchCurrentAmounts = useCallback(async () => {
     setIsLoadingAmount(true);
     try {
@@ -55,25 +63,53 @@ const CashRegisterContextComponent: React.FC<
     }
   }, []);
 
-  const fetchTransactions = useCallback(async (date?: string) => {
-    setIsLoadingTransactions(true);
+  const fetchDailyTotals = useCallback(async (date?: string) => {
+    setIsLoadingDailyTotals(true);
     try {
       const params = new URLSearchParams();
-      params.append("date", date || new Date().toISOString().split('T')[0]);
-      const url = `${API_URL}/transactions?${params.toString()}`;
+      params.append("date", date || new Date().toISOString().split("T")[0]);
+      const url = `${API_URL}/transactions/summary?${params.toString()}`;
       const response = await fetch(url);
       if (!response.ok) {
-        toast.error(`Error al obtener transacciones: ${response.status}`);
+        toast.error(`Error al obtener totales diarios: ${response.status}`);
         throw new Error(`HTTP Error: ${response.status}`);
       }
-      const data = (await response.json()) as CashRegisterTransaction[];
-      setTransactions(data);
+      const data = (await response.json()) as CashRegisterDailyTotals;
+      setDailyTotals({
+        inTotal: data?.inTotal ?? 0,
+        outTotal: data?.outTotal ?? 0,
+      });
     } catch (error) {
       // Error already handled
     } finally {
-      setIsLoadingTransactions(false);
+      setIsLoadingDailyTotals(false);
     }
   }, []);
+
+  const fetchTransactions = useCallback(
+    async (date?: string) => {
+      setIsLoadingTransactions(true);
+      try {
+        const params = new URLSearchParams();
+        params.append("date", date || new Date().toISOString().split("T")[0]);
+        const url = `${API_URL}/transactions?${params.toString()}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          toast.error(`Error al obtener transacciones: ${response.status}`);
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        const data = (await response.json()) as CashRegisterTransaction[];
+        setTransactions(data);
+        // after obtaining transactions we also refresh the daily totals for the same date
+        await fetchDailyTotals(date);
+      } catch (error) {
+        // Error already handled
+      } finally {
+        setIsLoadingTransactions(false);
+      }
+    },
+    [fetchDailyTotals],
+  );
 
   const addCash = useCallback(
     async (amount: number, description?: string) => {
@@ -259,7 +295,8 @@ const CashRegisterContextComponent: React.FC<
 
       if (!paymentMethod) return;
 
-      const registerType: CashRegisterType = paymentMethod === "CASH" ? "PAPER" : "DIGITAL";
+      const registerType: CashRegisterType =
+        paymentMethod === "CASH" ? "PAPER" : "DIGITAL";
 
       try {
         const dto: CreateCashRegisterTransactionDTO = {
@@ -309,7 +346,9 @@ const CashRegisterContextComponent: React.FC<
 
   useEffect(() => {
     fetchCurrentAmounts();
-  }, [fetchCurrentAmounts]);
+    // load today's totals on mount as well
+    fetchDailyTotals();
+  }, [fetchCurrentAmounts, fetchDailyTotals]);
 
   const exportData: CashRegisterContextType = useMemo(
     () => ({
@@ -320,10 +359,13 @@ const CashRegisterContextComponent: React.FC<
       isLoadingTransactions,
       selectedType,
       setSelectedType,
+      dailyTotals,
+      isLoadingDailyTotals,
       fetchCurrentAmounts,
       addCash,
       removeCash,
       fetchTransactions,
+      fetchDailyTotals,
       updateTransaction,
       deleteTransaction,
       applyInvoiceStatusChange,
@@ -336,10 +378,13 @@ const CashRegisterContextComponent: React.FC<
       isLoadingTransactions,
       selectedType,
       setSelectedType,
+      dailyTotals,
+      isLoadingDailyTotals,
       fetchCurrentAmounts,
       addCash,
       removeCash,
       fetchTransactions,
+      fetchDailyTotals,
       updateTransaction,
       deleteTransaction,
       applyInvoiceStatusChange,

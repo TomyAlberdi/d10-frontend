@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { formatPrice } from "@/lib/utils";
+import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -25,19 +26,30 @@ const TRANSACTION_ROW_CLASSES: Record<string, string> = {
 };
 
 const CashRegisterOverview = () => {
-  const { paperAmount, digitalAmount, isLoadingAmount, fetchCurrentAmounts, transactions, isLoadingTransactions, fetchTransactions } =
-    useCashRegisterContext();
+  const {
+    paperAmount,
+    digitalAmount,
+    isLoadingAmount,
+    fetchCurrentAmounts,
+    transactions,
+    isLoadingTransactions,
+    fetchTransactions,
+    dailyTotals,
+    isLoadingDailyTotals,
+    fetchDailyTotals,
+  } = useCashRegisterContext();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    return today.toISOString().split("T")[0];
   });
 
   useEffect(() => {
     if (selectedDate) {
       fetchTransactions(selectedDate);
+      fetchDailyTotals(selectedDate);
     }
-  }, [selectedDate, fetchTransactions]);
+  }, [selectedDate, fetchTransactions, fetchDailyTotals]);
 
   return (
     <div className="h-full flex flex-col gap-6">
@@ -53,7 +65,9 @@ const CashRegisterOverview = () => {
 
           <div className="space-y-4">
             <div className="flex items-baseline gap-3">
-              <span className="text-muted-foreground text-lg">Caja Efectivo:</span>
+              <span className="text-muted-foreground text-lg">
+                Caja Efectivo:
+              </span>
               {isLoadingAmount ? (
                 <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
                   Cargando...
@@ -66,7 +80,9 @@ const CashRegisterOverview = () => {
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="text-muted-foreground text-lg">Caja Transferencia:</span>
+              <span className="text-muted-foreground text-lg">
+                Caja Transferencia:
+              </span>
               {isLoadingAmount ? (
                 <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
                   Cargando...
@@ -103,19 +119,37 @@ const CashRegisterOverview = () => {
             </p>
           </div>
 
-          <div className="max-w-sm">
-            <label
-              className="block text-sm font-medium mb-1"
-              htmlFor="transaction-date"
-            >
-              Fecha
-            </label>
-            <Input
-              id="transaction-date"
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
+          <div className="flex gap-5 items-end">
+            <div className="w-md">
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="transaction-date"
+              >
+                Fecha
+              </label>
+              <Input
+                id="transaction-date"
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-row items-center gap-3 mb-2">
+              {isLoadingDailyTotals ? (
+                <span className="text-muted-foreground">
+                  Cargando totales...
+                </span>
+              ) : (
+                <>
+                  <span className="flex gap-2">
+                    <BanknoteArrowUp color="green" /> $ {formatPrice(dailyTotals.inTotal)}
+                  </span>
+                  <span className="flex gap-2">
+                    <BanknoteArrowDown color="red" /> $ {formatPrice(dailyTotals.outTotal)}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto border rounded-md">
@@ -187,4 +221,3 @@ const CashRegisterOverview = () => {
 };
 
 export default CashRegisterOverview;
-

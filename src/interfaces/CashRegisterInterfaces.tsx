@@ -39,6 +39,11 @@ export interface CashRegisterStatusChangePayload {
   stockDecreasedInitially?: boolean;
 }
 
+export interface CashRegisterDailyTotals {
+  inTotal: number;
+  outTotal: number;
+}
+
 export interface CashRegisterContextType {
   /** Current amount of cash in the paper register. */
   paperAmount: number;
@@ -55,6 +60,14 @@ export interface CashRegisterContextType {
   /** Set selected type */
   setSelectedType: (type: CashRegisterType) => void;
   /**
+   * Totals for the currently selected date.
+   */
+  dailyTotals: CashRegisterDailyTotals;
+  /**
+   * Whether daily totals are being loaded.
+   */
+  isLoadingDailyTotals: boolean;
+  /**
    * Fetch the current amounts from the backend.
    */
   fetchCurrentAmounts: () => Promise<void>;
@@ -70,6 +83,10 @@ export interface CashRegisterContextType {
    * Fetch transactions, optionally filtered by date (ISO date string YYYY-MM-DD).
    */
   fetchTransactions: (date?: string) => Promise<void>;
+  /**
+   * Fetch aggregated in/out totals for a given date.
+   */
+  fetchDailyTotals: (date?: string) => Promise<void>;
   /**
    * Update an existing transaction.
    */
