@@ -1,7 +1,15 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
+import { formatPrice } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -31,45 +39,43 @@ const ProductStockList = () => {
   return (
     <div className="px-5 h-full flex flex-col gap-4">
       <h2 className="text-2xl font-bold">Productos en Stock</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {products.map((product) => (
-          <Card
-            key={product.id}
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/product/${product.id}`)}
-          >
-            <CardHeader>
-              <CardTitle className="text-lg">{product.name}</CardTitle>
-              <div className="flex gap-2">
-                <Badge variant="secondary">{product.code}</Badge>
-                <Badge variant={product.quality === "PRIMERA" ? "default" : "secondary"}>
-                  {product.quality}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Dimensiones:</span>
-                  <span className="text-sm">{product.dimensions}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Precio:</span>
-                  <span>${product.priceByMeasureUnit.toFixed(2)} X {product.measureType}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Stock:</span>
-                  <span className="font-bold text-green-600">
-                    {product.stock.quantity} {product.saleUnitType}
-                    {product.measureType !== product.saleUnitType && (
-                      <> ({(product.measurePerSaleUnit * product.stock.quantity).toFixed(2)} {product.measureType})</>
-                    )}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="bg-card p-2 rounded-xl">
+        <Table>
+          <TableHeader>
+            <TableRow className="sticky top-0 z-10 shadow-[0_1px_0_0_hsl(var(--border))]">
+              <TableHead className="w-1/12">Código</TableHead>
+              <TableHead className="w-1/12">Fabricante</TableHead>
+              <TableHead className="w-4/12">Nombre</TableHead>
+              <TableHead className="w-2/12">Stock</TableHead>
+              <TableHead className="w-2/12">Precio</TableHead>
+              <TableHead className="w-2/12">Dimensiones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((product) => (
+              <TableRow
+                key={product.id}
+                className="cursor-pointer"
+                onClick={() => navigate(`/product/${product.id}`)}
+              >
+                <TableCell>
+                  <Badge variant={"secondary"}>{product.code}</Badge>
+                </TableCell>
+                <TableCell>{product.providerName}</TableCell>
+                <TableCell>{product.name}</TableCell>
+                <TableCell>
+                  <Badge>{product.stock.quantity} {product.saleUnitType}</Badge>
+                </TableCell>
+                <TableCell>
+                  {product.priceBySaleUnit && (
+                    <>$ {formatPrice(product.priceBySaleUnit)}</>
+                  )}
+                </TableCell>
+                <TableCell>{product.dimensions}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
       {products.length === 0 && (
         <div className="text-center text-muted-foreground py-8">
