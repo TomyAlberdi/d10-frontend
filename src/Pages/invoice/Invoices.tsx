@@ -202,11 +202,12 @@ const Invoices = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))] py-4">
-                    <TableHead className="w-2/12 bg-card">Número</TableHead>
-                    <TableHead className="w-2/12 bg-card">Fecha</TableHead>
+                    <TableHead className="w-1/12 bg-card">Número</TableHead>
+                    <TableHead className="w-1/12 bg-card">Fecha</TableHead>
                     <TableHead className="w-3/12 bg-card">Cliente</TableHead>
                     <TableHead className="w-2/12 bg-card">Estado</TableHead>
-                    <TableHead className="w-3/12 bg-card">Total</TableHead>
+                    <TableHead className="w-2/12 bg-card">Total</TableHead>
+                    <TableHead className="w-2/12 bg-card">Pago Restante</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -247,7 +248,7 @@ const Invoices = () => {
                       onClick={() => navigate(`/invoice/${invoice.id}`)}
                       className={`cursor-pointer py-4`}
                     >
-                      <TableCell>{invoice.invoiceNumber ?? "-"}</TableCell>
+                      <TableCell># {invoice.invoiceNumber ?? "-"}</TableCell>
                       <TableCell>{invoice.date}</TableCell>
                       <TableCell>{invoice.client.name}</TableCell>
                       <TableCell
@@ -257,6 +258,14 @@ const Invoices = () => {
                       </TableCell>
                       <TableCell className="font-medium">
                         $ {formatPrice(invoice.total)}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        ${" "}
+                        {invoice.status === "PENDIENTE"
+                          ? formatPrice(
+                              invoice.total - (invoice.partialPayment ?? 0),
+                            )
+                          : "-"}
                       </TableCell>
                     </TableRow>
                   ))}
