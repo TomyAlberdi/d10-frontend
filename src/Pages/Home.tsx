@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { isBackendReachable } from "@/lib/utils";
-import { FileText, Package, ShoppingCart, Users, Wallet } from "lucide-react";
+import {
+  FileText,
+  Package,
+  ShoppingCart,
+  Users,
+  Wallet,
+  Warehouse,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -60,10 +67,16 @@ const Home = () => {
             Carrito
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 col-span-2">
+        <Button size="lg" asChild className="h-25 w-64">
           <Link to="/cash-register" className="flex items-center gap-3 text-xl">
             <Wallet className="big-icon" />
             Caja
+          </Link>
+        </Button>
+        <Button size="lg" asChild className="h-25 w-64">
+          <Link to="/warehouse" className="flex items-center gap-3 text-xl">
+            <Warehouse className="big-icon" />
+            Depósito
           </Link>
         </Button>
       </div>

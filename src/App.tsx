@@ -27,6 +27,7 @@ import Products from "./Pages/product/Products";
 import ProductStockList from "./Pages/product/ProductStockList";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
+import Warehouse from "./Pages/warehouse/Warehouse";
 
 const DESKTOP_MIN_WIDTH = 1024;
 
@@ -112,6 +113,7 @@ export function App() {
                       element={<CashRegisterInvoiceTransaction />}
                     />
                   </Route>
+                  <Route path="/warehouse" element={<Warehouse />} />
                 </Routes>
               </CashRegisterContextComponent>
             </InvoiceContextComponent>
