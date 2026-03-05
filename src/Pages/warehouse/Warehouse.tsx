@@ -1,9 +1,12 @@
 import FloatingGenericMenu from "@/components/FloatingGenericMenu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useWarehouseContext } from "@/contexts/warehouse/UseWarehouseContext";
 import WarehouseMenu from "@/Pages/warehouse/WarehouseMenu";
 import { useState } from "react";
-import Cell from "./Cell";
+import WarehouseCell from "./WarehouseCell";
 
 const Warehouse = () => {
+  const { Warehouse, isLoading } = useWarehouseContext();
   const [CurrentLevel, setCurrentLevel] = useState(0);
 
   const handleLevelUp = () => {
@@ -30,21 +33,15 @@ const Warehouse = () => {
       </section>
       <section className="w-7/8 h-screen p-3 pl-0">
         <div className="bg-card rounded h-full grid grid-rows-10 grid-cols-20">
-          {Array.from({ length: 10 }).map((_, rowIdx) => {
-            const rowLabel = String.fromCharCode(65 + rowIdx); // A, B, C...
-            return Array.from({ length: 20 }).map((_, colIdx) => {
-              const colLabel = (colIdx + 1).toString();
-              return (
-                <Cell
-                  key={`${rowLabel}${colLabel}`}
-                  row={rowIdx}
-                  col={colIdx}
-                  rowLabel={rowLabel}
-                  colLabel={colLabel}
-                />
-              );
-            });
-          })}
+          {isLoading ? (
+            <Skeleton className="col-span-full row-span-full" />
+          ) : (
+            Warehouse?.cells.map((cell, index) => {
+              if (cell.level === CurrentLevel) {
+                return <WarehouseCell key={index} cellData={cell} />;
+              }
+            })
+          )}
         </div>
       </section>
     </div>
