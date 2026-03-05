@@ -5,7 +5,7 @@ export interface WarehouseContextType {
   Warehouse: Warehouse | null;
   isLoading: boolean;
   fetchWarehouse: () => Promise<void>;
-  updateCell: (dto: Cell) => Promise<Cell>;
+  updateCell: (cell: Cell) => Promise<Cell | undefined>;
 }
 
 export const WarehouseContext = createContext<WarehouseContextType | null>(
