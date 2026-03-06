@@ -13,7 +13,6 @@ export interface CellItemDTO {
 export interface Cell {
   row: number;
   column: number;
-  level: number;
   items: CellItem[];
 }
 

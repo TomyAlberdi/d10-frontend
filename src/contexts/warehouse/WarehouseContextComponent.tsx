@@ -40,18 +40,27 @@ const WarehouseContextComponent: React.FC<WarehouseContextComponentProps> = ({
   const updateCell = async (cell: Cell) => {
     setIsLoading(true);
     try {
+      const dto = {
+        row: cell.row,
+        column: cell.column,
+        items: cell.items.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
+      };
       const response = await fetch(`${API_URL}/cell`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(cell),
+        body: JSON.stringify(dto),
       });
       if (!response.ok) {
         toast.error(`Error al actualizar el depósito: ${response.status}`);
         throw new Error(`HTTP Error: ${response.status}`);
       }
       const data = (await response.json()) as Cell;
+      fetchWarehouse();
       return data;
     } catch (error) {
       // Error already handled

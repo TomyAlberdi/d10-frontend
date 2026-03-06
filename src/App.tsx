@@ -30,6 +30,8 @@ import ProductStockList from "./Pages/product/ProductStockList";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
 import Warehouse from "./Pages/warehouse/Warehouse";
+import WarehouseCellAssign from "./Pages/warehouse/WarehouseCellAssign";
+import WarehouseGrid from "./Pages/warehouse/WarehouseGrid";
 
 const DESKTOP_MIN_WIDTH = 1024;
 
@@ -120,7 +122,13 @@ export function App() {
                           element={<CashRegisterInvoiceTransaction />}
                         />
                       </Route>
-                      <Route path="/warehouse" element={<Warehouse />} />
+                      <Route path="/warehouse" element={<Warehouse />}>
+                        <Route index element={<WarehouseGrid />} />
+                        <Route
+                          path="cell/:row/:column"
+                          element={<WarehouseCellAssign />}
+                        />
+                      </Route>
                     </Routes>
                   </WarehouseContextComponent>
                 </CashRegisterContextComponent>

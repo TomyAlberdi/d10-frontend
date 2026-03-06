@@ -4,8 +4,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Cell } from "@/interfaces/WarehouseInterfaces";
+import { useNavigate } from "react-router-dom";
 
 const WarehouseCell = ({ cellData }: { cellData: Cell }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/warehouse/cell/${cellData.row}/${cellData.column}`);
+  };
   if (
     (cellData.row === 9 && cellData.column === 0) ||
     (cellData.row === 0 &&
@@ -20,9 +26,12 @@ const WarehouseCell = ({ cellData }: { cellData: Cell }) => {
 
   if (cellData.items.length === 0) {
     return (
-      <div className="flex items-center justify-center border border-gray-800 text-gray-800 select-none cursor-pointer hover:bg-muted hover:text-white hover:border-gray-200">
+      <div
+        className="flex items-center justify-center border border-gray-800 text-gray-800 select-none cursor-pointer hover:bg-muted hover:text-white hover:border-gray-200"
+        onClick={handleClick}
+      >
         <span className="text-xs font-medium">
-          {`${cellData.level}${cellData.row}${cellData.column}`}
+          {`${cellData.row}${cellData.column}`}
         </span>
       </div>
     );
@@ -30,14 +39,23 @@ const WarehouseCell = ({ cellData }: { cellData: Cell }) => {
 
   return (
     <Tooltip>
-      <TooltipTrigger className="flex items-center justify-center border border-gray-200 select-none cursor-pointer hover:bg-muted text-white">
+      <TooltipTrigger
+        className="flex items-center justify-center border border-gray-200 select-none cursor-pointer hover:bg-muted text-white"
+        onClick={handleClick}
+      >
         <div>
           <span className="text-xs font-medium">
-            {`${cellData.level}${cellData.row}${cellData.column}`}
+            {`${cellData.row}${cellData.column}`}
           </span>
         </div>
       </TooltipTrigger>
-      <TooltipContent>prueba</TooltipContent>
+      <TooltipContent>
+        {cellData.items.map((item, index) => (
+          <div key={index}>
+            {item.product.name}: {item.quantity}
+          </div>
+        ))}
+      </TooltipContent>
     </Tooltip>
   );
 };
