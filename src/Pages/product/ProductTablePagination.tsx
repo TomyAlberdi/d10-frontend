@@ -111,7 +111,7 @@ const ProductTablePagination = ({
                 selectedProduct?.id === product.id ? "selected" : undefined
               }
               onClick={() => onSelectProduct(product)}
-              className="cursor-pointer"
+              className={`cursor-pointer ${product.discontinued && "bg-rose-950/20"}`}
             >
               <TableCell>{product.code}</TableCell>
               <TableCell>{product.providerName}</TableCell>
