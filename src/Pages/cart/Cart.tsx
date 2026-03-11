@@ -40,6 +40,7 @@ const Cart = () => {
     cart,
     setDiscount,
     setCartStatus,
+    setCartNotes,
     setPaymentMethod,
     removeProduct,
     clearCart,
@@ -74,6 +75,7 @@ const Cart = () => {
         status: cart.status,
         discount: cart.discount,
         total: cart.total,
+        notes: cart.notes,
         partialPayment,
         paymentMethod: cart.paymentMethod,
       });
@@ -291,6 +293,18 @@ const Cart = () => {
                 <SelectItem value="DIGITAL">Transferencia</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Notas (opcional)
+            </label>
+            <textarea
+              className="w-full border rounded-md px-3 py-2"
+              rows={3}
+              value={cart.notes || ""}
+              onChange={(e) => setCartNotes(e.target.value)}
+              placeholder="Agregar comentarios o instrucciones"
+            />
           </div>
           <Button
             onClick={handleCreateInvoice}

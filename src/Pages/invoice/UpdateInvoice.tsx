@@ -1,26 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type {
-  CreateInvoiceDTO,
-  Invoice,
-  InvoiceStatus,
+    CreateInvoiceDTO,
+    Invoice,
+    InvoiceStatus,
 } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { FileText, Trash2 } from "lucide-react";
@@ -84,6 +84,7 @@ const UpdateInvoice = () => {
             status: inv.status,
             discount: inv.discount,
             total: inv.total,
+            notes: inv.notes,
             partialPayment: inv.partialPayment,
             paymentMethod: inv.paymentMethod,
           });
@@ -137,6 +138,7 @@ const UpdateInvoice = () => {
         status,
         discount,
         total,
+        notes: invoice.notes,
         partialPayment,
         paymentMethod,
       });
@@ -338,6 +340,22 @@ const UpdateInvoice = () => {
                 <SelectItem value="DIGITAL">Transferencia</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground block mb-2">
+              Notas (opcional)
+            </label>
+            <textarea
+              className="w-full border rounded-md px-3 py-2"
+              rows={3}
+              value={invoice?.notes || ""}
+              onChange={(e) =>
+                setInvoice((prev) =>
+                  prev ? { ...prev, notes: e.target.value } : prev,
+                )
+              }
+              placeholder="Agregar comentarios o instrucciones"
+            />
           </div>
           <Button
             onClick={handleUpdateInvoice}

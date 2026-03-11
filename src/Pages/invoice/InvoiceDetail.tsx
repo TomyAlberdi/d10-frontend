@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
@@ -146,6 +146,12 @@ const InvoiceDetail = () => {
                   </p>
                 </div>
               </div>
+              {invoice.notes && (
+                <Card className="p-4 mt-4">
+                  <h2 className="font-semibold mb-2">Notas</h2>
+                  <p>{invoice.notes}</p>
+                </Card>
+              )}
 
               <Card className="p-4">
                 <h2 className="font-semibold mb-2">Cliente</h2>

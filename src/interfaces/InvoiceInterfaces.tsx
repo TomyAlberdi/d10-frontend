@@ -16,6 +16,7 @@ export interface CreateInvoiceDTO {
   status: InvoiceStatus;
   discount: number;
   total: number;
+  notes?: string; // optional annotation for invoice notes
   partialPayment?: number;
   paymentMethod?: PaymentMethod;
 }
