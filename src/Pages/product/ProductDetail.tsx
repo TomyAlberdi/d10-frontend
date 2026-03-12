@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { ArrowLeft, Package, ShoppingCart } from "lucide-react";
+import {
+  ArrowLeft,
+  Package,
+  PackagePlus,
+  PencilLine,
+  Route,
+  RouteOff,
+  ShoppingCart,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -13,7 +21,7 @@ import { toast } from "sonner";
 const ProductDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { getProductById } = useProductContext();
+  const { getProductById, updateProductDiscontinued } = useProductContext();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +63,9 @@ const ProductDetail = () => {
     return (
       <div className="p-6">
         <div className="flex flex-col items-center justify-center h-64 gap-4">
-          <div className="text-lg text-destructive">{error || "Producto no encontrado"}</div>
+          <div className="text-lg text-destructive">
+            {error || "Producto no encontrado"}
+          </div>
           <Button onClick={() => navigate("/product")} variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Volver a productos
@@ -113,24 +123,36 @@ const ProductDetail = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4">
                 <div className="flex justify-between items-center">
-                  <label className="text-sm font-medium text-muted-foreground">Código</label>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Código
+                  </label>
                   <span className="text-lg font-semibold">{product.code}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <label className="text-sm font-medium text-muted-foreground">Calidad</label>
-                  <Badge variant={product.quality === "PRIMERA" ? "default" : "secondary"}>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Calidad
+                  </label>
+                  <Badge
+                    variant={
+                      product.quality === "PRIMERA" ? "default" : "secondary"
+                    }
+                  >
                     {product.quality === "PRIMERA" ? "1RA" : "2DA"}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <label className="text-sm font-medium text-muted-foreground">Proveedor</label>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Proveedor
+                  </label>
                   <span className="text-sm">{product.providerName}</span>
                 </div>
               </div>
 
               {product.description && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground block mb-2">Descripción</label>
+                  <label className="text-sm font-medium text-muted-foreground block mb-2">
+                    Descripción
+                  </label>
                   <p className="text-sm">{product.description}</p>
                 </div>
               )}
@@ -139,7 +161,7 @@ const ProductDetail = () => {
 
           {/* Actions */}
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="flex flex-col gap-3">
               <Button
                 onClick={() => navigate(`/product/add/${product.id}`)}
                 className="w-full"
@@ -147,6 +169,41 @@ const ProductDetail = () => {
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
                 Añadir al Carrito
+              </Button>
+              <Button
+                onClick={() => navigate(`/product/${product.id}/update`)}
+                className="w-full"
+                size="lg"
+              >
+                <PencilLine className="w-4 h-4 mr-2" />
+                Editar
+              </Button>
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={() => navigate(`/product/${product.id}/stock`)}
+              >
+                <PackagePlus />
+                Actualizar stock
+              </Button>
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={() => {
+                  updateProductDiscontinued(product.id, !product.discontinued);
+                }}
+              >
+                {product.discontinued ? (
+                  <>
+                    <Route />
+                    Reactivar
+                  </>
+                ) : (
+                  <>
+                    <RouteOff />
+                    Discontinuar
+                  </>
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -164,32 +221,49 @@ const ProductDetail = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Tipo de Medida</label>
-                    <p className="text-lg font-semibold">{product.measureType}</p>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Tipo de Medida
+                    </label>
+                    <p className="text-lg font-semibold">
+                      {product.measureType}
+                    </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Tipo de Venta</label>
-                    <p className="text-lg font-semibold">{product.saleUnitType}</p>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Tipo de Venta
+                    </label>
+                    <p className="text-lg font-semibold">
+                      {product.saleUnitType}
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Precio por Medida</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Precio por Medida
+                    </label>
                     <p className="text-2xl font-bold text-green-600">
-                      $ {formatPrice(product.priceByMeasureUnit)} / {product.measureType}
+                      $ {formatPrice(product.priceByMeasureUnit)} /{" "}
+                      {product.measureType}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Precio por Unidad de Venta</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Precio por Unidad de Venta
+                    </label>
                     <p className="text-xl font-semibold">
-                      $ {formatPrice(product.priceBySaleUnit)} / {product.saleUnitType}
+                      $ {formatPrice(product.priceBySaleUnit)} /{" "}
+                      {product.saleUnitType}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Medida por Unidad de Venta</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Medida por Unidad de Venta
+                    </label>
                     <p className="text-lg">
-                      {product.measurePerSaleUnit} {product.measureType} por {product.saleUnitType}
+                      {product.measurePerSaleUnit} {product.measureType} por{" "}
+                      {product.saleUnitType}
                     </p>
                   </div>
                 </div>
@@ -204,34 +278,51 @@ const ProductDetail = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Cantidad en Stock</label>
-                    <p className={`text-2xl font-bold ${product.stock.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Cantidad en Stock
+                    </label>
+                    <p
+                      className={`text-2xl font-bold ${product.stock.quantity > 0 ? "text-green-600" : "text-red-600"}`}
+                    >
                       {product.stock.quantity} {product.saleUnitType}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Equivalente en Medida</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Equivalente en Medida
+                    </label>
                     <p className="text-lg">
-                      {product.stock.measureUnitEquivalent.toFixed(2)} {product.measureType}
+                      {product.stock.measureUnitEquivalent.toFixed(2)}{" "}
+                      {product.measureType}
                     </p>
                   </div>
                 </div>
 
-                {product.stock.recordList && product.stock.recordList.length > 0 && (
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Historial de Movimientos</label>
-                    <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
-                      {product.stock.recordList.slice(-5).map((record, index) => (
-                        <div key={index} className="flex justify-between items-center p-2 bg-secondary rounded text-sm">
-                          <span className={`font-medium ${record.type === 'IN' ? 'text-green-600' : 'text-red-600'}`}>
-                            {record.type === 'IN' ? 'Entrada' : 'Salida'}
-                          </span>
-                          <span>{record.quantity} unidades</span>
-                        </div>
-                      ))}
+                {product.stock.recordList &&
+                  product.stock.recordList.length > 0 && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Historial de Movimientos
+                      </label>
+                      <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
+                        {product.stock.recordList
+                          .slice(-5)
+                          .map((record, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-center p-2 bg-secondary rounded text-sm"
+                            >
+                              <span
+                                className={`font-medium ${record.type === "IN" ? "text-green-600" : "text-red-600"}`}
+                              >
+                                {record.type === "IN" ? "Entrada" : "Salida"}
+                              </span>
+                              <span>{record.quantity} unidades</span>
+                            </div>
+                          ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </CardContent>
             </Card>
           </div>
@@ -246,16 +337,28 @@ const ProductDetail = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div className="flex justify-between items-center">
-                    <label className="text-sm font-medium text-muted-foreground">Categoría</label>
-                    <span className="text-lg font-semibold">{product.category}</span>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Categoría
+                    </label>
+                    <span className="text-lg font-semibold text-right">
+                      {product.category}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <label className="text-sm font-medium text-muted-foreground">Subcategoría</label>
-                    <span className="text-lg font-semibold">{product.subcategory}</span>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Subcategoría
+                    </label>
+                    <span className="text-lg font-semibold">
+                      {product.subcategory}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <label className="text-sm font-medium text-muted-foreground">Dimensiones</label>
-                    <span className="text-lg font-semibold">{product.dimensions}</span>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Dimensiones
+                    </label>
+                    <span className="text-lg font-semibold">
+                      {product.dimensions}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -270,8 +373,13 @@ const ProductDetail = () => {
                 <CardContent>
                   <div className="grid grid-cols-1 gap-3">
                     {product.characteristics.map((char, index) => (
-                      <div key={index} className="flex justify-between items-center p-3 border rounded">
-                        <span className="font-medium text-muted-foreground">{char.key}</span>
+                      <div
+                        key={index}
+                        className="flex justify-between items-center p-3 border rounded"
+                      >
+                        <span className="font-medium text-muted-foreground">
+                          {char.key}
+                        </span>
                         <span className="font-semibold">{char.value}</span>
                       </div>
                     ))}
