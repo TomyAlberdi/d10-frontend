@@ -1,8 +1,8 @@
 import type {
-  CreateProduct,
-  PaginatedResult,
-  Product,
-  ProductStockRecord,
+    CreateProduct,
+    PaginatedResult,
+    Product,
+    ProductStockRecord,
 } from "@/interfaces/ProductInterfaces";
 import { createContext } from "react";
 
@@ -10,6 +10,10 @@ export interface ProductContextType {
   getProductById: (id: string) => Promise<Product | null>;
   listProducts: (
     query: string | null,
+    page: number | null,
+    size: number | null,
+  ) => Promise<PaginatedResult<Product>>;
+  listDiscontinuedProducts: (
     page: number | null,
     size: number | null,
   ) => Promise<PaginatedResult<Product>>;

@@ -21,6 +21,7 @@ import Home from "./Pages/Home";
 import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
 import Invoices from "./Pages/invoice/Invoices";
 import UpdateInvoice from "./Pages/invoice/UpdateInvoice";
+import DiscontinuedProductList from "./Pages/product/DiscontinuedProductList";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
 import ProductDetail from "./Pages/product/ProductDetail";
@@ -100,6 +101,10 @@ export function App() {
                           element={<UpdateProductStock />}
                         />
                         <Route path="stock" element={<ProductStockList />} />
+                        <Route
+                          path="discontinued"
+                          element={<DiscontinuedProductList />}
+                        />
                       </Route>
                       <Route path="/client" element={<Clients />}>
                         <Route index element={<ClientsList />} />

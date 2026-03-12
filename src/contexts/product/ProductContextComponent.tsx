@@ -1,8 +1,8 @@
 import type {
-  CreateProduct,
-  PaginatedResult,
-  Product,
-  ProductStockRecord,
+    CreateProduct,
+    PaginatedResult,
+    Product,
+    ProductStockRecord,
 } from "@/interfaces/ProductInterfaces";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
@@ -40,6 +40,25 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     if (size !== null) params.append("size", size.toString());
 
     const url = params.toString() ? `${API_URL}?${params.toString()}` : API_URL;
+    const response = await fetch(url);
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as PaginatedResult<Product>;
+  };
+
+  const listDiscontinuedProducts = async (
+    page: number | null,
+    size: number | null,
+  ) => {
+    const params = new URLSearchParams();
+    if (page !== null) params.append("page", page.toString());
+    if (size !== null) params.append("size", size.toString());
+
+    const url = params.toString()
+      ? `${API_URL}/discontinued?${params.toString()}`
+      : `${API_URL}/discontinued`;
     const response = await fetch(url);
     if (!response.ok) {
       toast.error(`Error: ${response.status}`);
@@ -155,6 +174,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
   const exportData: ProductContextType = {
     getProductById,
     listProducts,
+    listDiscontinuedProducts,
     getProductsWithStock,
     createProduct,
     updateProduct,
