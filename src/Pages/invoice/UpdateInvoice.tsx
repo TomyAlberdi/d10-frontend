@@ -37,9 +37,9 @@ const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "CANCELADO", label: "Cancelado" },
 ];
 
-const LOCKED_STATUSES: InvoiceStatus[] = ["CANCELADO", "ENVIADO", "ENTREGADO"];
+/* const LOCKED_STATUSES: InvoiceStatus[] = ["CANCELADO", "ENVIADO", "ENTREGADO"]; */
 
-function isStatusOptionDisabled(
+/* function isStatusOptionDisabled(
   optionValue: InvoiceStatus,
   currentStatus: InvoiceStatus,
 ): boolean {
@@ -50,7 +50,7 @@ function isStatusOptionDisabled(
     return optionValue === "PENDIENTE" || optionValue === "CANCELADO";
   }
   return false;
-}
+} */
 
 function computeTotal(products: CartProduct[], discount: number): number {
   const subtotalSum = products.reduce((sum, p) => sum + p.subtotal, 0);
