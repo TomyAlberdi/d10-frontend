@@ -19,11 +19,11 @@ export interface CreateInvoiceDTO {
   notes?: string; // optional annotation for invoice notes
   partialPayment?: number;
   paymentMethod?: PaymentMethod;
+  stockDecreased?: boolean;
 }
 
 export interface Invoice extends CreateInvoiceDTO {
   id: string;
   invoiceNumber?: string;
   date?: string;
-  stockDecreased?: boolean;
 }

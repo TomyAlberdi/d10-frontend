@@ -1,26 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type {
-    CreateInvoiceDTO,
-    Invoice,
-    InvoiceStatus,
+  CreateInvoiceDTO,
+  Invoice,
+  InvoiceStatus,
 } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { FileText, Trash2 } from "lucide-react";
@@ -66,9 +67,17 @@ const UpdateInvoice = () => {
   const [paymentMethod, setPaymentMethod] = useState<
     "CASH" | "DIGITAL" | undefined
   >(undefined);
+  const [stockDecreased, setStockDecreased] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [initialInvoice, setInitialInvoice] = useState<Invoice | null>(null);
+
+  // Auto-check stockDecreased when status is "ENTREGADO"
+  useEffect(() => {
+    if (status === "ENTREGADO" && !stockDecreased) {
+      setStockDecreased(true);
+    }
+  }, [status, stockDecreased]);
 
   useEffect(() => {
     if (!id) return;
@@ -87,10 +96,12 @@ const UpdateInvoice = () => {
             notes: inv.notes,
             partialPayment: inv.partialPayment,
             paymentMethod: inv.paymentMethod,
+            stockDecreased: inv.stockDecreased,
           });
           setDiscount(inv.discount);
           setStatus(inv.status);
           setPaymentMethod(inv.paymentMethod || "CASH");
+          setStockDecreased(inv.stockDecreased || false);
         }
       })
       .finally(() => {
@@ -141,12 +152,15 @@ const UpdateInvoice = () => {
         notes: invoice.notes,
         partialPayment,
         paymentMethod,
+        stockDecreased,
       });
       toast.success("Factura actualizada correctamente");
 
       // Check if we need to register cash transaction
       if (["PAGO", "ENVIADO", "ENTREGADO"].includes(status)) {
-        navigate("/cash-register/invoice-transaction", { state: { invoice: updatedInvoice } });
+        navigate("/cash-register/invoice-transaction", {
+          state: { invoice: updatedInvoice },
+        });
       } else {
         navigate("/invoice");
       }
@@ -311,16 +325,26 @@ const UpdateInvoice = () => {
               </SelectTrigger>
               <SelectContent>
                 {INVOICE_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem
-                    key={opt.value}
-                    value={opt.value}
-                    disabled={isStatusOptionDisabled(opt.value, status)}
-                  >
+                  <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={stockDecreased}
+              onCheckedChange={setStockDecreased}
+              disabled={initialInvoice?.stockDecreased === true}
+              id="stock-decreased"
+            />
+            <label
+              htmlFor="stock-decreased"
+              className="text-sm font-medium text-muted-foreground cursor-pointer"
+            >
+              Descontar stock de los productos
+            </label>
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">

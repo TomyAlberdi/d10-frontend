@@ -12,7 +12,7 @@ import {
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { Search } from "lucide-react";
+import { Check, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -205,9 +205,12 @@ const Invoices = () => {
                     <TableHead className="w-1/12 bg-card">Número</TableHead>
                     <TableHead className="w-1/12 bg-card">Fecha</TableHead>
                     <TableHead className="w-3/12 bg-card">Cliente</TableHead>
-                    <TableHead className="w-2/12 bg-card">Estado</TableHead>
+                    <TableHead className="w-1/12 bg-card">Estado</TableHead>
                     <TableHead className="w-2/12 bg-card">Total</TableHead>
-                    <TableHead className="w-2/12 bg-card">Pago Restante</TableHead>
+                    <TableHead className="w-2/12 bg-card">
+                      Pago Restante
+                    </TableHead>
+                    <TableHead className="w-1/12 bg-card">Retirado</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -266,6 +269,9 @@ const Invoices = () => {
                               invoice.total - (invoice.partialPayment ?? 0),
                             )
                           : "-"}
+                      </TableCell>
+                      <TableCell className="font-medium flex justify-center items-center">
+                        {invoice.stockDecreased ? <Check color="green" /> : <X color="red" />}
                       </TableCell>
                     </TableRow>
                   ))}

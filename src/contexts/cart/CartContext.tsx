@@ -9,6 +9,7 @@ export interface CartContextType {
   setCartStatus: (status: InvoiceStatus) => void;
   setPaymentMethod: (paymentMethod: PaymentMethod | undefined) => void;
   setCartNotes: (notes: string | undefined) => void;
+  setStockDecreased: (stockDecreased: boolean) => void;
   addProduct: (product: CartProduct) => void;
   removeProduct: (productId: string) => void;
   setDiscount: (discount: number) => void;

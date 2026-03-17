@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -21,7 +22,7 @@ import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { FileText, PackagePlus, Trash2, UserPlus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -42,12 +43,20 @@ const Cart = () => {
     setCartStatus,
     setCartNotes,
     setPaymentMethod,
+    setStockDecreased,
     removeProduct,
     clearCart,
   } = useCartContext();
   const { createInvoice } = useInvoiceContext();
   const [isCreating, setIsCreating] = useState(false);
   const [partialPayment, setpartialPayment] = useState(0);
+
+  // Auto-check stockDecreased when status is "ENTREGADO"
+  useEffect(() => {
+    if (cart.status === "ENTREGADO") {
+      setStockDecreased(true);
+    }
+  }, [cart.status, setStockDecreased]);
 
   const hasClient = cart.client.id.length > 0;
   const subtotalSum = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
@@ -78,6 +87,7 @@ const Cart = () => {
         notes: cart.notes,
         partialPayment,
         paymentMethod: cart.paymentMethod,
+        stockDecreased: cart.stockDecreased,
       });
       flushSync(() => {
         clearCart();
@@ -274,6 +284,19 @@ const Cart = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={cart.stockDecreased || false}
+              onCheckedChange={setStockDecreased}
+              id="stock-decreased"
+            />
+            <label
+              htmlFor="stock-decreased"
+              className="text-sm font-medium text-muted-foreground cursor-pointer"
+            >
+              Descontar stock de los productos
+            </label>
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">

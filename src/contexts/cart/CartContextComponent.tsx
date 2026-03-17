@@ -1,9 +1,9 @@
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Client } from "@/interfaces/ClientInterfaces";
 import type {
-    Invoice,
-    InvoiceStatus,
-    PaymentMethod,
+  Invoice,
+  InvoiceStatus,
+  PaymentMethod,
 } from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -35,6 +35,7 @@ const initialCart: Invoice = {
   total: 0,
   notes: undefined,
   paymentMethod: undefined,
+  stockDecreased: false,
 };
 
 const VALID_STATUSES: InvoiceStatus[] = [
@@ -64,6 +65,7 @@ function loadCartFromStorage(): Invoice {
       total: Number.isFinite(total) ? total : 0,
       notes: typeof parsed.notes === "string" ? parsed.notes : undefined,
       paymentMethod: parsed.paymentMethod,
+      stockDecreased: typeof parsed.stockDecreased === "boolean" ? parsed.stockDecreased : false,
     };
   } catch {
     return initialCart;
@@ -109,6 +111,13 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
     },
     [],
   );
+
+  const setStockDecreased = useCallback((stockDecreased: boolean) => {
+    setCart((prev) => ({
+      ...prev,
+      stockDecreased,
+    }));
+  }, []);
 
   const addProduct = useCallback((product: CartProduct) => {
     setCart((prev) => {
@@ -169,6 +178,7 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
       setCartStatus,
       setPaymentMethod,
       setCartNotes,
+      setStockDecreased,
       addProduct,
       removeProduct,
       setDiscount,
@@ -180,6 +190,7 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
       setCartStatus,
       setPaymentMethod,
       setCartNotes,
+      setStockDecreased,
       addProduct,
       removeProduct,
       setDiscount,
