@@ -36,7 +36,11 @@ const STATUS_ROW_CLASSES: Record<string, string> = {
 
 const Invoices = () => {
   const navigate = useNavigate();
-  const { searchInvoices, getRecentInvoices } = useInvoiceContext();
+  const {
+    searchInvoices,
+    getRecentInvoices,
+    getInvoicesWithStockNotDecreased,
+  } = useInvoiceContext();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,6 +51,7 @@ const Invoices = () => {
   const [selectedStatus, setSelectedStatus] = useState<
     Invoice["status"] | null
   >(null);
+  const [showStockNotDecreased, setShowStockNotDecreased] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
 
   const hasQuery = searchQuery.trim().length > 0;
@@ -65,20 +70,38 @@ const Invoices = () => {
 
   useEffect(() => {
     let cancelled = false;
-    getRecentInvoices(selectedStatus || undefined)
-      .then((result) => {
-        if (!cancelled) {
-          setRecentInvoices(result);
-          setSelectedInvoice(result[0] ?? null);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoadingRecent(false);
-      });
+    if (showStockNotDecreased) {
+      getInvoicesWithStockNotDecreased()
+        .then((result) => {
+          if (!cancelled) {
+            setRecentInvoices(result);
+            setSelectedInvoice(result[0] ?? null);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setIsLoadingRecent(false);
+        });
+    } else {
+      getRecentInvoices(selectedStatus || undefined)
+        .then((result) => {
+          if (!cancelled) {
+            setRecentInvoices(result);
+            setSelectedInvoice(result[0] ?? null);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setIsLoadingRecent(false);
+        });
+    }
     return () => {
       cancelled = true;
     };
-  }, [getRecentInvoices, selectedStatus]);
+  }, [
+    getRecentInvoices,
+    getInvoicesWithStockNotDecreased,
+    selectedStatus,
+    showStockNotDecreased,
+  ]);
 
   useEffect(() => {
     if (!hasQuery) return;
@@ -151,6 +174,19 @@ const Invoices = () => {
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
+                checked={showStockNotDecreased}
+                onChange={() =>
+                  setShowStockNotDecreased(!showStockNotDecreased)
+                }
+                className="w-4 h-4"
+              />
+              <span className="text-sm">Sin retirar</span>
+            </label>
+          </div>
+          <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
                 checked={selectedStatus === null}
                 onChange={() => setSelectedStatus(null)}
                 className="w-4 h-4"
@@ -169,6 +205,7 @@ const Invoices = () => {
                     setSelectedStatus(status as Invoice["status"])
                   }
                   className="w-4 h-4"
+                  disabled={showStockNotDecreased}
                 />
                 <span className="text-sm">{label}</span>
               </label>
@@ -271,7 +308,11 @@ const Invoices = () => {
                           : "-"}
                       </TableCell>
                       <TableCell className="font-medium flex justify-center items-center">
-                        {invoice.stockDecreased ? <Check color="green" /> : <X color="red" />}
+                        {invoice.stockDecreased ? (
+                          <Check color="green" />
+                        ) : (
+                          <X color="red" />
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
