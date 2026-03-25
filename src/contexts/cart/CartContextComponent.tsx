@@ -16,19 +16,19 @@ function computeTotal(products: CartProduct[], discount: number): number {
   return Math.max(0, subtotalSum - discount);
 }
 
-const placeholderClient: Client = {
-  id: "",
+const defaultConsumerClient: Client = {
+  id: "6988aaa7a52552790b2cc5ab",
   type: "CONSUMIDOR_FINAL",
-  name: "",
-  address: null,
-  phone: null,
-  email: null,
-  cuitDni: "",
+  name: "consumidor final",
+  address: "",
+  phone: "",
+  email: "",
+  cuitDni: "0",
 };
 
 const initialCart: Invoice = {
   id: "",
-  client: placeholderClient,
+  client: defaultConsumerClient,
   products: [],
   status: "PENDIENTE",
   discount: 0,
@@ -56,7 +56,7 @@ function loadCartFromStorage(): Invoice {
     const total = Number(parsed.total);
     return {
       id: parsed.id ?? "",
-      client: parsed.client ?? placeholderClient,
+      client: parsed.client ?? defaultConsumerClient,
       products: Array.isArray(parsed.products) ? parsed.products : [],
       status: VALID_STATUSES.includes(parsed.status as InvoiceStatus)
         ? (parsed.status as InvoiceStatus)
