@@ -56,7 +56,7 @@ export const generatePDF = (invoice: Invoice | null) => {
       `${product.saleUnitQuantity} ${product.saleUnitType}`,
       product.name,
       `$ ${product.priceByMeasureUnit} / ${product.measureType}`,
-      `${!product.individualDiscount ? "N/A" : `${product.individualDiscount} %`}`,
+      `${!product.individualDiscount ? "N/A" : `$ ${product.individualDiscount}`}`,
       `$ ${product.subtotal}`,
     ];
     rowData.forEach((text, index) => {
