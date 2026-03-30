@@ -1,14 +1,14 @@
-import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useProductContext } from "@/contexts/product/UseProductContext";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
+import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 
 const ProductAddToCart = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -67,6 +67,7 @@ const ProductAddToCart = () => {
       measureUnitQuantity,
       saleUnitType: product.saleUnitType,
       priceBySaleUnit: product.priceBySaleUnit,
+      dimensions: product.dimensions,
       saleUnitQuantity: qty,
       individualDiscount,
       subtotal,
@@ -77,9 +78,9 @@ const ProductAddToCart = () => {
       addProduct(cartProduct);
       toast("Producto añadido al carrito", {
         action: {
-          "label": "Ver carrito",
-          "onClick": () => navigate("/cart"),
-        }
+          label: "Ver carrito",
+          onClick: () => navigate("/cart"),
+        },
       });
       navigate("/product");
     } finally {
@@ -125,11 +126,15 @@ const ProductAddToCart = () => {
 
       <div className="mb-6 p-4 rounded-lg border bg-muted/50 space-y-1">
         <p className="text-sm">
-          <span className="text-muted-foreground">Precio por {product.saleUnitType}:</span>{" "}
+          <span className="text-muted-foreground">
+            Precio por {product.saleUnitType}:
+          </span>{" "}
           $ {formatPrice(product.priceBySaleUnit)}
         </p>
         <p className="text-sm">
-          <span className="text-muted-foreground">Medida por {product.saleUnitType}:</span>{" "}
+          <span className="text-muted-foreground">
+            Medida por {product.saleUnitType}:
+          </span>{" "}
           {product.measurePerSaleUnit} {product.measureType}
         </p>
       </div>

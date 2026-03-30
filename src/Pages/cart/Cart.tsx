@@ -2,20 +2,20 @@ import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
@@ -92,7 +92,7 @@ const Cart = () => {
       flushSync(() => {
         clearCart();
       });
-      toast.success("Factura creada correctamente");
+      toast.success("venta creada correctamente");
 
       // Check if we need to register cash transaction
       if (["PAGO", "ENVIADO", "ENTREGADO"].includes(cart.status)) {
@@ -220,7 +220,7 @@ const Cart = () => {
 
       {/* Card 3: Discount, total, create invoice */}
       <Card className="p-4">
-        <h2 className="text-lg font-semibold mb-3">Total y factura</h2>
+        <h2 className="text-lg font-semibold mb-3">Total y venta</h2>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
@@ -267,7 +267,7 @@ const Cart = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Estado de la factura
+              Estado de la venta
             </label>
             <Select
               value={cart.status}
@@ -334,11 +334,11 @@ const Cart = () => {
             disabled={!canCreateInvoice || isCreating}
           >
             <FileText className="size-4 mr-1" />
-            {isCreating ? "Creando factura…" : "Crear factura"}
+            {isCreating ? "Creando venta…" : "Crear venta"}
           </Button>
           {!hasClient && cart.products.length > 0 && (
             <p className="text-sm text-muted-foreground">
-              Selecciona un cliente para poder crear la factura.
+              Selecciona un cliente para poder crear la venta.
             </p>
           )}
         </div>

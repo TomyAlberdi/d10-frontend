@@ -44,6 +44,43 @@ export interface CashRegisterDailyTotals {
   outTotal: number;
 }
 
+export interface CashRegisterTransactionPageResponse {
+  content: CashRegisterTransaction[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  last: boolean;
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
+
+export interface PaginatedTransactionsState {
+  transactions: CashRegisterTransaction[];
+  currentPage: number;
+  totalPages: number;
+  totalElements: number;
+  isLoading: boolean;
+}
+
 export interface CashRegisterContextType {
   /** Current amount of cash in the paper register. */
   paperAmount: number;
@@ -108,4 +145,36 @@ export interface CashRegisterContextType {
   applyInvoiceStatusChange: (
     payload: CashRegisterStatusChangePayload,
   ) => Promise<void>;
+  /**
+   * Paginated transactions list.
+   */
+  paginatedTransactions: CashRegisterTransaction[];
+  /**
+   * Current page in paginated view.
+   */
+  paginatedCurrentPage: number;
+  /**
+   * Total pages available.
+   */
+  paginatedTotalPages: number;
+  /**
+   * Total elements available.
+   */
+  paginatedTotalElements: number;
+  /**
+   * Whether paginated transactions are being loaded.
+   */
+  isPaginatedLoading: boolean;
+  /**
+   * Fetch paginated transactions without date filtering.
+   * Appends to existing transactions list.
+   */
+  fetchTransactionsPaginated: (
+    page?: number,
+    type?: CashRegisterType,
+  ) => Promise<void>;
+  /**
+   * Reset paginated transactions state.
+   */
+  resetPaginatedTransactions: () => void;
 }

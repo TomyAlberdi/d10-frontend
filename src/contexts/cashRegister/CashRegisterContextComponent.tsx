@@ -4,6 +4,7 @@ import type {
   CashRegisterDTO,
   CashRegisterStatusChangePayload,
   CashRegisterTransaction,
+  CashRegisterTransactionPageResponse,
   CashRegisterType,
   CreateCashRegisterTransactionDTO,
 } from "@/interfaces/CashRegisterInterfaces";
@@ -40,6 +41,15 @@ const CashRegisterContextComponent: React.FC<
   });
   const [isLoadingDailyTotals, setIsLoadingDailyTotals] =
     useState<boolean>(false);
+
+  const [paginatedTransactions, setPaginatedTransactions] = useState<
+    CashRegisterTransaction[]
+  >([]);
+  const [paginatedCurrentPage, setPaginatedCurrentPage] = useState<number>(0);
+  const [paginatedTotalPages, setPaginatedTotalPages] = useState<number>(0);
+  const [paginatedTotalElements, setPaginatedTotalElements] =
+    useState<number>(0);
+  const [isPaginatedLoading, setIsPaginatedLoading] = useState<boolean>(false);
 
   const fetchCurrentAmounts = useCallback(async () => {
     setIsLoadingAmount(true);
@@ -332,7 +342,7 @@ const CashRegisterContextComponent: React.FC<
           }
           toast.error(
             message ??
-              `Error al registrar pago de factura en caja: ${response.status}`,
+              `Error al registrar pago de venta en caja: ${response.status}`,
           );
           throw new Error(`HTTP Error: ${response.status}`);
         }
@@ -343,6 +353,49 @@ const CashRegisterContextComponent: React.FC<
     },
     [fetchCurrentAmounts],
   );
+
+  const fetchTransactionsPaginated = useCallback(
+    async (page: number = 0, type?: CashRegisterType) => {
+      setIsPaginatedLoading(true);
+      try {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("size", "50");
+        if (type) {
+          params.append("type", type);
+        }
+        const url = `${API_URL}/transactions/paginated?${params.toString()}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          toast.error(
+            `Error al obtener transacciones paginadas: ${response.status}`,
+          );
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        const data =
+          (await response.json()) as CashRegisterTransactionPageResponse;
+        setPaginatedTransactions((prev) => [
+          ...prev,
+          ...data.content,
+        ]);
+        setPaginatedCurrentPage(data.number);
+        setPaginatedTotalPages(data.totalPages);
+        setPaginatedTotalElements(data.totalElements);
+      } catch (error) {
+        // Error already handled
+      } finally {
+        setIsPaginatedLoading(false);
+      }
+    },
+    [],
+  );
+
+  const resetPaginatedTransactions = useCallback(() => {
+    setPaginatedTransactions([]);
+    setPaginatedCurrentPage(0);
+    setPaginatedTotalPages(0);
+    setPaginatedTotalElements(0);
+  }, []);
 
   useEffect(() => {
     fetchCurrentAmounts();
@@ -369,6 +422,13 @@ const CashRegisterContextComponent: React.FC<
       updateTransaction,
       deleteTransaction,
       applyInvoiceStatusChange,
+      paginatedTransactions,
+      paginatedCurrentPage,
+      paginatedTotalPages,
+      paginatedTotalElements,
+      isPaginatedLoading,
+      fetchTransactionsPaginated,
+      resetPaginatedTransactions,
     }),
     [
       paperAmount,
@@ -388,6 +448,13 @@ const CashRegisterContextComponent: React.FC<
       updateTransaction,
       deleteTransaction,
       applyInvoiceStatusChange,
+      paginatedTransactions,
+      paginatedCurrentPage,
+      paginatedTotalPages,
+      paginatedTotalElements,
+      isPaginatedLoading,
+      fetchTransactionsPaginated,
+      resetPaginatedTransactions,
     ],
   );
 

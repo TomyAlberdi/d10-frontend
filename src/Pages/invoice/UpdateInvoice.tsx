@@ -1,27 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type {
-  CreateInvoiceDTO,
-  Invoice,
-  InvoiceStatus,
+    CreateInvoiceDTO,
+    Invoice,
+    InvoiceStatus,
 } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { FileText, Trash2 } from "lucide-react";
@@ -154,7 +154,7 @@ const UpdateInvoice = () => {
         paymentMethod,
         stockDecreased,
       });
-      toast.success("Factura actualizada correctamente");
+      toast.success("venta actualizada correctamente");
 
       // Check if we need to register cash transaction
       if (["PAGO", "ENVIADO", "ENTREGADO"].includes(status)) {
@@ -174,7 +174,7 @@ const UpdateInvoice = () => {
   if (isLoading) {
     return (
       <div className="p-6 max-w-5xl mx-auto">
-        <p className="text-muted-foreground">Cargando factura…</p>
+        <p className="text-muted-foreground">Cargando venta…</p>
       </div>
     );
   }
@@ -182,9 +182,9 @@ const UpdateInvoice = () => {
   if (!id || !invoice) {
     return (
       <div className="p-6 max-w-5xl mx-auto">
-        <p className="text-muted-foreground">Factura no encontrada</p>
+        <p className="text-muted-foreground">venta no encontrada</p>
         <Button variant="outline" onClick={() => navigate("/invoice")}>
-          Volver a facturas
+          Volver a ventas
         </Button>
       </div>
     );
@@ -194,7 +194,7 @@ const UpdateInvoice = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Editar factura #{id}</h1>
+      <h1 className="text-2xl font-bold">Editar venta #{id}</h1>
 
       {/* Card 1: Client */}
       <Card className="p-4">
@@ -213,7 +213,7 @@ const UpdateInvoice = () => {
         <h2 className="text-lg font-semibold mb-3">Productos</h2>
         {!hasProducts ? (
           <p className="text-muted-foreground text-sm py-4">
-            No hay productos en esta factura
+            No hay productos en esta venta
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -251,7 +251,7 @@ const UpdateInvoice = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleRemoveProduct(p.id)}
-                        aria-label="Quitar de la factura"
+                        aria-label="Quitar de la venta"
                       >
                         <Trash2 className="size-4 text-destructive" />
                       </Button>
@@ -266,7 +266,7 @@ const UpdateInvoice = () => {
 
       {/* Card 3: Discount, total, update invoice */}
       <Card className="p-4">
-        <h2 className="text-lg font-semibold mb-3">Total y factura</h2>
+        <h2 className="text-lg font-semibold mb-3">Total y venta</h2>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
@@ -317,7 +317,7 @@ const UpdateInvoice = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Estado de la factura
+              Estado de la venta
             </label>
             <Select value={status} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-full max-w-xs">
@@ -386,7 +386,7 @@ const UpdateInvoice = () => {
             disabled={!hasProducts || isUpdating}
           >
             <FileText className="size-4 mr-1" />
-            {isUpdating ? "Actualizando factura…" : "Actualizar factura"}
+            {isUpdating ? "Actualizando venta…" : "Actualizar venta"}
           </Button>
         </div>
       </Card>

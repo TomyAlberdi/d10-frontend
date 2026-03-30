@@ -22,14 +22,14 @@ const CashRegisterInvoiceTransaction = () => {
 
   useEffect(() => {
     if (!invoice) {
-      toast.error("No se encontró la factura");
+      toast.error("No se encontró la venta");
       navigate("/invoice");
       return;
     }
 
     // Pre-fill values
     setAmount(invoice.total.toString());
-    setDescription(`Factura #${invoice.invoiceNumber || invoice.id}`);
+    setDescription(`venta #${invoice.invoiceNumber || invoice.id}`);
     const initialType = invoice.paymentMethod === "DIGITAL" ? "DIGITAL" : "PAPER";
     setRegisterTypeState(initialType);
     setSelectedType(initialType);
@@ -48,7 +48,7 @@ const CashRegisterInvoiceTransaction = () => {
     if (!isValidAmount || !invoice) return;
     setIsProcessing(true);
     try {
-      await addCash(parsedAmount, description || `Factura #${invoice.invoiceNumber || invoice.id}`);
+      await addCash(parsedAmount, description || `venta #${invoice.invoiceNumber || invoice.id}`);
       toast.success("Transacción registrada correctamente");
       navigate("/invoice");
     } catch {
@@ -75,7 +75,7 @@ const CashRegisterInvoiceTransaction = () => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Factura
+              venta
             </label>
             <p className="text-sm text-muted-foreground">
               #{invoice.invoiceNumber || invoice.id} - {invoice.client.name}

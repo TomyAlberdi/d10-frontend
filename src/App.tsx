@@ -13,6 +13,7 @@ import CashRegister from "./Pages/cashRegister/CashRegister";
 import CashRegisterAdjust from "./Pages/cashRegister/CashRegisterAdjust";
 import CashRegisterInvoiceTransaction from "./Pages/cashRegister/CashRegisterInvoiceTransaction";
 import CashRegisterOverview from "./Pages/cashRegister/CashRegisterOverview";
+import CashRegisterTransactionsPaginated from "./Pages/cashRegister/CashRegisterTransactionsPaginated";
 import ClientCreate from "./Pages/client/ClientCreate";
 import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
@@ -122,6 +123,7 @@ export function App() {
                       <Route path="/cash-register" element={<CashRegister />}>
                         <Route index element={<CashRegisterOverview />} />
                         <Route path="adjust" element={<CashRegisterAdjust />} />
+                        <Route path="transactions" element={<CashRegisterTransactionsPaginated />} />
                         <Route
                           path="invoice-transaction"
                           element={<CashRegisterInvoiceTransaction />}

@@ -48,7 +48,7 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
   if (!invoice) {
     return (
       <Card className="h-2/6 p-4 flex items-center justify-center">
-        <p className="text-muted-foreground">No hay factura seleccionada</p>
+        <p className="text-muted-foreground">No hay venta seleccionada</p>
       </Card>
     );
   }
@@ -64,7 +64,7 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
     <Card className="overflow-hidden flex flex-col gap-1 p-2">
       <div className="col-span-2 flex items-center py-1">
         <span className="text-xl font-bold ml-1">
-          Factura #{invoice.invoiceNumber ?? invoice.id}
+          venta #{invoice.invoiceNumber ?? invoice.id}
         </span>
       </div>
       <div className="py-1 flex items-center gap-3 border-2 px-2">

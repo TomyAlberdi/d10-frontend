@@ -101,7 +101,7 @@ const InvoiceDetail = () => {
             </Button>
             {invoice && (
               <Button onClick={() => navigate(`/invoice/${invoice.id}/update`)}>
-                Editar factura
+                Editar venta
               </Button>
             )}
           </div>
@@ -109,19 +109,19 @@ const InvoiceDetail = () => {
 
         <Card className="p-6 flex flex-col gap-4">
           {isLoading && (
-            <p className="text-muted-foreground">Cargando factura…</p>
+            <p className="text-muted-foreground">Cargando venta…</p>
           )}
 
           {!isLoading && !invoice && (
             <p className="text-muted-foreground">
-              No se encontró la factura solicitada.
+              No se encontró la venta solicitada.
             </p>
           )}
 
           {!isLoading && invoice && (
             <>
               <h1 className="text-2xl font-bold">
-                Detalle de factura #{invoice.invoiceNumber ?? invoice.id}
+                Detalle de venta #{invoice.invoiceNumber ?? invoice.id}
               </h1>
 
               <div className="grid grid-cols-3 gap-3">
@@ -248,7 +248,7 @@ const InvoiceDetail = () => {
                   </p>
                 </div>
                 <div className="border rounded-md p-3">
-                  <p className="text-sm text-muted-foreground">Total factura</p>
+                  <p className="text-sm text-muted-foreground">Total venta</p>
                   <p className="text-lg font-bold">
                     $ {formatPrice(invoice.total)}
                   </p>

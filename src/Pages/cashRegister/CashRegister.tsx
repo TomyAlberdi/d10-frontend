@@ -1,6 +1,6 @@
 import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
-import { CirclePlus, Wallet } from "lucide-react";
+import { CirclePlus, List, Wallet } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const CashRegister = () => {
@@ -16,6 +16,13 @@ const CashRegister = () => {
         >
           <Wallet className="medium-icon" />
           Resumen
+        </Button>
+        <Button
+          onClick={() => navigate("/cash-register/transactions")}
+          className="text-md h-16"
+        >
+          <List className="medium-icon" />
+          Transacciones
         </Button>
         <Button
           onClick={() => navigate("/cash-register/adjust")}

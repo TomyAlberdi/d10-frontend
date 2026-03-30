@@ -225,11 +225,11 @@ const Invoices = () => {
               <Search className="size-4 text-muted-foreground shrink-0" />
               <Input
                 type="search"
-                placeholder="Buscar facturas por cliente, ID..."
+                placeholder="Buscar ventas por cliente, ID..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="flex-1"
-                aria-label="Buscar facturas"
+                aria-label="Buscar ventas"
               />
               {isSearching && (
                 <span className="text-sm text-muted-foreground">Buscando…</span>
@@ -260,8 +260,8 @@ const Invoices = () => {
                           className="text-center text-muted-foreground py-8"
                         >
                           {hasQuery
-                            ? "No se encontraron facturas"
-                            : "No hay facturas recientes"}
+                            ? "No se encontraron ventas"
+                            : "No hay ventas recientes"}
                         </TableCell>
                       </TableRow>
                     )}
@@ -273,7 +273,7 @@ const Invoices = () => {
                           colSpan={5}
                           className="text-center text-muted-foreground py-8"
                         >
-                          Cargando facturas recientes…
+                          Cargando ventas recientes…
                         </TableCell>
                       </TableRow>
                     )}

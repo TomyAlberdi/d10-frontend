@@ -57,7 +57,7 @@ const Home = () => {
         <Button size="lg" asChild className="h-25 w-64">
           <Link to="/invoice" className="flex items-center gap-3 text-xl">
             <FileText className="big-icon" />
-            Presupuestos
+            Ventas
           </Link>
         </Button>
         <Button size="lg" asChild className="h-25 w-64">

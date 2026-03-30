@@ -9,4 +9,5 @@ export interface CartProduct {
   saleUnitQuantity: number;
   individualDiscount: number;
   subtotal: number;
+  dimensions: string;
 }
