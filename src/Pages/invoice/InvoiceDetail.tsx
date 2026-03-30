@@ -196,9 +196,8 @@ const InvoiceDetail = () => {
                       <TableHead>Tipo medida</TableHead>
                       <TableHead>Precio por medida</TableHead>
                       <TableHead>Cantidad medida</TableHead>
-                      <TableHead>Tipo venta</TableHead>
-                      <TableHead>Precio venta</TableHead>
-                      <TableHead>Cantidad venta</TableHead>
+                      <TableHead>Precio unidad</TableHead>
+                      <TableHead>Cantidad unidad</TableHead>
                       <TableHead>Descuento</TableHead>
                       <TableHead>Subtotal</TableHead>
                     </TableRow>
@@ -216,8 +215,7 @@ const InvoiceDetail = () => {
                         <TableCell>
                           $ {formatPrice(product.priceByMeasureUnit)}
                         </TableCell>
-                        <TableCell>{product.measureUnitQuantity}</TableCell>
-                        <TableCell>{product.saleUnitType}</TableCell>
+                        <TableCell>{formatPrice(product.measureUnitQuantity)}</TableCell>
                         <TableCell>
                           $ {formatPrice(product.priceBySaleUnit)}
                         </TableCell>
