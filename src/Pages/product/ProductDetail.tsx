@@ -7,6 +7,7 @@ import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
 import {
   ArrowLeft,
+  FileText,
   Package,
   PackagePlus,
   PencilLine,
@@ -204,6 +205,15 @@ const ProductDetail = () => {
                     Discontinuar
                   </>
                 )}
+              </Button>
+              <Button
+                onClick={() => navigate(`/invoices-by-product/${product.id}`)}
+                className="w-full"
+                size="lg"
+                variant="outline"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Ver Ventas
               </Button>
             </CardContent>
           </Card>

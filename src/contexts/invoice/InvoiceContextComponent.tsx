@@ -1,7 +1,7 @@
 import type {
-    CreateInvoiceDTO,
-    Invoice,
-    InvoiceStatus,
+  CreateInvoiceDTO,
+  Invoice,
+  InvoiceStatus,
 } from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
@@ -160,6 +160,15 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     }
   };
 
+  const getInvoicesByProductId = async (productId: string): Promise<Invoice[]> => {
+    const response = await fetch(`${API_URL}/product/${productId}`);
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as Invoice[];
+  };
+
   const exportData: InvoiceContextType = {
     createInvoice,
     getInvoiceById,
@@ -169,6 +178,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     getRecentInvoices,
     getInvoicesWithStockNotDecreased,
     updateInvoiceStatus,
+    getInvoicesByProductId,
   };
 
   return (

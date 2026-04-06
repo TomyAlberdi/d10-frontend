@@ -14,6 +14,7 @@ export interface InvoiceContextType {
   getRecentInvoices: (status?: InvoiceStatus) => Promise<Invoice[]>;
   getInvoicesWithStockNotDecreased: () => Promise<Invoice[]>;
   updateInvoiceStatus: (id: string, status: InvoiceStatus) => Promise<void>;
+  getInvoicesByProductId: (productId: string) => Promise<Invoice[]>;
 }
 
 export const InvoiceContext = createContext<InvoiceContextType | null>(null);

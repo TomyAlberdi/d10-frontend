@@ -21,6 +21,7 @@ import ClientUpdate from "./Pages/client/ClientUpdate";
 import Home from "./Pages/Home";
 import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
 import Invoices from "./Pages/invoice/Invoices";
+import InvoicesByProduct from "./Pages/invoice/InvoicesByProduct";
 import UpdateInvoice from "./Pages/invoice/UpdateInvoice";
 import DiscontinuedProductList from "./Pages/product/DiscontinuedProductList";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
@@ -119,6 +120,10 @@ export function App() {
                       <Route
                         path="/invoice/:id/update"
                         element={<UpdateInvoice />}
+                      />
+                      <Route
+                        path="/invoices-by-product/:productId"
+                        element={<InvoicesByProduct />}
                       />
                       <Route path="/cash-register" element={<CashRegister />}>
                         <Route index element={<CashRegisterOverview />} />
