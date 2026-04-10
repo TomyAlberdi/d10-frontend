@@ -15,7 +15,7 @@ const Clients = () => {
           className="text-lg h-16 min-w-min"
         >
           <ListOrdered className="medium-icon" />
-          Listar
+          Lista
         </Button>
         <Button
           onClick={() => navigate("/client/create")}

@@ -15,21 +15,21 @@ const Products = () => {
           className="text-lg h-16 min-w-min"
         >
           <ListOrdered className="medium-icon" />
-          Listar
+          Lista
         </Button>
         <Button
           onClick={() => navigate("/product/stock")}
           className="text-lg h-16 min-w-min"
         >
           <Package className="medium-icon" />
-          Listar Stock
+          Stock
         </Button>
         <Button
           onClick={() => navigate("/product/discontinued")}
           className="text-md h-16 min-w-min"
         >
           <XCircle className="medium-icon" />
-          Discontinuados
+          Eliminados
         </Button>
         <Button
           onClick={() => navigate("/product/create")}

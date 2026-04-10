@@ -18,6 +18,7 @@ import ClientCreate from "./Pages/client/ClientCreate";
 import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
+import Data from "./Pages/data/Data";
 import Home from "./Pages/Home";
 import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
 import Invoices from "./Pages/invoice/Invoices";
@@ -134,6 +135,7 @@ export function App() {
                           element={<CashRegisterInvoiceTransaction />}
                         />
                       </Route>
+                      <Route path="/data" element={<Data />} />
                       <Route path="/warehouse" element={<Warehouse />}>
                         <Route index element={<WarehouseGrid />} />
                         <Route

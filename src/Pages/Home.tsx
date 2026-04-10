@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { isBackendReachable } from "@/lib/utils";
 import {
+  ChartPie,
   FileText,
   Package,
   ShoppingCart,
@@ -70,6 +71,12 @@ const Home = () => {
           <Link to="/cash-register" className="flex items-center gap-3 text-xl">
             <Wallet className="big-icon" />
             Caja
+          </Link>
+        </Button>
+        <Button size="lg" asChild className="h-25 col-span-2">
+          <Link to="/data" className="flex items-center gap-3 text-xl">
+            <ChartPie className="big-icon" />
+            Análisis de Datos
           </Link>
         </Button>
 {/*         <Button size="lg" asChild className="h-25 w-64">
