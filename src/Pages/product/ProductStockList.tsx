@@ -15,11 +15,21 @@ import jsPDF from "jspdf";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const calculateM2Total = (products: Product[]): number => {
+  const total = products
+    .filter((product) => product.measureType === "M2")
+    .reduce((sum, product) => {
+      return sum + (product.measurePerSaleUnit * product.stock.quantity);
+    }, 0);
+  return Math.round(total * 100) / 100;
+};
+
 const ProductStockList = () => {
   const { getProductsWithStock } = useProductContext();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [m2Total, setM2Total] = useState(0);
 
   useEffect(() => {
     getProductsWithStock()
@@ -29,6 +39,10 @@ const ProductStockList = () => {
       })
       .finally(() => setLoading(false));
   }, [getProductsWithStock]);
+
+  useEffect(() => {
+    setM2Total(calculateM2Total(products));
+  }, [products]);
 
   const generateStockPDF = () => {
     const doc = new jsPDF();
@@ -42,7 +56,14 @@ const ProductStockList = () => {
     doc.setFont("helvetica", "normal");
     doc.text(`Fecha: ${today}`, 10, 30);
     // Table Headers
-    const headers = ["Código", "Fabricante", "Nombre", "Stock", "Precio", "Dimensiones"];
+    const headers = [
+      "Código",
+      "Fabricante",
+      "Nombre",
+      "Stock",
+      "Precio",
+      "Dimensiones",
+    ];
     const columnWidths = [15, 30, 60, 20, 25, 20];
     // Draw table
     let startY = 45;
@@ -67,12 +88,15 @@ const ProductStockList = () => {
         product.providerName || "N/A",
         product.name,
         `${product.stock.quantity} ${product.saleUnitType}`,
-        product.priceBySaleUnit ? `$ ${formatPrice(product.priceBySaleUnit)}` : "N/A",
+        product.priceBySaleUnit
+          ? `$ ${formatPrice(product.priceBySaleUnit)}`
+          : "N/A",
         product.dimensions || "N/A",
       ];
       doc.setFontSize(8);
       rowData.forEach((text, index) => {
-        const xPos = 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
+        const xPos =
+          10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
         const splitText = doc.splitTextToSize(text, columnWidths[index] - 2);
         doc.text(splitText, xPos, startY);
       });
@@ -102,19 +126,18 @@ const ProductStockList = () => {
   return (
     <div className="px-5 h-full flex flex-col gap-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Productos en Stock</h2>
+        <h2 className="text-2xl font-bold">Productos en Stock <span className="text-lg">(Superficie total: {m2Total} M2)</span></h2>
         <Button onClick={generateStockPDF}>Descargar stock</Button>
       </div>
       <div className="bg-card p-2 rounded-xl">
         <Table>
           <TableHeader>
             <TableRow className="sticky top-0 z-10 shadow-[0_1px_0_0_hsl(var(--border))]">
-              <TableHead className="w-1/12">Código</TableHead>
-              <TableHead className="w-1/12">Fabricante</TableHead>
+              <TableHead>Código</TableHead>
               <TableHead className="w-4/12">Nombre</TableHead>
-              <TableHead className="w-2/12">Stock</TableHead>
-              <TableHead className="w-2/12">Precio</TableHead>
-              <TableHead className="w-2/12">Dimensiones</TableHead>
+              <TableHead>Stock</TableHead>
+              <TableHead>Stock valorizado</TableHead>
+              <TableHead>Dimensiones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -127,14 +150,18 @@ const ProductStockList = () => {
                 <TableCell>
                   <Badge variant={"secondary"}>{product.code}</Badge>
                 </TableCell>
-                <TableCell>{product.providerName}</TableCell>
                 <TableCell>{product.name}</TableCell>
                 <TableCell>
-                  <Badge>{product.stock.quantity} {product.saleUnitType}</Badge>
+                  <Badge>
+                    {product.stock.quantity} {product.saleUnitType}{" "}
+                    {product.measureType !== product.saleUnitType &&
+                      `(${product.stock.measureUnitEquivalent.toFixed(2) + " " + product.measureType})`}
+                  </Badge>
                 </TableCell>
                 <TableCell>
-                  {product.priceBySaleUnit && (
-                    <>$ {formatPrice(product.priceBySaleUnit)}</>
+                  ${" "}
+                  {formatPrice(
+                    product.priceBySaleUnit * product.stock.quantity,
                   )}
                 </TableCell>
                 <TableCell>{product.dimensions}</TableCell>
