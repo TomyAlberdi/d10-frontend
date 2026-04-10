@@ -5,6 +5,7 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import CartContextComponent from "./contexts/cart/CartContextComponent";
 import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterContextComponent";
 import ClientContextComponent from "./contexts/client/ClientContextComponent";
+import DataContextComponent from "./contexts/data/DataContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
 import WarehouseContextComponent from "./contexts/warehouse/WarehouseContextComponent";
@@ -19,6 +20,7 @@ import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
 import Data from "./Pages/data/Data";
+import MainData from "./Pages/data/MainData";
 import Home from "./Pages/Home";
 import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
 import Invoices from "./Pages/invoice/Invoices";
@@ -88,62 +90,81 @@ export function App() {
               <InvoiceContextComponent>
                 <CashRegisterContextComponent>
                   <WarehouseContextComponent>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/product" element={<Products />}>
-                        <Route index element={<ProductList />} />
-                        <Route path="create" element={<ProductCreate />} />
+                    <DataContextComponent>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/product" element={<Products />}>
+                          <Route index element={<ProductList />} />
+                          <Route path="create" element={<ProductCreate />} />
+                          <Route
+                            path="add/:productId"
+                            element={<ProductAddToCart />}
+                          />
+                          <Route path=":id" element={<ProductDetail />} />
+                          <Route
+                            path=":id/update"
+                            element={<ProductUpdate />}
+                          />
+                          <Route
+                            path=":id/stock"
+                            element={<UpdateProductStock />}
+                          />
+                          <Route path="stock" element={<ProductStockList />} />
+                          <Route
+                            path="discontinued"
+                            element={<DiscontinuedProductList />}
+                          />
+                        </Route>
+                        <Route path="/client" element={<Clients />}>
+                          <Route index element={<ClientsList />} />
+                          <Route path="create" element={<ClientCreate />} />
+                          <Route path=":id/update" element={<ClientUpdate />} />
+                        </Route>
+                        <Route path="/cart" element={<Cart />} />
                         <Route
-                          path="add/:productId"
-                          element={<ProductAddToCart />}
+                          path="/client/create"
+                          element={<ClientCreate />}
                         />
-                        <Route path=":id" element={<ProductDetail />} />
-                        <Route path=":id/update" element={<ProductUpdate />} />
+                        <Route path="/invoice" element={<Invoices />} />
                         <Route
-                          path=":id/stock"
-                          element={<UpdateProductStock />}
+                          path="/invoice/:id"
+                          element={<InvoiceDetail />}
                         />
-                        <Route path="stock" element={<ProductStockList />} />
                         <Route
-                          path="discontinued"
-                          element={<DiscontinuedProductList />}
+                          path="/invoice/:id/update"
+                          element={<UpdateInvoice />}
                         />
-                      </Route>
-                      <Route path="/client" element={<Clients />}>
-                        <Route index element={<ClientsList />} />
-                        <Route path="create" element={<ClientCreate />} />
-                        <Route path=":id/update" element={<ClientUpdate />} />
-                      </Route>
-                      <Route path="/cart" element={<Cart />} />
-                      <Route path="/client/create" element={<ClientCreate />} />
-                      <Route path="/invoice" element={<Invoices />} />
-                      <Route path="/invoice/:id" element={<InvoiceDetail />} />
-                      <Route
-                        path="/invoice/:id/update"
-                        element={<UpdateInvoice />}
-                      />
-                      <Route
-                        path="/invoices-by-product/:productId"
-                        element={<InvoicesByProduct />}
-                      />
-                      <Route path="/cash-register" element={<CashRegister />}>
-                        <Route index element={<CashRegisterOverview />} />
-                        <Route path="adjust" element={<CashRegisterAdjust />} />
-                        <Route path="transactions" element={<CashRegisterTransactionsPaginated />} />
                         <Route
-                          path="invoice-transaction"
-                          element={<CashRegisterInvoiceTransaction />}
+                          path="/invoices-by-product/:productId"
+                          element={<InvoicesByProduct />}
                         />
-                      </Route>
-                      <Route path="/data" element={<Data />} />
-                      <Route path="/warehouse" element={<Warehouse />}>
-                        <Route index element={<WarehouseGrid />} />
-                        <Route
-                          path="cell/:row/:column"
-                          element={<WarehouseCellAssign />}
-                        />
-                      </Route>
-                    </Routes>
+                        <Route path="/cash-register" element={<CashRegister />}>
+                          <Route index element={<CashRegisterOverview />} />
+                          <Route
+                            path="adjust"
+                            element={<CashRegisterAdjust />}
+                          />
+                          <Route
+                            path="transactions"
+                            element={<CashRegisterTransactionsPaginated />}
+                          />
+                          <Route
+                            path="invoice-transaction"
+                            element={<CashRegisterInvoiceTransaction />}
+                          />
+                        </Route>
+                        <Route path="/data" element={<Data />}>
+                          <Route index element={<MainData />} />
+                        </Route>
+                        <Route path="/warehouse" element={<Warehouse />}>
+                          <Route index element={<WarehouseGrid />} />
+                          <Route
+                            path="cell/:row/:column"
+                            element={<WarehouseCellAssign />}
+                          />
+                        </Route>
+                      </Routes>
+                    </DataContextComponent>
                   </WarehouseContextComponent>
                 </CashRegisterContextComponent>
               </InvoiceContextComponent>

@@ -8,6 +8,7 @@ const Data = () => {
         <FloatingGenericMenu />
       </section>
       <section className="w-5/8 h-screen py-5">
+        <h1 className="text-3xl font-bold mb-3">Análisis de Datos</h1>
         <Outlet />
       </section>
     </div>

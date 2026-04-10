@@ -26,7 +26,7 @@ const Products = () => {
         </Button>
         <Button
           onClick={() => navigate("/product/discontinued")}
-          className="text-md h-16 min-w-min"
+          className="text-lg h-16 min-w-min"
         >
           <XCircle className="medium-icon" />
           Eliminados
