@@ -50,7 +50,7 @@ const MonthlySalesChart = () => {
       <Card className="w-3/4">
         <CardHeader>
           <CardTitle>Ingresos Mensuales</CardTitle>
-          <CardDescription>2026</CardDescription>
+          <CardDescription>{SelectedYear}</CardDescription>
         </CardHeader>
         <CardContent className="px-3">
           <ChartContainer config={chartConfig}>
