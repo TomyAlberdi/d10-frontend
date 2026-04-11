@@ -1,4 +1,10 @@
-import type { DataContextType, MonthlySummaryRecord } from "@/interfaces/DataInterfaces";
+import type {
+  BestSellingProductDTO,
+  DataContextType,
+  MonthlySummaryRecord,
+  SortByEnum,
+  TimeSpanEnum,
+} from "@/interfaces/DataInterfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { DataContext } from "./DataContext";
@@ -21,8 +27,20 @@ const DataContextComponent: React.FC<DataContextComponentProps> = ({
     return (await response.json()) as MonthlySummaryRecord[];
   };
 
+  const getBestSellingProducts = async (timeSpan: TimeSpanEnum, sortBy: SortByEnum) => {
+    const response = await fetch(
+      `${API_URL}/best-selling-products/${timeSpan}/${sortBy}`
+    );
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as BestSellingProductDTO[];
+  };
+
   const value: DataContextType = {
     getYearlySalesData,
+    getBestSellingProducts,
   };
 
   return (
