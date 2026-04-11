@@ -15,7 +15,6 @@ import {
 import { useDataContext } from "@/contexts/data/UseDataContext";
 import type { MonthlySummaryRecord } from "@/interfaces/DataInterfaces";
 import { getMonthName } from "@/lib/utils";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
@@ -46,7 +45,7 @@ const MonthlySalesChart = () => {
   }, [getYearlySalesData, fillData, SelectedYear]);
 
   return (
-    <div className="col-span-4 flex items-center gap-3">
+    <div className="col-span-4 flex gap-3">
       <Card className="w-3/4">
         <CardHeader>
           <CardTitle>Ingresos Mensuales</CardTitle>
@@ -83,26 +82,9 @@ const MonthlySalesChart = () => {
         </CardContent>
       </Card>
       <div className="flex flex-col items-center gap-3 w-1/4">
-        <h3 className="text-xl">Seleccionar Año</h3>
-        <Button
-          className="w-full"
-          variant="secondary"
-          disabled={SelectedYear === 2026}
-          onClick={() => {
-            setSelectedYear(SelectedYear + 1);
-          }}
-        >
-          <ChevronUp />
-        </Button>
-        <span className="text-3xl font-bold">{SelectedYear}</span>
-        <Button
-          className="w-full"
-          variant="secondary"
-          onClick={() => {
-            setSelectedYear(SelectedYear - 1);
-          }}
-        >
-          <ChevronDown />
+        <h3 className="text-xl font-semibold">Seleccionar Año</h3>
+        <Button className="w-full" variant={"secondary"} onClick={() => setSelectedYear(2026)}>
+          2026
         </Button>
       </div>
     </div>
