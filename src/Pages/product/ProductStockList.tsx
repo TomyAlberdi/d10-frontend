@@ -19,8 +19,15 @@ const calculateM2Total = (products: Product[]): number => {
   const total = products
     .filter((product) => product.measureType === "M2")
     .reduce((sum, product) => {
-      return sum + (product.measurePerSaleUnit * product.stock.quantity);
+      return sum + product.measurePerSaleUnit * product.stock.quantity;
     }, 0);
+  return Math.round(total * 100) / 100;
+};
+
+const calculateTotalValue = (products: Product[]): number => {
+  const total = products.reduce((sum, product) => {
+    return sum + product.priceBySaleUnit * product.stock.quantity;
+  }, 0);
   return Math.round(total * 100) / 100;
 };
 
@@ -30,6 +37,7 @@ const ProductStockList = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [m2Total, setM2Total] = useState(0);
+  const [totalValue, setTotalValue] = useState(0);
 
   useEffect(() => {
     getProductsWithStock()
@@ -42,6 +50,7 @@ const ProductStockList = () => {
 
   useEffect(() => {
     setM2Total(calculateM2Total(products));
+    setTotalValue(calculateTotalValue(products));
   }, [products]);
 
   const generateStockPDF = () => {
@@ -126,8 +135,14 @@ const ProductStockList = () => {
   return (
     <div className="px-5 h-full flex flex-col gap-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Productos en Stock <span className="text-lg">(Superficie total: {m2Total} M2)</span></h2>
+        <h2 className="text-2xl font-bold">Productos en Stock </h2>
         <Button onClick={generateStockPDF}>Descargar stock</Button>
+      </div>
+      <div className="flex flex-col gap-2 bg-card p-2 rounded-md w-fit">
+        <span className="text-lg">Superficie total: {m2Total} M2</span>
+        <span className="text-lg">
+          Valor total: $ {formatPrice(totalValue)}
+        </span>
       </div>
       <div className="bg-card p-2 rounded-xl">
         <Table>

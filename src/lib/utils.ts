@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import categoriesData from "./../Pages/product/categories.json";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -46,3 +47,7 @@ export async function isBackendReachable(): Promise<boolean> {
     return false;
   }
 }
+
+export const CATEGORIES = Object.keys(categoriesData) as string[];
+export const getSubcategories = (category: string): string[] =>
+  category ? (categoriesData as Record<string, string[]>)[category] ?? [] : [];

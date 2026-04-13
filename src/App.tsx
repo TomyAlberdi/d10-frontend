@@ -19,6 +19,7 @@ import ClientCreate from "./Pages/client/ClientCreate";
 import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
+import CategoryData from "./Pages/data/CategoryData";
 import Data from "./Pages/data/Data";
 import MainData from "./Pages/data/MainData";
 import Home from "./Pages/Home";
@@ -155,6 +156,7 @@ export function App() {
                         </Route>
                         <Route path="/data" element={<Data />}>
                           <Route index element={<MainData />} />
+                          <Route path="category" element={<CategoryData />} />
                         </Route>
                         <Route path="/warehouse" element={<Warehouse />}>
                           <Route index element={<WarehouseGrid />} />

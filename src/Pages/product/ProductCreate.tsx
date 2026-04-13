@@ -1,37 +1,33 @@
 import { Button } from "@/components/ui/button";
 import {
-    Field,
-    FieldGroup,
-    FieldLabel,
-    FieldSet,
-    FieldTitle,
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+  FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type {
-    CreateProduct,
-    ProductCharacteristic,
+  CreateProduct,
+  ProductCharacteristic,
 } from "@/interfaces/ProductInterfaces";
+import { CATEGORIES, getSubcategories } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import categoriesData from "./categories.json";
 import providersList from "./providers.json";
 
 const BASE_URL = import.meta.env.VITE_BASE_API_URL;
 const PROVIDERS = providersList as string[];
-
-const CATEGORIES = Object.keys(categoriesData) as string[];
-const getSubcategories = (category: string): string[] =>
-  category ? (categoriesData as Record<string, string[]>)[category] ?? [] : [];
 
 const QUALITY_OPTIONS: CreateProduct["quality"][] = ["PRIMERA", "SEGUNDA"];
 const MEASURE_TYPE_OPTIONS: CreateProduct["measureType"][] = [
@@ -75,9 +71,9 @@ const ProductCreate = () => {
   const [costBySaleUnit, setCostBySaleUnit] = useState<string>("");
   const [priceBySaleUnit, setPriceBySaleUnit] = useState<string>("");
   const [measurePerSaleUnit, setMeasurePerSaleUnit] = useState<string>("");
-  const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
-    initialCharacteristics
-  );
+  const [characteristics, setCharacteristics] = useState<
+    ProductCharacteristic[]
+  >(initialCharacteristics);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [uploadState, setUploadState] = useState({
@@ -107,7 +103,9 @@ const ProductCreate = () => {
     setUploadState((prev) => ({ ...prev, isUploading: true }));
     try {
       const uploadPromises = files.map(async (file) => {
-        const urlResponse = await fetch(`${BASE_URL}/img?fileName=${file.name}`);
+        const urlResponse = await fetch(
+          `${BASE_URL}/img?fileName=${file.name}`,
+        );
         if (!urlResponse.ok) {
           throw new Error(`Error obteniendo URL: ${urlResponse.status}`);
         }
@@ -158,12 +156,15 @@ const ProductCreate = () => {
   const updateCharacteristic = (
     index: number,
     field: "key" | "value",
-    value: string
+    value: string,
   ) => {
     setCharacteristics((prev) => {
       const next = [...prev];
       if (field === "key") {
-        next[index] = { ...next[index], key: value as ProductCharacteristic["key"] };
+        next[index] = {
+          ...next[index],
+          key: value as ProductCharacteristic["key"],
+        };
       } else {
         next[index] = { ...next[index], value };
       }
@@ -498,10 +499,7 @@ const ProductCreate = () => {
             <FieldGroup>
               <FieldTitle>Características</FieldTitle>
               {characteristics.map((c, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 items-end flex-wrap"
-                >
+                <div key={index} className="flex gap-2 items-end flex-wrap">
                   <Field className="flex-1 min-w-[120px]">
                     <FieldLabel className="sr-only">Clave</FieldLabel>
                     <Select

@@ -19,10 +19,27 @@ export interface BestSellingProductDTO {
   netIncome: number | null;
 }
 
+export interface TopSellingProductDTO {
+  product: Product;
+  salesAmount: number;
+  totalIncome: number;
+  timespan: TimeSpanEnum;
+}
+
 export interface DataContextType {
   getYearlySalesData: (year: number) => Promise<MonthlySummaryRecord[]>;
   getBestSellingProducts: (
     timeSpan: TimeSpanEnum,
-    sortBy: SortByEnum
+    sortBy: SortByEnum,
   ) => Promise<BestSellingProductDTO[]>;
+  getTop5ByCategory: (
+    category: string,
+    sortBy: SortByEnum,
+    timespan: TimeSpanEnum,
+  ) => Promise<TopSellingProductDTO[]>;
+  getTop5BySubcategory: (
+    subcategory: string,
+    sortBy: SortByEnum,
+    timespan: TimeSpanEnum,
+  ) => Promise<TopSellingProductDTO[]>;
 }
