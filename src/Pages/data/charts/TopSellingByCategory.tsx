@@ -20,8 +20,8 @@ const TopSellingByCategory = () => {
   const [SelectedSubcategory, setSelectedSubcategory] = useState(
     getSubcategories(SelectedCategory)[0],
   );
-  const [SelectedTimespan, setSelectedTimespan] = useState("LAST_MONTH");
-  const [SortBy, setSortBy] = useState("GROSS_INCOME");
+  //const [SelectedTimespan, setSelectedTimespan] = useState("LAST_MONTH");
+  //const [SortBy, setSortBy] = useState("GROSS_INCOME");
 
   useEffect(() => {
     setSelectedSubcategory(getSubcategories(SelectedCategory)[0]);
