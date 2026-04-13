@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 const getTimeSpanLabel = (timeSpan: TimeSpanEnum) => {
   switch (timeSpan) {
     case "LAST_MONTH":
-      return "Último Mes";
+      return "Últimos 30 días";
     case "LAST_YEAR":
       return "Último Año";
     case "ALL_TIME":
@@ -70,7 +70,7 @@ const BestSellingProducts = () => {
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="LAST_MONTH" id="last-month" />
               <Label htmlFor="last-month" className="cursor-pointer">
-                Último Mes
+                Últimos 30 días
               </Label>
             </div>
             <div className="flex items-center space-x-2">
