@@ -20,6 +20,7 @@ const Data = () => {
         <Button
           onClick={() => navigate("/data/category")}
           className="text-lg h-16 min-w-min"
+          disabled
         >
           <ChartPie className="medium-icon" />
           Categorias
