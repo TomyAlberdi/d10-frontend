@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { formatPrice } from "@/lib/utils";
-import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
+import { BanknoteArrowDown, BanknoteArrowUp, DollarSign, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -100,10 +100,12 @@ const CashRegisterOverview = () => {
               variant="outline"
               onClick={() => navigate("/cash-register/adjust")}
             >
+              <DollarSign />
               Ajustar saldo
             </Button>
             <Button variant="outline" onClick={fetchCurrentAmounts}>
-              Actualizar montos
+              <RefreshCcw />
+              Actualizar
             </Button>
           </div>
         </Card>

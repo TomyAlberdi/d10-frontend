@@ -1,8 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import categoriesData from "./../Pages/product/categories.json";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function formatPrice(value: number): string {
@@ -10,6 +11,24 @@ export function formatPrice(value: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+}
+
+export function getMonthName(month: number): string {
+  const months = [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
+  ];
+  return months[month - 1] || "";
 }
 
 // -------------------------------------------------------------
@@ -28,3 +47,7 @@ export async function isBackendReachable(): Promise<boolean> {
     return false;
   }
 }
+
+export const CATEGORIES = Object.keys(categoriesData) as string[];
+export const getSubcategories = (category: string): string[] =>
+  category ? (categoriesData as Record<string, string[]>)[category] ?? [] : [];

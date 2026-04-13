@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldGroup,
@@ -5,7 +6,6 @@ import {
   FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,18 +20,14 @@ import type {
   CreateProduct,
   ProductCharacteristic,
 } from "@/interfaces/ProductInterfaces";
+import { CATEGORIES, getSubcategories } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import categoriesData from "./categories.json";
 import providersList from "./providers.json";
 
 const BASE_URL = import.meta.env.VITE_BASE_API_URL;
 const PROVIDERS = providersList as string[];
-
-const CATEGORIES = Object.keys(categoriesData) as string[];
-const getSubcategories = (category: string): string[] =>
-  category ? (categoriesData as Record<string, string[]>)[category] ?? [] : [];
 
 const QUALITY_OPTIONS: CreateProduct["quality"][] = ["PRIMERA", "SEGUNDA"];
 const MEASURE_TYPE_OPTIONS: CreateProduct["measureType"][] = [
@@ -72,11 +68,12 @@ const ProductCreate = () => {
     useState<CreateProduct["measureType"]>("M2");
   const [saleUnitType, setSaleUnitType] =
     useState<CreateProduct["saleUnitType"]>("CAJA");
+  const [costBySaleUnit, setCostBySaleUnit] = useState<string>("");
   const [priceBySaleUnit, setPriceBySaleUnit] = useState<string>("");
   const [measurePerSaleUnit, setMeasurePerSaleUnit] = useState<string>("");
-  const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
-    initialCharacteristics
-  );
+  const [characteristics, setCharacteristics] = useState<
+    ProductCharacteristic[]
+  >(initialCharacteristics);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [uploadState, setUploadState] = useState({
@@ -106,7 +103,9 @@ const ProductCreate = () => {
     setUploadState((prev) => ({ ...prev, isUploading: true }));
     try {
       const uploadPromises = files.map(async (file) => {
-        const urlResponse = await fetch(`${BASE_URL}/img?fileName=${file.name}`);
+        const urlResponse = await fetch(
+          `${BASE_URL}/img?fileName=${file.name}`,
+        );
         if (!urlResponse.ok) {
           throw new Error(`Error obteniendo URL: ${urlResponse.status}`);
         }
@@ -157,12 +156,15 @@ const ProductCreate = () => {
   const updateCharacteristic = (
     index: number,
     field: "key" | "value",
-    value: string
+    value: string,
   ) => {
     setCharacteristics((prev) => {
       const next = [...prev];
       if (field === "key") {
-        next[index] = { ...next[index], key: value as ProductCharacteristic["key"] };
+        next[index] = {
+          ...next[index],
+          key: value as ProductCharacteristic["key"],
+        };
       } else {
         next[index] = { ...next[index], value };
       }
@@ -174,12 +176,25 @@ const ProductCreate = () => {
     setCharacteristics((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const calculateProfit = (): string => {
+    const cost = parseFloat(costBySaleUnit);
+    const price = parseFloat(priceBySaleUnit);
+    if (isNaN(cost) || isNaN(price) || cost === 0) return "0.00";
+    const profit = ((price - cost) / cost) * 100;
+    return profit.toFixed(2);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (uploadState.isUploading) return;
 
+    const cost = parseFloat(costBySaleUnit);
     const price = parseFloat(priceBySaleUnit);
     const measure = parseFloat(measurePerSaleUnit);
+    if (Number.isNaN(cost) || cost < 0) {
+      toast.error("Costo por unidad de venta debe ser un número válido");
+      return;
+    }
     if (Number.isNaN(price) || price < 0) {
       toast.error("Precio por unidad de venta debe ser un número válido");
       return;
@@ -214,6 +229,7 @@ const ProductCreate = () => {
         dimensions: dimensions.trim(),
         measureType,
         saleUnitType,
+        costBySaleUnit: cost,
         priceBySaleUnit: price,
         measurePerSaleUnit: measure,
       };
@@ -405,6 +421,30 @@ const ProductCreate = () => {
           </Field>
 
           <Field>
+            <FieldLabel>Costo por unidad de venta</FieldLabel>
+            <Input
+              type="number"
+              min={0}
+              step="0.01"
+              value={costBySaleUnit}
+              onChange={(e) => setCostBySaleUnit(e.target.value)}
+              placeholder="0.00"
+              required
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>Ganancia (%)</FieldLabel>
+            <Input
+              type="number"
+              value={calculateProfit()}
+              readOnly
+              placeholder="0.00"
+              className="bg-muted cursor-not-allowed"
+            />
+          </Field>
+
+          <Field>
             <FieldLabel>Medida por unidad de venta</FieldLabel>
             <Input
               type="number"
@@ -459,10 +499,7 @@ const ProductCreate = () => {
             <FieldGroup>
               <FieldTitle>Características</FieldTitle>
               {characteristics.map((c, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 items-end flex-wrap"
-                >
+                <div key={index} className="flex gap-2 items-end flex-wrap">
                   <Field className="flex-1 min-w-[120px]">
                     <FieldLabel className="sr-only">Clave</FieldLabel>
                     <Select

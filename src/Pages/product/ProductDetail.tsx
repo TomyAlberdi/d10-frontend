@@ -267,6 +267,27 @@ const ProductDetail = () => {
                       {product.saleUnitType}
                     </p>
                   </div>
+                  {product.costBySaleUnit && product.profit && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">
+                          Costo por Unidad de Venta
+                        </label>
+                        <p className="text-lg">
+                          $ {formatPrice(product.costBySaleUnit)} /{" "}
+                          {product.saleUnitType}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">
+                          Ganancia (%)
+                        </label>
+                        <p className="text-lg font-semibold text-green-600">
+                          {product.profit.toFixed(2)}%
+                        </p>
+                      </div>
+                    </>
+                  )}
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
                       Medida por Unidad de Venta

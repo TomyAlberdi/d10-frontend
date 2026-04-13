@@ -1,28 +1,28 @@
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-  FieldTitle,
-} from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import {
+    Field,
+    FieldGroup,
+    FieldLabel,
+    FieldSet,
+    FieldTitle,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type {
-  CreateProduct,
-  ProductCharacteristic,
+    CreateProduct,
+    ProductCharacteristic,
 } from "@/interfaces/ProductInterfaces";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import categoriesData from "./categories.json";
 import providersList from "./providers.json";
 
@@ -74,6 +74,7 @@ const ProductUpdate = () => {
     useState<CreateProduct["measureType"]>("M2");
   const [saleUnitType, setSaleUnitType] =
     useState<CreateProduct["saleUnitType"]>("CAJA");
+  const [costBySaleUnit, setCostBySaleUnit] = useState<string>("");
   const [priceBySaleUnit, setPriceBySaleUnit] = useState<string>("");
   const [measurePerSaleUnit, setMeasurePerSaleUnit] = useState<string>("");
   const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
@@ -115,6 +116,7 @@ const ProductUpdate = () => {
         setDimensions(product.dimensions ?? "");
         setMeasureType(product.measureType);
         setSaleUnitType(product.saleUnitType);
+        setCostBySaleUnit(String(product.costBySaleUnit));
         setPriceBySaleUnit(String(product.priceBySaleUnit));
         setMeasurePerSaleUnit(String(product.measurePerSaleUnit));
         setCharacteristics(
@@ -237,12 +239,25 @@ const ProductUpdate = () => {
     setCharacteristics((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const calculateProfit = (): string => {
+    const cost = parseFloat(costBySaleUnit);
+    const price = parseFloat(priceBySaleUnit);
+    if (isNaN(cost) || isNaN(price) || cost === 0) return "0.00";
+    const profit = ((price - cost) / cost) * 100;
+    return profit.toFixed(2);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id || uploadState.isUploading) return;
 
+    const cost = parseFloat(costBySaleUnit);
     const price = parseFloat(priceBySaleUnit);
     const measure = parseFloat(measurePerSaleUnit);
+    if (Number.isNaN(cost) || cost < 0) {
+      toast.error("Costo por unidad de venta debe ser un número válido");
+      return;
+    }
     if (Number.isNaN(price) || price < 0) {
       toast.error("Precio por unidad de venta debe ser un número válido");
       return;
@@ -282,6 +297,7 @@ const ProductUpdate = () => {
         dimensions: dimensions.trim(),
         measureType,
         saleUnitType,
+        costBySaleUnit: cost,
         priceBySaleUnit: price,
         measurePerSaleUnit: measure,
       };
@@ -481,6 +497,30 @@ const ProductUpdate = () => {
               onChange={(e) => setPriceBySaleUnit(e.target.value)}
               placeholder="0.00"
               required
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>Costo por unidad de venta</FieldLabel>
+            <Input
+              type="number"
+              min={0}
+              step="0.01"
+              value={costBySaleUnit}
+              onChange={(e) => setCostBySaleUnit(e.target.value)}
+              placeholder="0.00"
+              required
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>Ganancia (%)</FieldLabel>
+            <Input
+              type="number"
+              value={calculateProfit()}
+              readOnly
+              placeholder="0.00"
+              className="bg-muted cursor-not-allowed"
             />
           </Field>
 
