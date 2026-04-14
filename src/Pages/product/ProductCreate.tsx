@@ -191,10 +191,10 @@ const ProductCreate = () => {
     const cost = parseFloat(costBySaleUnit);
     const price = parseFloat(priceBySaleUnit);
     const measure = parseFloat(measurePerSaleUnit);
-    if (Number.isNaN(cost) || cost < 0) {
+    /* if (Number.isNaN(cost) || cost < 0) {
       toast.error("Costo por unidad de venta debe ser un número válido");
       return;
-    }
+    } */
     if (Number.isNaN(price) || price < 0) {
       toast.error("Precio por unidad de venta debe ser un número válido");
       return;
@@ -429,7 +429,6 @@ const ProductCreate = () => {
               value={costBySaleUnit}
               onChange={(e) => setCostBySaleUnit(e.target.value)}
               placeholder="0.00"
-              required
             />
           </Field>
 
