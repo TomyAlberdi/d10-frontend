@@ -68,8 +68,8 @@ const ProductCreate = () => {
     useState<CreateProduct["measureType"]>("M2");
   const [saleUnitType, setSaleUnitType] =
     useState<CreateProduct["saleUnitType"]>("CAJA");
-  const [costBySaleUnit, setCostBySaleUnit] = useState<string>("");
-  const [priceBySaleUnit, setPriceBySaleUnit] = useState<string>("");
+  const [costByMeasureUnit, setCostByMeasureUnit] = useState<string>("");
+  const [profitPercentage, setProfitPercentage] = useState<string>("");
   const [measurePerSaleUnit, setMeasurePerSaleUnit] = useState<string>("");
   const [characteristics, setCharacteristics] = useState<
     ProductCharacteristic[]
@@ -176,27 +176,29 @@ const ProductCreate = () => {
     setCharacteristics((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const calculateProfit = (): string => {
-    const cost = parseFloat(costBySaleUnit);
-    const price = parseFloat(priceBySaleUnit);
-    if (isNaN(cost) || isNaN(price) || cost === 0) return "0.00";
-    const profit = ((price - cost) / cost) * 100;
-    return profit.toFixed(2);
+  const calculatePriceBySaleUnit = (): string => {
+    const cost = parseFloat(costByMeasureUnit);
+    const profit = parseFloat(profitPercentage);
+    const measure = parseFloat(measurePerSaleUnit);
+    if (isNaN(cost) || isNaN(profit) || isNaN(measure) || cost === 0 || measure === 0) return "0.00";
+    const priceByMeasureUnit = cost * (1 + profit / 100);
+    const priceBySaleUnit = priceByMeasureUnit * measure;
+    return priceBySaleUnit.toFixed(2);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (uploadState.isUploading) return;
 
-    const cost = parseFloat(costBySaleUnit);
-    const price = parseFloat(priceBySaleUnit);
+    const cost = parseFloat(costByMeasureUnit);
+    const profit = parseFloat(profitPercentage);
     const measure = parseFloat(measurePerSaleUnit);
-    /* if (Number.isNaN(cost) || cost < 0) {
-      toast.error("Costo por unidad de venta debe ser un número válido");
+    if (Number.isNaN(cost) || cost < 0) {
+      toast.error("Costo por unidad de medida debe ser un número válido");
       return;
-    } */
-    if (Number.isNaN(price) || price < 0) {
-      toast.error("Precio por unidad de venta debe ser un número válido");
+    }
+    if (Number.isNaN(profit)) {
+      toast.error("Ganancia (%) debe ser un número válido");
       return;
     }
     if (Number.isNaN(measure) || measure <= 0) {
@@ -216,6 +218,10 @@ const ProductCreate = () => {
         });
       }
 
+      // Calculate priceBySaleUnit from costByMeasureUnit, profit, and measure
+      const priceByMeasureUnit = cost * (1 + profit / 100);
+      const priceBySaleUnit = priceByMeasureUnit * measure;
+
       const dto: CreateProduct = {
         code: code.trim(),
         name: name.trim(),
@@ -229,8 +235,9 @@ const ProductCreate = () => {
         dimensions: dimensions.trim(),
         measureType,
         saleUnitType,
-        costBySaleUnit: cost,
-        priceBySaleUnit: price,
+        costByMeasureUnit: cost,
+        profitPercentage: profit,
+        priceBySaleUnit: priceBySaleUnit,
         measurePerSaleUnit: measure,
       };
 
@@ -408,27 +415,15 @@ const ProductCreate = () => {
           </Field>
 
           <Field>
-            <FieldLabel>Precio por unidad de venta</FieldLabel>
+            <FieldLabel>Costo por unidad de medida</FieldLabel>
             <Input
               type="number"
               min={0}
               step="0.01"
-              value={priceBySaleUnit}
-              onChange={(e) => setPriceBySaleUnit(e.target.value)}
+              value={costByMeasureUnit}
+              onChange={(e) => setCostByMeasureUnit(e.target.value)}
               placeholder="0.00"
               required
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>Costo por unidad de venta</FieldLabel>
-            <Input
-              type="number"
-              min={0}
-              step="0.01"
-              value={costBySaleUnit}
-              onChange={(e) => setCostBySaleUnit(e.target.value)}
-              placeholder="0.00"
             />
           </Field>
 
@@ -436,7 +431,19 @@ const ProductCreate = () => {
             <FieldLabel>Ganancia (%)</FieldLabel>
             <Input
               type="number"
-              value={calculateProfit()}
+              step="0.01"
+              value={profitPercentage}
+              onChange={(e) => setProfitPercentage(e.target.value)}
+              placeholder="0.00"
+              required
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>Precio por unidad de venta</FieldLabel>
+            <Input
+              type="number"
+              value={calculatePriceBySaleUnit()}
               readOnly
               placeholder="0.00"
               className="bg-muted cursor-not-allowed"

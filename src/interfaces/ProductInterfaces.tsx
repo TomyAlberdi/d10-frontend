@@ -31,7 +31,7 @@ export interface Product {
   measureType: "M2" | "ML" | "MM" | "UNIDAD";
   priceByMeasureUnit: number;
   saleUnitType: "CAJA" | "JUEGO" | "UNIDAD";
-  costBySaleUnit: number;
+  costByMeasureUnit: number;
   priceBySaleUnit: number;
   profit: number;
   measurePerSaleUnit: number;
@@ -50,7 +50,8 @@ export interface CreateProduct {
   dimensions: string;
   measureType: "M2" | "ML" | "MM" | "UNIDAD";
   saleUnitType: "CAJA" | "JUEGO" | "UNIDAD";
-  costBySaleUnit: number;
+  costByMeasureUnit: number;
+  profitPercentage: number;
   priceBySaleUnit: number;
   measurePerSaleUnit: number;
 }

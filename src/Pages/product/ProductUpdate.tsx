@@ -1,24 +1,24 @@
 import { Button } from "@/components/ui/button";
 import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-  FieldTitle,
+    Field,
+    FieldGroup,
+    FieldLabel,
+    FieldSet,
+    FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type {
-  CreateProduct,
-  ProductCharacteristic,
+    CreateProduct,
+    ProductCharacteristic,
 } from "@/interfaces/ProductInterfaces";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -74,8 +74,8 @@ const ProductUpdate = () => {
     useState<CreateProduct["measureType"]>("M2");
   const [saleUnitType, setSaleUnitType] =
     useState<CreateProduct["saleUnitType"]>("CAJA");
-  const [costBySaleUnit, setCostBySaleUnit] = useState<string>("");
-  const [priceBySaleUnit, setPriceBySaleUnit] = useState<string>("");
+  const [costByMeasureUnit, setCostByMeasureUnit] = useState<string>("");
+  const [profitPercentage, setProfitPercentage] = useState<string>("");
   const [measurePerSaleUnit, setMeasurePerSaleUnit] = useState<string>("");
   const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
     initialCharacteristics
@@ -116,8 +116,8 @@ const ProductUpdate = () => {
         setDimensions(product.dimensions ?? "");
         setMeasureType(product.measureType);
         setSaleUnitType(product.saleUnitType);
-        setCostBySaleUnit(String(product.costBySaleUnit));
-        setPriceBySaleUnit(String(product.priceBySaleUnit));
+        setCostByMeasureUnit(String(product.costByMeasureUnit));
+        setProfitPercentage(String(product.profit));
         setMeasurePerSaleUnit(String(product.measurePerSaleUnit));
         setCharacteristics(
           product.characteristics?.length
@@ -239,27 +239,29 @@ const ProductUpdate = () => {
     setCharacteristics((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const calculateProfit = (): string => {
-    const cost = parseFloat(costBySaleUnit);
-    const price = parseFloat(priceBySaleUnit);
-    if (isNaN(cost) || isNaN(price) || cost === 0) return "0.00";
-    const profit = ((price - cost) / cost) * 100;
-    return profit.toFixed(2);
+  const calculatePriceBySaleUnit = (): string => {
+    const cost = parseFloat(costByMeasureUnit);
+    const profit = parseFloat(profitPercentage);
+    const measure = parseFloat(measurePerSaleUnit);
+    if (isNaN(cost) || isNaN(profit) || isNaN(measure) || cost === 0 || measure === 0) return "0.00";
+    const priceByMeasureUnit = cost * (1 + profit / 100);
+    const priceBySaleUnit = priceByMeasureUnit * measure;
+    return priceBySaleUnit.toFixed(2);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id || uploadState.isUploading) return;
 
-    const cost = parseFloat(costBySaleUnit);
-    const price = parseFloat(priceBySaleUnit);
+    const cost = parseFloat(costByMeasureUnit);
+    const profit = parseFloat(profitPercentage);
     const measure = parseFloat(measurePerSaleUnit);
-/*     if (Number.isNaN(cost) || cost < 0) {
-      toast.error("Costo por unidad de venta debe ser un número válido");
+    if (Number.isNaN(cost) || cost < 0) {
+      toast.error("Costo por unidad de medida debe ser un número válido");
       return;
-    } */
-    if (Number.isNaN(price) || price < 0) {
-      toast.error("Precio por unidad de venta debe ser un número válido");
+    }
+    if (Number.isNaN(profit)) {
+      toast.error("Ganancia (%) debe ser un número válido");
       return;
     }
     if (Number.isNaN(measure) || measure <= 0) {
@@ -284,6 +286,10 @@ const ProductUpdate = () => {
       );
       const imageUrls = [...keptExisting, ...newImageUrls];
 
+      // Calculate priceBySaleUnit from costByMeasureUnit, profit, and measure
+      const priceByMeasureUnit = cost * (1 + profit / 100);
+      const priceBySaleUnit = priceByMeasureUnit * measure;
+
       const dto: CreateProduct = {
         code: code.trim(),
         name: name.trim(),
@@ -297,8 +303,9 @@ const ProductUpdate = () => {
         dimensions: dimensions.trim(),
         measureType,
         saleUnitType,
-        costBySaleUnit: cost,
-        priceBySaleUnit: price,
+        costByMeasureUnit: cost,
+        profitPercentage: profit,
+        priceBySaleUnit: priceBySaleUnit,
         measurePerSaleUnit: measure,
       };
 
@@ -491,24 +498,23 @@ const ProductUpdate = () => {
             <FieldLabel>Precio por unidad de venta</FieldLabel>
             <Input
               type="number"
-              min={0}
-              step="0.01"
-              value={priceBySaleUnit}
-              onChange={(e) => setPriceBySaleUnit(e.target.value)}
+              value={calculatePriceBySaleUnit()}
+              readOnly
               placeholder="0.00"
-              required
+              className="bg-muted cursor-not-allowed"
             />
           </Field>
 
           <Field>
-            <FieldLabel>Costo por unidad de venta</FieldLabel>
+            <FieldLabel>Costo por unidad de medida</FieldLabel>
             <Input
               type="number"
               min={0}
               step="0.01"
-              value={costBySaleUnit}
-              onChange={(e) => setCostBySaleUnit(e.target.value)}
+              value={costByMeasureUnit}
+              onChange={(e) => setCostByMeasureUnit(e.target.value)}
               placeholder="0.00"
+              required
             />
           </Field>
 
@@ -516,10 +522,11 @@ const ProductUpdate = () => {
             <FieldLabel>Ganancia (%)</FieldLabel>
             <Input
               type="number"
-              value={calculateProfit()}
-              readOnly
+              step="0.01"
+              value={profitPercentage}
+              onChange={(e) => setProfitPercentage(e.target.value)}
               placeholder="0.00"
-              className="bg-muted cursor-not-allowed"
+              required
             />
           </Field>
 
