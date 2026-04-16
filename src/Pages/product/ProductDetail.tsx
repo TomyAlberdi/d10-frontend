@@ -232,7 +232,7 @@ const ProductDetail = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
-                      Tipo de Medida
+                      Unidad Medida
                     </label>
                     <p className="text-lg font-semibold">
                       {product.measureType}
@@ -240,7 +240,7 @@ const ProductDetail = () => {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
-                      Tipo de Venta
+                      Unidad Venta
                     </label>
                     <p className="text-lg font-semibold">
                       {product.saleUnitType}
@@ -275,12 +275,12 @@ const ProductDetail = () => {
                         </label>
                         <p className="text-lg">
                           $ {formatPrice(product.costByMeasureUnit)} /{" "}
-                          {product.saleUnitType}
+                          {product.measureType}
                         </p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">
-                          Ganancia (%)
+                          Ganancia
                         </label>
                         <p className="text-lg font-semibold text-green-600">
                           {product.profit ? product.profit.toFixed(2) : 0.0} %
