@@ -40,7 +40,7 @@ const Home = () => {
       )}
 
       <h1 className="text-4xl font-bold text-foreground mb-12 text-center alternate-font">
-        Diseño 10 Olavarría - Administración
+        Diseño 10 Olavarría <br /> Administración
       </h1>
       <div className="grid grid-cols-2 gap-4">
         <Button size="lg" asChild className="h-25 w-64">

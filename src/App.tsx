@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -39,7 +38,7 @@ import UpdateProductStock from "./Pages/product/UpdateProductStock";
 import Warehouse from "./Pages/warehouse/Warehouse";
 import WarehouseCellAssign from "./Pages/warehouse/WarehouseCellAssign";
 import WarehouseGrid from "./Pages/warehouse/WarehouseGrid";
-
+/* 
 const DESKTOP_MIN_WIDTH = 1024;
 
 function MobileTabletMessage() {
@@ -61,10 +60,10 @@ function MobileTabletMessage() {
       </p>
     </div>
   );
-}
+} */
 
 export function App() {
-  const [isDesktop, setIsDesktop] = useState(
+  /*   const [isDesktop, setIsDesktop] = useState(
     () =>
       typeof window !== "undefined" &&
       window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH}px)`).matches,
@@ -79,7 +78,7 @@ export function App() {
 
   if (!isDesktop) {
     return <MobileTabletMessage />;
-  }
+  } */
 
   return (
     <Router>
