@@ -7,8 +7,8 @@ const Products = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center gap-5">
-      <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-0 md:gap-5">
+      <section className="w-full md:w-1/8 flex flex-col justify-start p-2 md:p-4 gap-2 md:gap-3">
         <FloatingGenericMenu />
         <Button
           onClick={() => navigate("/product")}
@@ -39,7 +39,7 @@ const Products = () => {
           Crear
         </Button>
       </section>
-      <section className="w-5/8 h-screen py-5">
+      <section className="w-full md:w-5/8 h-screen py-0 md:py-5">
         <Outlet />
       </section>
     </div>

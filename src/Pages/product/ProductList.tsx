@@ -54,7 +54,7 @@ const ProductList = () => {
   }, [listProducts, page, searchQuery]);
 
   return (
-    <div className="px-5 h-full flex flex-col gap-4">
+    <div className="px-2 md:px-5 h-full flex flex-col gap-4">
       <SelectedProduct
         product={selectedProduct}
         updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}

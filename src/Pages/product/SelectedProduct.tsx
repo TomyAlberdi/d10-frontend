@@ -42,13 +42,21 @@ const SelectedProduct = ({
           "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
     >
-      <div className="col-span-2 flex items-center gap-3">
+      <div className="col-span-2 flex gap-3 flex-col md:flex-row items-start md:items-center">
         <span className="text-xl font-bold ml-1">{product.name}</span>
-        <Badge>Código {product.code}</Badge>
-        {product.quality && (
-          <Badge variant={"secondary"}>{product.quality}</Badge>
-        )}
-        {isDiscontinued && <Badge variant="destructive">Discontinuado</Badge>}
+        <div>
+          <Badge className="mr-3">Código {product.code}</Badge>
+          {product.quality && (
+            <Badge className="mr-3" variant={"secondary"}>
+              {product.quality}
+            </Badge>
+          )}
+          {isDiscontinued && (
+            <Badge className="mr-3" variant="destructive">
+              Discontinuado
+            </Badge>
+          )}
+        </div>
       </div>
       <div className="row-start-2 row-span-1 col-span-2 flex items-center gap-2">
         {product.dimensions && (
@@ -106,7 +114,7 @@ const SelectedProduct = ({
         onClick={() => navigate(`/product/${product.id}`)}
         title="Ver detalles del producto"
       />
-      <div className="row-start-6 row-span-2 col-span-2 flex items-center gap-3">
+      <div className="row-start-6 row-span-2 col-span-2 hidden md:flex items-center gap-3">
         {/*         <Button
           className="h-full"
           disabled
