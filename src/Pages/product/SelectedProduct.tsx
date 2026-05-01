@@ -37,7 +37,7 @@ const SelectedProduct = ({
   return (
     <Card
       className={cn(
-        "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
+        "md:h-2/6 h-auto overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
         isDiscontinued &&
           "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
@@ -104,7 +104,7 @@ const SelectedProduct = ({
         )}
       </div>
       <div
-        className="col-start-3 row-span-7 bg-secondary cursor-pointer hover:bg-secondary/80 transition-colors"
+        className="col-start-1 row-start-1 md:col-start-3 md:row-span-7 bg-secondary cursor-pointer hover:bg-secondary/80 transition-colors"
         style={{
           backgroundImage: `url(${firstImage})`,
           backgroundSize: "contain",
@@ -114,7 +114,7 @@ const SelectedProduct = ({
         onClick={() => navigate(`/product/${product.id}`)}
         title="Ver detalles del producto"
       />
-      <div className="row-start-6 row-span-2 col-span-2 hidden md:flex items-center gap-3">
+      <div className="row-start-6 row-span-2 col-span-2 flex items-center gap-3">
         {/*         <Button
           className="h-full"
           disabled
