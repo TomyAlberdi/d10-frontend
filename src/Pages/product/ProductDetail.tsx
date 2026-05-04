@@ -173,7 +173,7 @@ const ProductDetail = () => {
               </Button>
               <Button
                 onClick={() => navigate(`/product/${product.id}/update`)}
-                className="w-full"
+                className="w-full hidden md:flex"
                 size="lg"
               >
                 <PencilLine className="w-4 h-4 mr-2" />
@@ -188,7 +188,7 @@ const ProductDetail = () => {
                 Actualizar stock
               </Button>
               <Button
-                className="w-full"
+                className="w-full hidden md:flex"
                 size="lg"
                 onClick={() => {
                   updateProductDiscontinued(product.id, !product.discontinued);

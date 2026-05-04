@@ -115,16 +115,15 @@ export function App() {
                             element={<DiscontinuedProductList />}
                           />
                         </Route>
+                        {/* TODO: Mobile clients */}
                         <Route path="/client" element={<Clients />}>
                           <Route index element={<ClientsList />} />
                           <Route path="create" element={<ClientCreate />} />
                           <Route path=":id/update" element={<ClientUpdate />} />
                         </Route>
+                        {/* TODO: Mobile cart */}
                         <Route path="/cart" element={<Cart />} />
-                        <Route
-                          path="/client/create"
-                          element={<ClientCreate />}
-                        />
+                        {/* TODO: Mobile Invoices */}
                         <Route path="/invoice" element={<Invoices />} />
                         <Route
                           path="/invoice/:id"
@@ -138,6 +137,7 @@ export function App() {
                           path="/invoices-by-product/:productId"
                           element={<InvoicesByProduct />}
                         />
+                        {/* TODO: Mobile Cash Register */}
                         <Route path="/cash-register" element={<CashRegister />}>
                           <Route index element={<CashRegisterOverview />} />
                           <Route
@@ -153,6 +153,7 @@ export function App() {
                             element={<CashRegisterInvoiceTransaction />}
                           />
                         </Route>
+                        {/* TODO: Mobile Data */}
                         <Route path="/data" element={<Data />}>
                           <Route index element={<MainData />} />
                           <Route path="category" element={<CategoryData />} />
