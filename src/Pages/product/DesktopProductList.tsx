@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { useEffect, useState } from "react";
