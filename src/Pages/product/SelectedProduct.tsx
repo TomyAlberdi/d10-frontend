@@ -37,12 +37,12 @@ const SelectedProduct = ({
   return (
     <Card
       className={cn(
-        "md:h-2/6 h-auto overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
+        "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
         isDiscontinued &&
           "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
     >
-      <div className="col-span-2 flex gap-3 flex-col md:flex-row items-start md:items-center">
+      <div className="col-span-2 flex gap-3 flex-row items-center">
         <span className="text-xl font-bold ml-1">{product.name}</span>
         <div>
           <Badge className="mr-3">Código {product.code}</Badge>
@@ -104,7 +104,7 @@ const SelectedProduct = ({
         )}
       </div>
       <div
-        className="col-start-1 row-start-1 md:col-start-3 md:row-span-7 bg-secondary cursor-pointer hover:bg-secondary/80 transition-colors"
+        className="col-start-3 row-span-7 bg-secondary cursor-pointer hover:bg-secondary/80 transition-colors"
         style={{
           backgroundImage: `url(${firstImage})`,
           backgroundSize: "contain",

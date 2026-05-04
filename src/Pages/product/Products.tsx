@@ -39,7 +39,7 @@ const Products = () => {
           Crear
         </Button>
       </section>
-      <section className="w-full md:w-5/8 h-screen py-0 md:py-5">
+      <section className="w-full md:w-5/8 h-auto md:h-screen py-0 md:py-5">
         <Outlet />
       </section>
     </div>
