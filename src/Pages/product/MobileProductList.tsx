@@ -9,6 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
@@ -31,7 +38,6 @@ const MobileProductList = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -54,7 +60,6 @@ const MobileProductList = () => {
         if (!cancelled) {
           setProducts(result.content);
           setTotalPages(result.totalPages);
-          setSelectedProduct(result.content[0] ?? null);
         }
       })
       .finally(() => {
@@ -176,9 +181,47 @@ const MobileProductList = () => {
           </DropdownMenu>
         </Card>
       ))}
-      <div>
-        {/* implement mobile pagination */}
-      </div>
+      <Pagination className="shrink-0">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page > 0) setPage(page - 1);
+              }}
+              aria-disabled={page <= 0}
+              className={
+                page <= 0
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer border"
+              }
+              text=""
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <span>
+              {page + 1} de {totalPages || 1}
+            </span>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page < totalPages - 1) setPage(page + 1);
+              }}
+              aria-disabled={page >= totalPages - 1}
+              className={
+                page >= totalPages - 1
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+              text=""
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

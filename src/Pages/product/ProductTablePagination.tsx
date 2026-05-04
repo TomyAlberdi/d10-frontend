@@ -68,7 +68,7 @@ const ProductTablePagination = ({
         onSelectProduct(products[prevIndex]);
       }
     },
-    [products, selectedIndex, onSelectProduct]
+    [products, selectedIndex, onSelectProduct],
   );
 
   return (
@@ -105,30 +105,30 @@ const ProductTablePagination = ({
           </TableHeader>
           <TableBody>
             {products.map((product) => (
-            <TableRow
-              key={product.id}
-              data-state={
-                selectedProduct?.id === product.id ? "selected" : undefined
-              }
-              onClick={() => onSelectProduct(product)}
-              className={`cursor-pointer ${product.discontinued && "bg-rose-950/20"}`}
-            >
-              <TableCell>{product.code}</TableCell>
-              <TableCell>{product.providerName}</TableCell>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>
-                {product.priceBySaleUnit && (
-                  <>
-                    $ {formatPrice(product.priceBySaleUnit)} X{" "}
-                    {product.saleUnitType}
-                  </>
-                )}
-              </TableCell>
-              <TableCell>{product.dimensions}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              <TableRow
+                key={product.id}
+                data-state={
+                  selectedProduct?.id === product.id ? "selected" : undefined
+                }
+                onClick={() => onSelectProduct(product)}
+                className={`cursor-pointer ${product.discontinued && "bg-rose-950/20"}`}
+              >
+                <TableCell>{product.code}</TableCell>
+                <TableCell>{product.providerName}</TableCell>
+                <TableCell>{product.name}</TableCell>
+                <TableCell>
+                  {product.priceBySaleUnit && (
+                    <>
+                      $ {formatPrice(product.priceBySaleUnit)} X{" "}
+                      {product.saleUnitType}
+                    </>
+                  )}
+                </TableCell>
+                <TableCell>{product.dimensions}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
       <Pagination className="mt-auto shrink-0">
         <PaginationContent>
