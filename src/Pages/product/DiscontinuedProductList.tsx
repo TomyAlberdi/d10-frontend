@@ -58,7 +58,6 @@ const DiscontinuedProductList = () => {
         selectedProduct={selectedProduct}
         onSelectProduct={setSelectedProduct}
         searchInput=""
-        onSearchChange={() => {}}
         isSearching={isLoading}
       />
     </div>
