@@ -35,6 +35,7 @@ import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
 import ProductStockList from "./Pages/product/ProductStockList";
 import ProductUpdate from "./Pages/product/ProductUpdate";
+import UpdatePrice from "./Pages/product/UpdatePrice";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
 import Warehouse from "./Pages/warehouse/Warehouse";
 import WarehouseCellAssign from "./Pages/warehouse/WarehouseCellAssign";
@@ -114,6 +115,10 @@ export function App() {
                           <Route
                             path="discontinued"
                             element={<DiscontinuedProductList />}
+                          />
+                          <Route
+                            path="update-price"
+                            element={<UpdatePrice />}
                           />
                         </Route>
                         <Route path="/client" element={<Clients />}>
