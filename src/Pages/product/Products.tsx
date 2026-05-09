@@ -40,7 +40,7 @@ const Products = () => {
         </Button>
         <Button
           onClick={() => navigate("/product/update-price")}
-          className="text-lg h-16 min-w-min"
+          className="text-lg h-16 min-w-min hidden md:flex"
         >
           <TrendingUp className="medium-icon" />
           Precios

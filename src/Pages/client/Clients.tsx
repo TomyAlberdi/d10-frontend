@@ -19,7 +19,7 @@ const Clients = () => {
         </Button>
         <Button
           onClick={() => navigate("/client/create")}
-          className="text-lg h-16 min-w-min"
+          className="text-lg h-16 min-w-min hidden md:flex"
         >
           <CirclePlus className="medium-icon" />
           Crear
