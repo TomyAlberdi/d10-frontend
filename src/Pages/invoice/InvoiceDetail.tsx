@@ -11,7 +11,7 @@ import {
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { ArrowLeft, ReceiptText } from "lucide-react";
+import { ChevronLeft, ReceiptText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { generatePDF } from "./CreateInvoiceDetail";
@@ -80,51 +80,52 @@ const InvoiceDetail = () => {
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-6xl mx-auto flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            <ArrowLeft />
-            Volver
+        <div className="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-0">
+          <Button onClick={() => navigate(-1)} className="w-full md:w-fit">
+            <ChevronLeft className="bigger-icon" />
           </Button>
-          <div className="flex gap-4">
-            <Button
-              disabled={!invoice}
-              onClick={() => {
-                if (InvoiceDetail) {
-                  InvoiceDetail.save(
-                    `Presupuesto_${invoice?.invoiceNumber ?? invoice?.id}.pdf`,
-                  );
-                }
-              }}
-            >
-              <ReceiptText />
-              Descargar Detalle
-            </Button>
-            {invoice && (
-              <Button onClick={() => navigate(`/invoice/${invoice.id}/update`)}>
+          {invoice && (
+            <div className="flex gap-4 w-full md:w-auto">
+              <Button
+                className="w-full md:w-fit"
+                disabled={!invoice}
+                onClick={() => {
+                  if (InvoiceDetail) {
+                    InvoiceDetail.save(
+                      `Presupuesto_${invoice?.invoiceNumber ?? invoice?.id}.pdf`,
+                    );
+                  }
+                }}
+              >
+                <ReceiptText />
+                Descargar Detalle
+              </Button>
+              <Button
+                onClick={() => navigate(`/invoice/${invoice.id}/update`)}
+                className="hidden md:flex"
+              >
                 Editar venta
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        <Card className="p-6 flex flex-col gap-4">
+        <Card className="p-3 md:p-6 flex flex-col gap-4">
           {isLoading && (
             <p className="text-muted-foreground">Cargando venta…</p>
           )}
-
           {!isLoading && !invoice && (
             <p className="text-muted-foreground">
               No se encontró la venta solicitada.
             </p>
           )}
-
           {!isLoading && invoice && (
             <>
               <h1 className="text-2xl font-bold">
                 Detalle de venta #{invoice.invoiceNumber ?? invoice.id}
               </h1>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col md:grid grid-cols-3 gap-3">
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Fecha</p>
                   <p className="font-medium">
@@ -147,15 +148,15 @@ const InvoiceDetail = () => {
                 </div>
               </div>
               {invoice.notes && (
-                <Card className="p-4">
+                <Card className="p-4 gap-3">
                   <h2 className="font-semibold">Notas</h2>
                   <p>{invoice.notes}</p>
                 </Card>
               )}
 
-              <Card className="p-4">
-                <h2 className="font-semibold mb-2">Cliente</h2>
-                <div className="grid grid-cols-3 gap-3 text-sm">
+              <Card className="p-4 gap-3">
+                <h2 className="font-semibold">Cliente</h2>
+                <div className="flex flex-col md:grid grid-cols-3 gap-3 text-sm">
                   <p>
                     <span className="text-muted-foreground">ID:</span>{" "}
                     {invoice.client.id}
@@ -187,8 +188,8 @@ const InvoiceDetail = () => {
                 </div>
               </Card>
 
-              <Card className="p-4">
-                <h2 className="font-semibold mb-2">Productos</h2>
+              <Card className="p-4 gap-3">
+                <h2 className="font-semibold">Productos</h2>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -215,7 +216,9 @@ const InvoiceDetail = () => {
                         <TableCell>
                           $ {formatPrice(product.priceByMeasureUnit)}
                         </TableCell>
-                        <TableCell>{formatPrice(product.measureUnitQuantity)}</TableCell>
+                        <TableCell>
+                          {formatPrice(product.measureUnitQuantity)}
+                        </TableCell>
                         <TableCell>
                           $ {formatPrice(product.priceBySaleUnit)}
                         </TableCell>
@@ -232,7 +235,7 @@ const InvoiceDetail = () => {
                 </Table>
               </Card>
 
-              <div className="grid grid-cols-4 gap-3">
+              <div className="flex flex-col md:grid grid-cols-4 gap-3">
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">
                     Total productos

@@ -6,14 +6,14 @@ import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
 import {
-  ArrowLeft,
+  ChevronLeft,
   FileText,
   Package,
   PackagePlus,
   PencilLine,
   Route,
   RouteOff,
-  ShoppingCart,
+  ShoppingCart
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -67,9 +67,8 @@ const ProductDetail = () => {
           <div className="text-lg text-destructive">
             {error || "Producto no encontrado"}
           </div>
-          <Button onClick={() => navigate("/product")} variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a productos
+          <Button onClick={() => navigate(-1)}>
+            <ChevronLeft className="bigger-icon" />
           </Button>
         </div>
       </div>
@@ -81,9 +80,8 @@ const ProductDetail = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center gap-4 mb-6">
-        <Button onClick={() => navigate(-1)} variant="outline" size="sm">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver
+        <Button onClick={() => navigate(-1)}>
+          <ChevronLeft className="bigger-icon" />
         </Button>
         <h1 className="text-3xl font-bold">{product.name}</h1>
         {product.discontinued && (

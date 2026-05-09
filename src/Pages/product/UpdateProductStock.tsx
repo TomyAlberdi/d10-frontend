@@ -1,9 +1,5 @@
-import {
-  Field,
-  FieldLabel,
-  FieldSet,
-} from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -14,9 +10,10 @@ import {
 } from "@/components/ui/select";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { ProductStockRecord } from "@/interfaces/ProductInterfaces";
+import { ChevronLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 
 const OPERATION_OPTIONS: ProductStockRecord["type"][] = ["IN", "OUT"];
 
@@ -25,7 +22,8 @@ const UpdateProductStock = () => {
   const { getProductById, updateProductStock } = useProductContext();
   const navigate = useNavigate();
 
-  const [product, setProduct] = useState<Awaited<ReturnType<typeof getProductById>>>(null);
+  const [product, setProduct] =
+    useState<Awaited<ReturnType<typeof getProductById>>>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [operation, setOperation] = useState<ProductStockRecord["type"]>("IN");
   const [amount, setAmount] = useState("");
@@ -56,7 +54,9 @@ const UpdateProductStock = () => {
       return;
     }
     if (operation === "OUT" && product.stock.quantity < qty) {
-      toast.error("Stock insuficiente. No puede sacar más unidades de las que hay en stock.");
+      toast.error(
+        "Stock insuficiente. No puede sacar más unidades de las que hay en stock.",
+      );
       return;
     }
 
@@ -66,7 +66,7 @@ const UpdateProductStock = () => {
       toast.success(
         operation === "IN"
           ? "Stock actualizado correctamente (entrada)."
-          : "Stock actualizado correctamente (salida)."
+          : "Stock actualizado correctamente (salida).",
       );
       const updated = await getProductById(id);
       if (updated) setProduct(updated);
@@ -90,8 +90,8 @@ const UpdateProductStock = () => {
     return (
       <div className="p-6">
         <p className="text-muted-foreground">Producto no encontrado</p>
-        <Button variant="outline" onClick={() => navigate("/product")}>
-          Volver al listado
+        <Button onClick={() => navigate(-1)}>
+          <ChevronLeft className="bigger-icon" />
         </Button>
       </div>
     );
@@ -113,11 +113,15 @@ const UpdateProductStock = () => {
       <div className="mb-6 p-4 rounded-lg border bg-muted/50 space-y-2">
         <p className="text-sm font-medium">Stock actual</p>
         <p className="text-sm">
-          <span className="text-muted-foreground">Cantidad ({product.saleUnitType}):</span>{" "}
+          <span className="text-muted-foreground">
+            Cantidad ({product.saleUnitType}):
+          </span>{" "}
           {product.stock.quantity}
         </p>
         <p className="text-sm">
-          <span className="text-muted-foreground">Equivalente en medida ({product.measureType}):</span>{" "}
+          <span className="text-muted-foreground">
+            Equivalente en medida ({product.measureType}):
+          </span>{" "}
           {product.stock.measureUnitEquivalent}
         </p>
       </div>
@@ -128,7 +132,9 @@ const UpdateProductStock = () => {
             <FieldLabel>Tipo de operación</FieldLabel>
             <Select
               value={operation}
-              onValueChange={(v) => setOperation(v as ProductStockRecord["type"])}
+              onValueChange={(v) =>
+                setOperation(v as ProductStockRecord["type"])
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -156,7 +162,8 @@ const UpdateProductStock = () => {
           </Field>
           {measureEquivalentForAmount !== null && (
             <div className="sm:col-span-2 text-sm text-muted-foreground">
-              Equivalente en medida: {measureEquivalentForAmount} {product.measureType}
+              Equivalente en medida: {measureEquivalentForAmount}{" "}
+              {product.measureType}
             </div>
           )}
         </FieldSet>
@@ -165,12 +172,8 @@ const UpdateProductStock = () => {
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Actualizando…" : "Actualizar stock"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate("/product")}
-          >
-            Volver
+          <Button onClick={() => navigate(-1)}>
+            <ChevronLeft className="bigger-icon" />
           </Button>
         </div>
       </form>

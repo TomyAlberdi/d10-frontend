@@ -6,6 +6,7 @@ import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
+import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -100,8 +101,8 @@ const ProductAddToCart = () => {
     return (
       <div className="p-6">
         <p className="text-muted-foreground">Producto no encontrado</p>
-        <Button variant="outline" onClick={() => navigate("/product")}>
-          Volver al listado
+        <Button onClick={() => navigate(-1)}>
+          <ChevronLeft className="bigger-icon" />
         </Button>
       </div>
     );

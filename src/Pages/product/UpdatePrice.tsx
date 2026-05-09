@@ -1,9 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  FieldLabel,
-  FieldSet
-} from "@/components/ui/field";
+import { FieldLabel, FieldSet } from "@/components/ui/field";
 import { useProductContext } from "@/contexts/product/UseProductContext";
+import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -14,7 +12,9 @@ const UpdatePrice = () => {
 
   const [providers, setProviders] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedProviders, setSelectedProviders] = useState<Set<string>>(new Set());
+  const [selectedProviders, setSelectedProviders] = useState<Set<string>>(
+    new Set(),
+  );
   const [percentage, setPercentage] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -61,7 +61,7 @@ const UpdatePrice = () => {
       toast.success(
         `${totalUpdated} producto${totalUpdated !== 1 ? "s" : ""} actualizado${
           totalUpdated !== 1 ? "s" : ""
-        } correctamente`
+        } correctamente`,
       );
       setSelectedProviders(new Set());
       setPercentage(5);
@@ -84,8 +84,8 @@ const UpdatePrice = () => {
     return (
       <div className="p-6">
         <p className="text-muted-foreground">No hay proveedores disponibles</p>
-        <Button variant="outline" onClick={() => navigate("/product")}>
-          Volver al menú
+        <Button onClick={() => navigate(-1)}>
+          <ChevronLeft className="bigger-icon" />
         </Button>
       </div>
     );
@@ -93,10 +93,13 @@ const UpdatePrice = () => {
 
   return (
     <div className="p-6 max-w-2xl">
-      <h1 className="text-2xl font-bold mb-2">Actualizar precios por proveedor</h1>
+      <h1 className="text-2xl font-bold mb-2">
+        Actualizar precios por proveedor
+      </h1>
       <p className="text-muted-foreground mb-6">
-        Selecciona los proveedores e ingresa el porcentaje de cambio en los costos.
-        Los precios se recalcularán automáticamente usando el margen de ganancia existente.
+        Selecciona los proveedores e ingresa el porcentaje de cambio en los
+        costos. Los precios se recalcularán automáticamente usando el margen de
+        ganancia existente.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -104,7 +107,10 @@ const UpdatePrice = () => {
           <FieldLabel>Proveedores</FieldLabel>
           <div className="space-y-3 p-4 border rounded-lg bg-muted/30 max-h-[33vh] overflow-y-auto">
             {providers.map((provider) => (
-              <label key={provider} className="flex items-center gap-3 cursor-pointer">
+              <label
+                key={provider}
+                className="flex items-center gap-3 cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   checked={selectedProviders.has(provider)}
@@ -131,11 +137,13 @@ const UpdatePrice = () => {
                 disabled={isSubmitting}
               />
               <span className="text-lg font-semibold min-w-fit">
-                {percentage > 0 ? "+" : ""}{percentage}%
+                {percentage > 0 ? "+" : ""}
+                {percentage}%
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              {percentage > 0 ? "Incremento" : "Decremento"} de costos en {Math.abs(percentage)}%
+              {percentage > 0 ? "Incremento" : "Decremento"} de costos en{" "}
+              {Math.abs(percentage)}%
             </p>
           </div>
         </FieldSet>

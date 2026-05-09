@@ -165,8 +165,8 @@ const Invoices = () => {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center gap-5">
-      <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-0 md:gap-5">
+      <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 pb-0 gap-3">
         <FloatingGenericMenu />
         <Card className="p-4 gap-0">
           <h3 className="text-sm font-medium mb-3">Filtrar por Estado</h3>
@@ -213,8 +213,8 @@ const Invoices = () => {
           </div>
         </Card>
       </section>
-      <section className="w-5/8 h-screen py-5">
-        <div className="px-5 h-full flex flex-col gap-4">
+      <section className="w-full md:w-5/8 h-auto py-3 md:py-5">
+        <div className="px-3 md:px-5 h-full flex flex-col gap-4">
           <Card
             ref={tableRef}
             className="h-full flex flex-col overflow-hidden py-0 gap-0"

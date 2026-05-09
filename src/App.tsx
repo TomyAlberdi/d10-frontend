@@ -85,9 +85,7 @@ export function App() {
                           <Route path="create" element={<ClientCreate />} />
                           <Route path=":id/update" element={<ClientUpdate />} />
                         </Route>
-                        {/* TODO: Mobile cart */}
                         <Route path="/cart" element={<Cart />} />
-                        {/* TODO: Mobile Invoices */}
                         <Route path="/invoice" element={<Invoices />} />
                         <Route
                           path="/invoice/:id"
