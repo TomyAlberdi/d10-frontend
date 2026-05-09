@@ -80,7 +80,6 @@ export function App() {
                             element={<UpdatePrice />}
                           />
                         </Route>
-                        {/* TODO: Mobile clients */}
                         <Route path="/client" element={<Clients />}>
                           <Route index element={<ClientsList />} />
                           <Route path="create" element={<ClientCreate />} />

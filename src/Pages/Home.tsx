@@ -74,13 +74,13 @@ const Home = () => {
             Caja
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
           <Link to="/data" className="flex items-center gap-3 text-xl">
             <ChartPie className="big-icon" />
             Datos
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
           <Link to="/note" className="flex items-center gap-3 text-xl">
             <StickyNote className="big-icon" />
             Notas
