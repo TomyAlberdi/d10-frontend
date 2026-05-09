@@ -1,5 +1,5 @@
 import FloatingGenericMenu from "@/components/FloatingGenericMenu";
-import { CirclePlus, ListOrdered, Package, XCircle } from "lucide-react";
+import { CirclePlus, ListOrdered, Package, TrendingUp, XCircle } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 
@@ -37,6 +37,13 @@ const Products = () => {
         >
           <CirclePlus className="medium-icon" />
           Crear
+        </Button>
+        <Button
+          onClick={() => navigate("/product/update-price")}
+          className="text-lg h-16 min-w-min"
+        >
+          <TrendingUp className="medium-icon" />
+          Precios
         </Button>
       </section>
       <section className="w-full md:w-5/8 h-auto md:h-screen py-0 md:py-5">

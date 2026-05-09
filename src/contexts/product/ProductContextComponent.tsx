@@ -171,6 +171,32 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     return (await response.json()) as Product[];
   };
 
+  const getProviders = async () => {
+    const response = await fetch(`${API_URL}/providers`);
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as string[];
+  };
+
+  const updateCostsByProvider = async (
+    providerName: string,
+    percentageChange: number,
+  ) => {
+    const response = await fetch(
+      `${API_URL}/update-price?providerName=${encodeURIComponent(providerName)}&percentageChange=${percentageChange}`,
+      {
+        method: "PATCH",
+      },
+    );
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as Product[];
+  };
+
   const exportData: ProductContextType = {
     getProductById,
     listProducts,
@@ -181,6 +207,8 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     deleteProduct,
     updateProductDiscontinued,
     updateProductStock,
+    getProviders,
+    updateCostsByProvider,
   };
 
   return (

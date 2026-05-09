@@ -26,6 +26,8 @@ export interface ProductContextType {
     discontinued: boolean,
   ) => Promise<void>;
   updateProductStock: (id: string, record: ProductStockRecord) => Promise<void>;
+  getProviders: () => Promise<string[]>;
+  updateCostsByProvider: (providerName: string, percentageChange: number) => Promise<Product[]>;
 }
 
 export const ProductContext = createContext<ProductContextType | null>(null);

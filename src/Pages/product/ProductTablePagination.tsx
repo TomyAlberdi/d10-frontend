@@ -28,7 +28,7 @@ interface ProductTablePaginationProps {
   selectedProduct: Product | null;
   onSelectProduct: (product: Product) => void;
   searchInput: string;
-  onSearchChange: (value: string) => void;
+  onSearchChange?: (value: string) => void;
   isSearching?: boolean;
 }
 
@@ -78,20 +78,23 @@ const ProductTablePagination = ({
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
-      <div className="p-3 border-b shrink-0 flex items-center gap-2">
-        <Search className="size-4 text-muted-foreground shrink-0" />
-        <Input
-          type="search"
-          placeholder="Buscar por código, nombre o fabricante"
-          value={searchInput}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="flex-1"
-          aria-label="Buscar productos"
-        />
-        {isSearching && (
-          <span className="text-sm text-muted-foreground">Buscando…</span>
-        )}
-      </div>
+      {onSearchChange && (
+        <div className="p-3 border-b shrink-0 flex items-center gap-2">
+          <Search className="size-4 text-muted-foreground shrink-0" />
+          <Input
+            type="search"
+            placeholder="Buscar por código, nombre o fabricante"
+            value={searchInput}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="flex-1"
+            aria-label="Buscar productos"
+          />
+          {isSearching && (
+            <span className="text-sm text-muted-foreground">Buscando…</span>
+          )}
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto">
         <Table>
           <TableHeader>
