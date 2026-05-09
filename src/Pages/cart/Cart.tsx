@@ -2,20 +2,20 @@ import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
@@ -110,16 +110,16 @@ const Cart = () => {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
+    <div className="p-3 md:p-6 max-w-5xl mx-auto space-y-3 md:space-y-6">
       <div className="w-full flex justify-between items-center">
         <h1 className="text-2xl font-bold">Carrito</h1>
-        <div className="w-1/6">
+        <div className="w-4/6 md:w-1/6">
           <FloatingGenericMenu />
         </div>
       </div>
       {/* Card 1: Client */}
-      <Card className="p-4">
-        <h2 className="text-lg font-semibold mb-3">Cliente</h2>
+      <Card className="p-3 md:p-4">
+        <h2 className="text-lg font-semibold mb-0 md:mb-3">Cliente</h2>
         {hasClient ? (
           <div className="flex flex-wrap items-center gap-3">
             <div className="text-sm">
@@ -153,7 +153,7 @@ const Cart = () => {
 
       {/* Card 2: Products table */}
       <Card className="p-4 overflow-hidden">
-        <h2 className="text-lg font-semibold mb-3">Productos</h2>
+        <h2 className="text-lg font-semibold mb-0 md:mb-3">Productos</h2>
         {cart.products.length === 0 ? (
           <div className="flex items-center gap-3">
             <p className="text-muted-foreground text-sm py-4">
@@ -220,12 +220,13 @@ const Cart = () => {
 
       {/* Card 3: Discount, total, create invoice */}
       <Card className="p-4">
-        <h2 className="text-lg font-semibold mb-3">Total y venta</h2>
+        <h2 className="text-lg font-semibold mb-0 md:mb-3">Total y venta</h2>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
               Descuento sobre total: {Math.round(discountPercent)}%
             </label>
+            {/* Slider for larger screens */}
             <input
               type="range"
               min={0}
@@ -233,7 +234,22 @@ const Cart = () => {
               step={1}
               value={discountPercent}
               onChange={handleDiscountPercentChange}
-              className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-primary"
+              className="hidden md:block w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-primary"
+            />
+            {/* Number input for mobile */}
+            <input
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              value={Math.round(discountPercent)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (Number.isFinite(value) && value >= 0 && value <= 100) {
+                  setDiscount(subtotalSum * (value / 100));
+                }
+              }}
+              className="md:hidden w-full border rounded-md px-3 py-2"
             />
           </div>
           <div className="text-xl font-semibold pt-2">
@@ -332,6 +348,7 @@ const Cart = () => {
           <Button
             onClick={handleCreateInvoice}
             disabled={!canCreateInvoice || isCreating}
+            className="w-full md:w-auto"
           >
             <FileText className="size-4 mr-1" />
             {isCreating ? "Creando venta…" : "Crear venta"}
