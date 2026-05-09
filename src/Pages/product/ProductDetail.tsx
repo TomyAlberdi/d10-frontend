@@ -79,10 +79,7 @@ const ProductDetail = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <Button onClick={() => navigate(-1)}>
-          <ChevronLeft className="bigger-icon" />
-        </Button>
+      <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold">{product.name}</h1>
         {product.discontinued && (
           <Badge variant="destructive">Discontinuado</Badge>
