@@ -7,8 +7,8 @@ import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterCo
 import ClientContextComponent from "./contexts/client/ClientContextComponent";
 import DataContextComponent from "./contexts/data/DataContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
+import NoteContextComponent from "./contexts/note/NoteContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
-import WarehouseContextComponent from "./contexts/warehouse/WarehouseContextComponent";
 import Cart from "./Pages/cart/Cart";
 import CashRegister from "./Pages/cashRegister/CashRegister";
 import CashRegisterAdjust from "./Pages/cashRegister/CashRegisterAdjust";
@@ -27,6 +27,10 @@ import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
 import Invoices from "./Pages/invoice/Invoices";
 import InvoicesByProduct from "./Pages/invoice/InvoicesByProduct";
 import UpdateInvoice from "./Pages/invoice/UpdateInvoice";
+import NoteCreate from "./Pages/note/NoteCreate";
+import Notes from "./Pages/note/Notes";
+import NotesList from "./Pages/note/NotesList";
+import NoteUpdate from "./Pages/note/NoteUpdate";
 import DiscontinuedProductList from "./Pages/product/DiscontinuedProductList";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
@@ -37,9 +41,6 @@ import ProductStockList from "./Pages/product/ProductStockList";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import UpdatePrice from "./Pages/product/UpdatePrice";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
-import Warehouse from "./Pages/warehouse/Warehouse";
-import WarehouseCellAssign from "./Pages/warehouse/WarehouseCellAssign";
-import WarehouseGrid from "./Pages/warehouse/WarehouseGrid";
 
 const DESKTOP_MIN_WIDTH = 1024;
 
@@ -91,8 +92,8 @@ export function App() {
             <ClientContextComponent>
               <InvoiceContextComponent>
                 <CashRegisterContextComponent>
-                  <WarehouseContextComponent>
-                    <DataContextComponent>
+                  <DataContextComponent>
+                    <NoteContextComponent>
                       <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/product" element={<Products />}>
@@ -163,16 +164,14 @@ export function App() {
                           <Route index element={<MainData />} />
                           <Route path="category" element={<CategoryData />} />
                         </Route>
-                        <Route path="/warehouse" element={<Warehouse />}>
-                          <Route index element={<WarehouseGrid />} />
-                          <Route
-                            path="cell/:row/:column"
-                            element={<WarehouseCellAssign />}
-                          />
+                        <Route path="/note" element={<Notes />}>
+                          <Route index element={<NotesList />} />
+                          <Route path="create" element={<NoteCreate />} />
+                          <Route path=":id" element={<NoteUpdate />} />
                         </Route>
                       </Routes>
+                      </NoteContextComponent>
                     </DataContextComponent>
-                  </WarehouseContextComponent>
                 </CashRegisterContextComponent>
               </InvoiceContextComponent>
             </ClientContextComponent>
