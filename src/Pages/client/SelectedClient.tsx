@@ -40,7 +40,7 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
   };
 
   return (
-    <Card className="h-2/6 overflow-hidden grid grid-cols-5 grid-rows-4 gap-1 p-2">
+    <Card className="h-auto md:h-2/6 overflow-hidden flex flex-col md:grid grid-cols-5 grid-rows-5 md:grid-rows-4 gap-1 p-2">
       <div className="col-span-4 flex items-center">
         <span className="text-xl font-bold ml-1">{client.name}</span>
         {isCartClient && (
@@ -49,31 +49,31 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
           </span>
         )}
       </div>
-      <div className="col-span-2 row-start-2 flex items-center gap-3 border-2 px-2">
+      <div className="col-span-2 row-start-2 flex items-center gap-3 border-2 p-2">
         <span className="text-muted-foreground">Tipo</span>
         <span className="text-foreground">{typeLabel}</span>
       </div>
-      <div className="col-span-2 row-start-2 flex items-center gap-3 border-2 px-2">
+      <div className="col-span-2 row-start-2 flex items-center gap-3 border-2 p-2">
         <span className="text-muted-foreground">Email</span>
         <span className="text-foreground">{client.email}</span>
       </div>
-      <div className="col-span-2 row-start-3 flex items-center gap-3 border-2 px-2">
+      <div className="col-span-2 row-start-3 flex items-center gap-3 border-2 p-2">
         <span className="text-muted-foreground">
           {client.type === "CONSUMIDOR_FINAL" ? "DNI" : "CUIT"}
         </span>
         <span className="text-foreground">{client.cuitDni}</span>
       </div>
-      <div className="col-span-2 row-start-3 flex items-center gap-3 border-2 px-2">
+      <div className="col-span-2 row-start-3 flex items-center gap-3 border-2 p-2">
         <span className="text-muted-foreground">Teléfono</span>
         <span className="text-foreground">{client.phone}</span>
       </div>
-      <div className="col-span-2 row-start-4 flex items-center gap-3 border-2 px-2 w-full">
+      <div className="col-span-2 row-start-4 flex items-center gap-3 border-2 p-2 w-full">
         <span className="text-muted-foreground">Dirección</span>
         <span className="text-foreground">{client.address}</span>
       </div>
-      <div className="col-span-1 row-span-full flex flex-col justify-between">
+      <div className="row-start-5 col-span-full md:col-span-1 md:row-span-full flex flex-col justify-between">
         <Button
-          className="h-[49%] w-full"
+          className="h-[49%] w-full hidden md:flex"
           variant="outline"
           size="sm"
           onClick={() => navigate(`/client/${client.id}/update`)}
@@ -82,7 +82,7 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
           Editar
         </Button>
         <Button
-          className="h-[49%] w-full"
+          className="md:h-[49%] w-full"
           variant="outline"
           size="sm"
           onClick={handleSetAsCartClient}

@@ -80,7 +80,7 @@ const NotesList = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-4">
+    <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-0 md:pr-4">
       {notes.map((note) => {
         return (
           <Card

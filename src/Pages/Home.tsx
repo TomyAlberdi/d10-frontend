@@ -41,28 +41,28 @@ const Home = () => {
       )}
 
       <h1 className="text-4xl font-bold text-foreground mb-12 text-center alternate-font">
-        Diseño 10 Olavarría - Administración
+        Diseño 10 Olavarría <br /> Administración
       </h1>
-      <div className="grid grid-cols-2 gap-4">
-        <Button size="lg" asChild className="h-25 w-64">
+      <div className="md:grid flex flex-col grid-cols-2 gap-4 w-full md:w-auto">
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
           <Link to="/product" className="flex items-center gap-3 text-xl">
             <Package className="big-icon" />
             Productos
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
           <Link to="/client" className="flex items-center gap-3 text-xl">
             <Users className="big-icon" />
             Clientes
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
           <Link to="/invoice" className="flex items-center gap-3 text-xl">
             <FileText className="big-icon" />
             Ventas
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
           <Link to="/cart" className="flex items-center gap-3 text-xl">
             <ShoppingCart className="big-icon" />
             Carrito
@@ -74,13 +74,13 @@ const Home = () => {
             Caja
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64 hidden md:flex">
           <Link to="/data" className="flex items-center gap-3 text-xl">
             <ChartPie className="big-icon" />
             Datos
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
           <Link to="/note" className="flex items-center gap-3 text-xl">
             <StickyNote className="big-icon" />
             Notas

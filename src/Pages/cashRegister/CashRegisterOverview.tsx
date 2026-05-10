@@ -52,7 +52,7 @@ const CashRegisterOverview = () => {
   }, [selectedDate, fetchTransactions, fetchDailyTotals]);
 
   return (
-    <div className="h-full flex flex-col gap-6">
+    <div className="h-auto md:h-full flex flex-col gap-3 md:gap-6">
       {/* Overview Section */}
       <div className="flex justify-center">
         <Card className="w-full max-w-xl p-6 flex flex-col gap-6">
@@ -121,8 +121,8 @@ const CashRegisterOverview = () => {
             </p>
           </div>
 
-          <div className="flex gap-5 items-end">
-            <div className="w-md">
+          <div className="flex flex-col md:flex-row gap-5 items-center md:items-end">
+            <div className="w-full md:w-md">
               <label
                 className="block text-sm font-medium mb-1"
                 htmlFor="transaction-date"

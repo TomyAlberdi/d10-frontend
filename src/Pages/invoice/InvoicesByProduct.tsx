@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,7 +14,7 @@ import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { Check, ChevronLeft, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -137,9 +138,8 @@ const InvoicesByProduct = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-4">
           <div className="text-lg text-destructive">{error}</div>
-          <Button onClick={() => navigate(-1)} variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver
+          <Button onClick={() => navigate(-1)}>
+            <ChevronLeft className="bigger-icon" />
           </Button>
         </div>
       </div>
@@ -147,11 +147,10 @@ const InvoicesByProduct = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center gap-5">
-      <section className="w-1/8 flex flex-col justify-start p-4 gap-3">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-start md:justify-center gap-0 md:gap-5">
+      <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 gap-3">
         <FloatingGenericMenu />
         <Card className="p-4">
-          <h3 className="text-sm font-medium mb-3">Información</h3>
           <div className="space-y-3">
             <div>
               <label className="text-xs font-medium text-muted-foreground">
@@ -168,8 +167,8 @@ const InvoicesByProduct = () => {
           </div>
         </Card>
       </section>
-      <section className="w-5/8 h-screen py-5">
-        <div className="px-5 h-full flex flex-col gap-4">
+      <section className="w-full md:w-5/8 h-auto md:h-screen py-0 md:py-5">
+        <div className="px-3 md:px-5 h-full flex flex-col gap-4">
           <Card
             ref={tableRef}
             className="h-full flex flex-col overflow-hidden py-0 gap-0"

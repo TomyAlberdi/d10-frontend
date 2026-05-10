@@ -1,30 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type {
-    CreateInvoiceDTO,
-    Invoice,
-    InvoiceStatus,
+  CreateInvoiceDTO,
+  Invoice,
+  InvoiceStatus,
 } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { FileText, Trash2 } from "lucide-react";
+import { ChevronLeft, FileText, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -183,8 +183,8 @@ const UpdateInvoice = () => {
     return (
       <div className="p-6 max-w-5xl mx-auto">
         <p className="text-muted-foreground">venta no encontrada</p>
-        <Button variant="outline" onClick={() => navigate("/invoice")}>
-          Volver a ventas
+        <Button onClick={() => navigate(-1)}>
+          <ChevronLeft className="bigger-icon" />
         </Button>
       </div>
     );

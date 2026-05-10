@@ -92,7 +92,7 @@ const ClientsList = () => {
   );
 
   return (
-    <div className="px-5 h-full flex flex-col gap-4">
+    <div className="px-3 md:px-5 h-full flex flex-col gap-3 md:gap-4">
       <SelectedClient client={displaySelected} />
       <Card
         ref={tableRef}

@@ -12,6 +12,7 @@ import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
 import jsPDF from "jspdf";
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -134,13 +135,18 @@ const ProductStockList = () => {
 
   return (
     <div className="px-5 h-full flex flex-col gap-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-center md:justify-between items-center mt-3 md:mt-0 gap-2 md:gap-0">
         <h2 className="text-2xl font-bold">Productos en Stock </h2>
-        <Button onClick={generateStockPDF}>Descargar stock</Button>
+        <Button onClick={generateStockPDF} className="text-xl md:text-base">
+          <Download size={"4"} />
+          Descargar Stock
+        </Button>
       </div>
-      <div className="flex flex-col gap-2 bg-card p-2 rounded-md w-fit">
-        <span className="text-lg">Superficie total: {m2Total} M2</span>
-        <span className="text-lg">
+      <div className="flex flex-col gap-2 bg-card p-2 rounded-md w-fit self-center md:self-auto">
+        <span className="text-xl md:text-lg">
+          Superficie total: {m2Total} M2
+        </span>
+        <span className="text-xl md:text-lg">
           Valor total: $ {formatPrice(totalValue)}
         </span>
       </div>
