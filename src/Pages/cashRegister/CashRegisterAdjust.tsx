@@ -50,7 +50,7 @@ const CashRegisterAdjust = () => {
   };
 
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="h-auto md:h-full flex items-center justify-center">
       <Card className="w-full max-w-xl p-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold mb-2">Ajustar caja</h1>

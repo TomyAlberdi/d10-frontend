@@ -48,7 +48,7 @@ const CashRegisterTransactionsPaginated = () => {
     paginatedCurrentPage < paginatedTotalPages - 1 && !isPaginatedLoading;
 
   return (
-    <div className="h-full flex flex-col gap-6 p-6">
+    <div className="h-full flex flex-col gap-6 p-2 md:p-6">
       <div>
         <h1 className="text-2xl font-bold mb-2">Transacciones de caja</h1>
         <p className="text-sm text-muted-foreground">
@@ -56,7 +56,7 @@ const CashRegisterTransactionsPaginated = () => {
         </p>
       </div>
 
-      <Card className="w-full flex-1 p-6 flex flex-col gap-4 overflow-hidden">
+      <Card className="w-full flex-1 p-2 md:p-6 flex flex-col gap-4 overflow-hidden">
 
         <div className="text-xs text-muted-foreground">
           Mostrando {paginatedTransactions.length} de {paginatedTotalElements} transacciones

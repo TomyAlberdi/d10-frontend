@@ -74,7 +74,7 @@ const Home = () => {
             Caja
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-full md:w-64">
+        <Button size="lg" asChild className="h-25 w-full md:w-64 hidden md:flex">
           <Link to="/data" className="flex items-center gap-3 text-xl">
             <ChartPie className="big-icon" />
             Datos

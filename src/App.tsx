@@ -99,7 +99,6 @@ export function App() {
                           path="/invoices-by-product/:productId"
                           element={<InvoicesByProduct />}
                         />
-                        {/* TODO: Mobile Cash Register */}
                         <Route path="/cash-register" element={<CashRegister />}>
                           <Route index element={<CashRegisterOverview />} />
                           <Route
@@ -115,11 +114,11 @@ export function App() {
                             element={<CashRegisterInvoiceTransaction />}
                           />
                         </Route>
-                        {/* TODO: Mobile Data */}
                         <Route path="/data" element={<Data />}>
                           <Route index element={<MainData />} />
                           <Route path="category" element={<CategoryData />} />
                         </Route>
+                        {/* TODO: Mobile Notes */}
                         <Route path="/note" element={<Notes />}>
                           <Route index element={<NotesList />} />
                           <Route path="create" element={<NoteCreate />} />
