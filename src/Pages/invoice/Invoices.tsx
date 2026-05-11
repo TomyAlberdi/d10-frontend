@@ -21,7 +21,6 @@ const SEARCH_DEBOUNCE_MS = 300;
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Pendiente",
   PAGO: "Pago",
-  ENVIADO: "Enviado",
   ENTREGADO: "Entregado",
   CANCELADO: "Cancelado",
 };
@@ -165,7 +164,7 @@ const Invoices = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-0 md:gap-5">
+    <div className="h-screen flex flex-col md:flex-row items-center justify-center gap-0 md:gap-5">
       <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 pb-0 gap-3">
         <FloatingGenericMenu />
         <Card className="p-4 gap-0">
@@ -213,7 +212,7 @@ const Invoices = () => {
           </div>
         </Card>
       </section>
-      <section className="w-full md:w-5/8 h-auto py-3 md:py-5">
+      <section className="w-full md:w-5/8 h-auto md:h-full py-3 md:py-5">
         <div className="px-3 md:px-5 h-full flex flex-col gap-4">
           <Card
             ref={tableRef}

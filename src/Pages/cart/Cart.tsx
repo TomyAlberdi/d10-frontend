@@ -30,7 +30,6 @@ import { toast } from "sonner";
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Pendiente" },
   { value: "PAGO", label: "Pago" },
-  { value: "ENVIADO", label: "Enviado" },
   { value: "ENTREGADO", label: "Entregado" },
   { value: "CANCELADO", label: "Cancelado" },
 ];
