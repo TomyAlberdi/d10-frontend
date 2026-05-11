@@ -1,24 +1,25 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
-    Field,
-    FieldGroup,
-    FieldLabel,
-    FieldSet,
-    FieldTitle,
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+  FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type {
-    CreateProduct,
-    ProductCharacteristic,
+  CreateProduct,
+  ProductCharacteristic,
 } from "@/interfaces/ProductInterfaces";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -239,6 +240,14 @@ const ProductUpdate = () => {
     setCharacteristics((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const calculatePriceByMeasureUnit = (): string => {
+    const cost = parseFloat(costByMeasureUnit);
+    const profit = parseFloat(profitPercentage);
+    if (isNaN(cost) || isNaN(profit) || cost === 0) return "0.00";
+    const priceByMeasureUnit = cost * (1 + profit / 100);
+    return priceByMeasureUnit.toFixed(2);
+  };
+
   const calculatePriceBySaleUnit = (): string => {
     const cost = parseFloat(costByMeasureUnit);
     const profit = parseFloat(profitPercentage);
@@ -452,86 +461,104 @@ const ProductUpdate = () => {
             />
           </Field>
 
-          <Field>
-            <FieldLabel>Unidad de Medida</FieldLabel>
-            <Select
-              value={measureType}
-              onValueChange={(v) =>
-                setMeasureType(v as CreateProduct["measureType"])
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {MEASURE_TYPE_OPTIONS.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+          <div className="flex">
+            <Field className="mr-2">
+              <FieldLabel>Unidad de Medida</FieldLabel>
+              <Select
+                value={measureType}
+                onValueChange={(v) =>
+                  setMeasureType(v as CreateProduct["measureType"])
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MEASURE_TYPE_OPTIONS.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field>
+              <FieldLabel>Unidad de Venta</FieldLabel>
+              <Select
+                value={saleUnitType}
+                onValueChange={(v) =>
+                  setSaleUnitType(v as CreateProduct["saleUnitType"])
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SALE_UNIT_OPTIONS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+
+          <div className="flex">
+            <Field className="mr-2">
+              <FieldLabel>Costo por {measureType}</FieldLabel>
+              <Input
+                type="number"
+                min={0}
+                step="0.01"
+                value={costByMeasureUnit}
+                onChange={(e) => setCostByMeasureUnit(e.target.value)}
+                placeholder="0.00"
+                required
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Ganancia (%)</FieldLabel>
+              <Input
+                type="number"
+                step="0.01"
+                value={profitPercentage}
+                onChange={(e) => setProfitPercentage(e.target.value)}
+                placeholder="0.00"
+                required
+              />
+            </Field>
+          </div>
+
+          <Card className="flex flex-col gap-2 row-span-2 p-3">
+            <Field>
+              <FieldLabel>Precio final por {measureType}</FieldLabel>
+              <Input
+                type="number"
+                value={calculatePriceByMeasureUnit()}
+                readOnly
+                placeholder="0.00"
+                className="bg-muted cursor-not-allowed"
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Precio final por {saleUnitType}</FieldLabel>
+              <Input
+                type="number"
+                value={calculatePriceBySaleUnit()}
+                readOnly
+                placeholder="0.00"
+                className="bg-muted cursor-not-allowed"
+              />
+            </Field>
+          </Card>
 
           <Field>
-            <FieldLabel>Unidad de Venta</FieldLabel>
-            <Select
-              value={saleUnitType}
-              onValueChange={(v) =>
-                setSaleUnitType(v as CreateProduct["saleUnitType"])
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SALE_UNIT_OPTIONS.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field>
-            <FieldLabel>Precio por unidad de venta</FieldLabel>
-            <Input
-              type="number"
-              value={calculatePriceBySaleUnit()}
-              readOnly
-              placeholder="0.00"
-              className="bg-muted cursor-not-allowed"
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>Costo por unidad de medida</FieldLabel>
-            <Input
-              type="number"
-              min={0}
-              step="0.01"
-              value={costByMeasureUnit}
-              onChange={(e) => setCostByMeasureUnit(e.target.value)}
-              placeholder="0.00"
-              required
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>Ganancia (%)</FieldLabel>
-            <Input
-              type="number"
-              step="0.01"
-              value={profitPercentage}
-              onChange={(e) => setProfitPercentage(e.target.value)}
-              placeholder="0.00"
-              required
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>Medida por unidad de venta</FieldLabel>
+            <FieldLabel>
+              {measureType} por {saleUnitType}
+            </FieldLabel>
             <Input
               type="number"
               min="0"
