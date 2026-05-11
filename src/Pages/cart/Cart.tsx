@@ -320,7 +320,7 @@ const Cart = () => {
             <Select
               value={cart.paymentMethod || "CASH"}
               onValueChange={(value) =>
-                setPaymentMethod(value as "CASH" | "DIGITAL")
+                setPaymentMethod(value as "CASH" | "DIGITAL" | "USD")
               }
             >
               <SelectTrigger className="w-full max-w-xs">
@@ -329,6 +329,7 @@ const Cart = () => {
               <SelectContent>
                 <SelectItem value="CASH">Efectivo</SelectItem>
                 <SelectItem value="DIGITAL">Transferencia</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
               </SelectContent>
             </Select>
           </div>

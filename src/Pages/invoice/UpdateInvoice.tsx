@@ -65,7 +65,7 @@ const UpdateInvoice = () => {
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
   const [paymentMethod, setPaymentMethod] = useState<
-    "CASH" | "DIGITAL" | undefined
+    "CASH" | "DIGITAL" | "USD" | undefined
   >(undefined);
   const [stockDecreased, setStockDecreased] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -353,7 +353,7 @@ const UpdateInvoice = () => {
             <Select
               value={paymentMethod || "CASH"}
               onValueChange={(value) =>
-                setPaymentMethod(value as "CASH" | "DIGITAL")
+                setPaymentMethod(value as "CASH" | "DIGITAL" | "USD")
               }
             >
               <SelectTrigger className="w-full max-w-xs">
@@ -362,6 +362,7 @@ const UpdateInvoice = () => {
               <SelectContent>
                 <SelectItem value="CASH">Efectivo</SelectItem>
                 <SelectItem value="DIGITAL">Transferencia</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
               </SelectContent>
             </Select>
           </div>

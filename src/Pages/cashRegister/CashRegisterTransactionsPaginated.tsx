@@ -101,7 +101,9 @@ const CashRegisterTransactionsPaginated = () => {
                       ? "Efectivo"
                       : transaction.registerType === "DIGITAL"
                         ? "Transferencia"
-                        : "—"}
+                        : transaction.registerType === "USD"
+                          ? "USD"
+                          : "—"}
                   </TableCell>
                   <TableCell className="font-medium">
                     $ {formatPrice(transaction.amount)}

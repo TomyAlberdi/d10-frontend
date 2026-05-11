@@ -10,6 +10,7 @@ const CashRegisterAdjust = () => {
   const {
     paperAmount,
     digitalAmount,
+    usdAmount,
     selectedType,
     setSelectedType,
     addCash,
@@ -23,7 +24,12 @@ const CashRegisterAdjust = () => {
   const isValidAmount = Number.isFinite(parsedAmount) && parsedAmount > 0;
   const isDisabled = !isValidAmount || isProcessing;
 
-  const currentAmount = selectedType === "PAPER" ? paperAmount : digitalAmount;
+  const currentAmount =
+    selectedType === "PAPER"
+      ? paperAmount
+      : selectedType === "DIGITAL"
+        ? digitalAmount
+        : usdAmount;
 
   const handleAdd = async () => {
     if (!isValidAmount) return;
@@ -75,6 +81,13 @@ const CashRegisterAdjust = () => {
             onClick={() => setSelectedType("DIGITAL")}
           >
             Transferencia
+          </Button>
+          <Button
+            variant={selectedType === "USD" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedType("USD")}
+          >
+            USD
           </Button>
         </div>
 

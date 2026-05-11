@@ -8,7 +8,7 @@ export type InvoiceStatus =
   | "ENTREGADO"
   | "CANCELADO";
 
-export type PaymentMethod = "CASH" | "DIGITAL";
+export type PaymentMethod = "CASH" | "DIGITAL" | "USD";
 
 export interface CreateInvoiceDTO {
   client: Client;

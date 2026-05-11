@@ -29,6 +29,7 @@ const CashRegisterOverview = () => {
   const {
     paperAmount,
     digitalAmount,
+    usdAmount,
     isLoadingAmount,
     fetchCurrentAmounts,
     transactions,
@@ -90,6 +91,21 @@ const CashRegisterOverview = () => {
               ) : (
                 <span className="text-2xl font-extrabold tracking-tight">
                   $ {formatPrice(digitalAmount)}
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-baseline gap-3">
+              <span className="text-muted-foreground text-lg">
+                Caja USD:
+              </span>
+              {isLoadingAmount ? (
+                <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
+                  Cargando...
+                </span>
+              ) : (
+                <span className="text-2xl font-extrabold tracking-tight">
+                  $ {formatPrice(usdAmount)}
                 </span>
               )}
             </div>

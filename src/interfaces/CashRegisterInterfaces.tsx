@@ -1,6 +1,6 @@
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 
-export type CashRegisterType = "PAPER" | "DIGITAL";
+export type CashRegisterType = "PAPER" | "DIGITAL" | "USD";
 
 export type CashRegisterTransactionType = "IN" | "OUT";
 
@@ -86,6 +86,8 @@ export interface CashRegisterContextType {
   paperAmount: number;
   /** Current amount of cash in the digital register. */
   digitalAmount: number;
+  /** Current amount of cash in the USD register. */
+  usdAmount: number;
   /** Whether the amounts are being loaded. */
   isLoadingAmount: boolean;
   /** Transactions list. */

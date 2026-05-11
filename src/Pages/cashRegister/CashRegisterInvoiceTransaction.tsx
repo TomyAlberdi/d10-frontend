@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -17,8 +17,17 @@ const CashRegisterInvoiceTransaction = () => {
 
   const [amount, setAmount] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [registerType, setRegisterTypeState] = useState<"PAPER" | "DIGITAL">("PAPER");
+  const [registerType, setRegisterTypeState] = useState<"PAPER" | "DIGITAL" | "USD">("PAPER");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  const initialType = useMemo(() => {
+    if (!invoice) return "PAPER";
+    return invoice.paymentMethod === "DIGITAL"
+      ? "DIGITAL"
+      : invoice.paymentMethod === "USD"
+        ? "USD"
+        : "PAPER";
+  }, [invoice]);
 
   useEffect(() => {
     if (!invoice) {
@@ -30,16 +39,15 @@ const CashRegisterInvoiceTransaction = () => {
     // Pre-fill values
     setAmount(invoice.total.toString());
     setDescription(`venta #${invoice.invoiceNumber || invoice.id}`);
-    const initialType = invoice.paymentMethod === "DIGITAL" ? "DIGITAL" : "PAPER";
     setRegisterTypeState(initialType);
     setSelectedType(initialType);
-  }, [invoice, navigate, setSelectedType]);
+  }, [invoice, navigate, setSelectedType, initialType]);
 
   const parsedAmount = Number(amount.replace(",", "."));
   const isValidAmount = Number.isFinite(parsedAmount) && parsedAmount > 0;
   const isDisabled = !isValidAmount || isProcessing;
 
-  const handleRegisterTypeChange = (type: "PAPER" | "DIGITAL") => {
+  const handleRegisterTypeChange = (type: "PAPER" | "DIGITAL" | "USD") => {
     setRegisterTypeState(type);
     setSelectedType(type);
   };
@@ -99,6 +107,14 @@ const CashRegisterInvoiceTransaction = () => {
               disabled={isProcessing}
             >
               Transferencia
+            </Button>
+            <Button
+              variant={registerType === "USD" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleRegisterTypeChange("USD")}
+              disabled={isProcessing}
+            >
+              USD
             </Button>
           </div>
 

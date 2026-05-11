@@ -27,6 +27,7 @@ const CashRegisterContextComponent: React.FC<
 > = ({ children }) => {
   const [paperAmount, setPaperAmount] = useState<number>(0);
   const [digitalAmount, setDigitalAmount] = useState<number>(0);
+  const [usdAmount, setUsdAmount] = useState<number>(0);
   const [isLoadingAmount, setIsLoadingAmount] = useState<boolean>(true);
   const [transactions, setTransactions] = useState<CashRegisterTransaction[]>(
     [],
@@ -54,18 +55,21 @@ const CashRegisterContextComponent: React.FC<
   const fetchCurrentAmounts = useCallback(async () => {
     setIsLoadingAmount(true);
     try {
-      const [paperResponse, digitalResponse] = await Promise.all([
+      const [paperResponse, digitalResponse, usdResponse] = await Promise.all([
         fetch(`${API_URL}?type=PAPER`),
         fetch(`${API_URL}?type=DIGITAL`),
+        fetch(`${API_URL}?type=USD`),
       ]);
-      if (!paperResponse.ok || !digitalResponse.ok) {
+      if (!paperResponse.ok || !digitalResponse.ok || !usdResponse.ok) {
         toast.error(`Error al obtener los montos actuales`);
         throw new Error(`HTTP Error`);
       }
       const paperData = (await paperResponse.json()) as CashRegisterDTO;
       const digitalData = (await digitalResponse.json()) as CashRegisterDTO;
+      const usdData = (await usdResponse.json()) as CashRegisterDTO;
       setPaperAmount(paperData.currentAmount);
       setDigitalAmount(digitalData.currentAmount);
+      setUsdAmount(usdData.currentAmount);
     } catch (error) {
       // Error already handled
     } finally {
@@ -305,8 +309,14 @@ const CashRegisterContextComponent: React.FC<
 
       if (!paymentMethod) return;
 
-      const registerType: CashRegisterType =
-        paymentMethod === "CASH" ? "PAPER" : "DIGITAL";
+      let registerType: CashRegisterType;
+      if (paymentMethod === "CASH") {
+        registerType = "PAPER";
+      } else if (paymentMethod === "DIGITAL") {
+        registerType = "DIGITAL";
+      } else {
+        registerType = "USD";
+      }
 
       try {
         const dto: CreateCashRegisterTransactionDTO = {
@@ -407,6 +417,7 @@ const CashRegisterContextComponent: React.FC<
     () => ({
       paperAmount,
       digitalAmount,
+      usdAmount,
       isLoadingAmount,
       transactions,
       isLoadingTransactions,
@@ -433,6 +444,7 @@ const CashRegisterContextComponent: React.FC<
     [
       paperAmount,
       digitalAmount,
+      usdAmount,
       isLoadingAmount,
       transactions,
       isLoadingTransactions,
