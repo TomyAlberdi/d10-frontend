@@ -221,7 +221,7 @@ const CashRegisterOverview = () => {
                         ? "Efectivo"
                         : transaction.registerType === "DIGITAL"
                           ? "Transferencia"
-                          : "—"}
+                          : "USD"}
                     </TableCell>
                     <TableCell className="font-medium">
                       $ {formatPrice(transaction.amount)}
