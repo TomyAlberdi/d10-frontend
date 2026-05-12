@@ -57,9 +57,9 @@ const CashRegisterTransactionsPaginated = () => {
       </div>
 
       <Card className="w-full flex-1 p-2 md:p-6 flex flex-col gap-4 overflow-hidden">
-
         <div className="text-xs text-muted-foreground">
-          Mostrando {paginatedTransactions.length} de {paginatedTotalElements} transacciones
+          Mostrando {paginatedTransactions.length} de {paginatedTotalElements}{" "}
+          transacciones
         </div>
 
         <div className="flex-1 overflow-y-auto border rounded-md">
@@ -74,16 +74,18 @@ const CashRegisterTransactionsPaginated = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedTransactions.length === 0 && !isPaginatedLoading && paginatedTotalElements >= 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center text-muted-foreground py-8"
-                  >
-                    No hay transacciones disponibles
-                  </TableCell>
-                </TableRow>
-              )}
+              {paginatedTransactions.length === 0 &&
+                !isPaginatedLoading &&
+                paginatedTotalElements >= 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="text-center text-muted-foreground py-8"
+                    >
+                      No hay transacciones disponibles
+                    </TableCell>
+                  </TableRow>
+                )}
               {paginatedTransactions.map((transaction) => (
                 <TableRow
                   key={transaction.id}
@@ -101,9 +103,7 @@ const CashRegisterTransactionsPaginated = () => {
                       ? "Efectivo"
                       : transaction.registerType === "DIGITAL"
                         ? "Transferencia"
-                        : transaction.registerType === "USD"
-                          ? "USD"
-                          : "—"}
+                        : "USD"}
                   </TableCell>
                   <TableCell className="font-medium">
                     $ {formatPrice(transaction.amount)}

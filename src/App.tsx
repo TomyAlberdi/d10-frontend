@@ -118,7 +118,6 @@ export function App() {
                           <Route index element={<MainData />} />
                           <Route path="category" element={<CategoryData />} />
                         </Route>
-                        {/* TODO: Mobile Notes */}
                         <Route path="/note" element={<Notes />}>
                           <Route index element={<NotesList />} />
                           <Route path="create" element={<NoteCreate />} />
