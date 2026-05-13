@@ -68,13 +68,13 @@ const BestSellingProducts = () => {
             }
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="LAST_MONTH" id="last-month" />
+              <RadioGroupItem value="THIS_MONTH" id="last-month" />
               <Label htmlFor="last-month" className="cursor-pointer">
                 Este Mes
               </Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="LAST_YEAR" id="last-year" />
+              <RadioGroupItem value="THIS_YEAR" id="last-year" />
               <Label htmlFor="last-year" className="cursor-pointer">
                 Este Año
               </Label>

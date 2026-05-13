@@ -15,7 +15,7 @@ const Data = () => {
           className="text-lg h-16 min-w-min"
         >
           <ChartNoAxesCombined className="medium-icon" />
-          Ventas
+          Ingresos
         </Button>
         <Button
           onClick={() => navigate("/data/category")}
@@ -23,7 +23,7 @@ const Data = () => {
           disabled
         >
           <ChartPie className="medium-icon" />
-          Categorias
+          Ventas
         </Button>
       </section>
       <section className="w-5/8 h-screen py-5">
