@@ -16,7 +16,7 @@ import { useDataContext } from "@/contexts/data/UseDataContext";
 import type { MonthlySummaryRecord } from "@/interfaces/DataInterfaces";
 import { getMonthName } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 const chartConfig = {
   income: {
@@ -53,7 +53,7 @@ const MonthlySalesChart = () => {
         </CardHeader>
         <CardContent className="px-3">
           <ChartContainer config={chartConfig}>
-            <LineChart
+            <BarChart
               accessibilityLayer
               data={MonthlyData}
               margin={{ left: 10, right: 10 }}
@@ -70,14 +70,14 @@ const MonthlySalesChart = () => {
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Line
+              <Bar
                 dataKey="income"
                 type="natural"
                 stroke="var(--chart-2)"
+                fill="var(--chart-2)"
                 strokeWidth={2}
-                dot={false}
               />
-            </LineChart>
+            </BarChart>
           </ChartContainer>
         </CardContent>
       </Card>
