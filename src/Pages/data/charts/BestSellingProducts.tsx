@@ -29,10 +29,10 @@ import { useNavigate } from "react-router-dom";
 
 const getTimeSpanLabel = (timeSpan: TimeSpanEnum) => {
   switch (timeSpan) {
-    case "LAST_MONTH":
-      return "Últimos 30 días";
-    case "LAST_YEAR":
-      return "Último Año";
+    case "THIS_MONTH":
+      return "Este Mes";
+    case "THIS_YEAR":
+      return "Este Año";
     case "ALL_TIME":
       return "General";
     default:
@@ -45,7 +45,7 @@ const BestSellingProducts = () => {
   const { getBestSellingProducts } = useDataContext();
   const [products, setProducts] = useState<BestSellingProductDTO[]>([]);
   const [SelectedTimespan, setSelectedTimespan] =
-    useState<TimeSpanEnum>("LAST_MONTH");
+    useState<TimeSpanEnum>("THIS_MONTH");
   const [sortBy, setSortBy] = useState<SortByEnum>("GROSS_INCOME");
 
   useEffect(() => {
@@ -68,15 +68,15 @@ const BestSellingProducts = () => {
             }
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="LAST_MONTH" id="last-month" />
+              <RadioGroupItem value="THIS_MONTH" id="last-month" />
               <Label htmlFor="last-month" className="cursor-pointer">
-                Últimos 30 días
+                Este Mes
               </Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="LAST_YEAR" id="last-year" />
+              <RadioGroupItem value="THIS_YEAR" id="last-year" />
               <Label htmlFor="last-year" className="cursor-pointer">
-                Último Año
+                Este Año
               </Label>
             </div>
             <div className="flex items-center space-x-2">
@@ -99,12 +99,12 @@ const BestSellingProducts = () => {
                 Ingresos Brutos
               </Label>
             </div>
-            <div className="flex items-center space-x-2">
+{/*             <div className="flex items-center space-x-2">
               <RadioGroupItem value="NET_INCOME" id="net-income" disabled />
               <Label htmlFor="net-income" className="cursor-pointer">
                 Ingresos Netos
               </Label>
-            </div>
+            </div> */}
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="SALES_AMOUNT" id="sales-amount" />
               <Label htmlFor="sales-amount" className="cursor-pointer">

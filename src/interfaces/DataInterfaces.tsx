@@ -1,6 +1,6 @@
 import type { Product } from "./ProductInterfaces";
 
-export type TimeSpanEnum = "LAST_MONTH" | "LAST_YEAR" | "ALL_TIME";
+export type TimeSpanEnum = "THIS_MONTH" | "THIS_YEAR" | "ALL_TIME";
 export type SortByEnum = "SALES_AMOUNT" | "GROSS_INCOME" | "NET_INCOME";
 
 export interface MonthlySummaryRecord {
