@@ -1,5 +1,4 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { Toaster } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import CartContextComponent from "./contexts/cart/CartContextComponent";
 import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterContextComponent";
@@ -43,7 +42,6 @@ import UpdateProductStock from "./Pages/product/UpdateProductStock";
 export function App() {
   return (
     <Router>
-      <Toaster />
       <TooltipProvider>
         <ProductContextComponent>
           <CartContextComponent>
