@@ -1,6 +1,6 @@
 import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
-import { ChartNoAxesCombined, ChartPie } from "lucide-react";
+import { ChartNoAxesCombined, ChartPie, Glasses } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const Data = () => {
@@ -18,12 +18,18 @@ const Data = () => {
           Ingresos
         </Button>
         <Button
-          onClick={() => navigate("/data/category")}
           className="text-lg h-16 min-w-min"
           disabled
         >
           <ChartPie className="medium-icon" />
           Productos
+        </Button>
+        <Button
+          className="text-lg h-16 min-w-min"
+          disabled
+        >
+          <Glasses className="medium-icon" />
+          Análisis
         </Button>
       </section>
       <section className="w-5/8 h-screen py-5">

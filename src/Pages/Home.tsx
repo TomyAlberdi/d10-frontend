@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { isBackendReachable } from "@/lib/utils";
 import {
-  ChartPie,
+  Database,
   FileText,
   Package,
   ShoppingCart,
   StickyNote,
   Users,
-  Wallet
+  Wallet,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -74,9 +74,13 @@ const Home = () => {
             Caja
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-full md:w-64 hidden md:flex">
+        <Button
+          size="lg"
+          asChild
+          className="h-25 w-full md:w-64 hidden md:flex"
+        >
           <Link to="/data" className="flex items-center gap-3 text-xl">
-            <ChartPie className="big-icon" />
+            <Database className="big-icon" />
             Datos
           </Link>
         </Button>
