@@ -23,7 +23,7 @@ const Data = () => {
           disabled
         >
           <ChartPie className="medium-icon" />
-          Ventas
+          Productos
         </Button>
       </section>
       <section className="w-5/8 h-screen py-5">

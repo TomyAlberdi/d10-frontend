@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -25,10 +24,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const MonthlySalesChart = () => {
+const MonthlySalesChart = ({ SelectedYear }: { SelectedYear: number }) => {
   const { getYearlySalesData } = useDataContext();
 
-  const [SelectedYear, setSelectedYear] = useState(2026);
   const [MonthlyData, setMonthlyData] = useState<MonthlySummaryRecord[]>([]);
 
   const fillData = useCallback((data: MonthlySummaryRecord[]) => {
@@ -45,49 +43,41 @@ const MonthlySalesChart = () => {
   }, [getYearlySalesData, fillData, SelectedYear]);
 
   return (
-    <div className="col-span-4 flex gap-3">
-      <Card className="w-3/4">
-        <CardHeader>
-          <CardTitle>Ingresos Mensuales</CardTitle>
-          <CardDescription>{SelectedYear}</CardDescription>
-        </CardHeader>
-        <CardContent className="px-3">
-          <ChartContainer config={chartConfig}>
-            <BarChart
-              accessibilityLayer
-              data={MonthlyData}
-              margin={{ left: 10, right: 10 }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey={"monthName"}
-                tickLine={false}
-                axisLine={false}
-                tickMargin={10}
-                interval={0}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Bar
-                dataKey="income"
-                type="natural"
-                stroke="var(--chart-2)"
-                fill="var(--chart-2)"
-                strokeWidth={2}
-              />
-            </BarChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-      <div className="flex flex-col items-center gap-3 w-1/4">
-        <h3 className="text-xl font-semibold">Seleccionar Año</h3>
-        <Button className="w-full" variant={"secondary"} onClick={() => setSelectedYear(2026)}>
-          2026
-        </Button>
-      </div>
-    </div>
+    <Card className="col-span-3">
+      <CardHeader>
+        <CardTitle>Ingresos por Ventas Mensuales</CardTitle>
+        <CardDescription>{SelectedYear}</CardDescription>
+      </CardHeader>
+      <CardContent className="px-3">
+        <ChartContainer config={chartConfig}>
+          <BarChart
+            accessibilityLayer
+            data={MonthlyData}
+            margin={{ left: 10, right: 10 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey={"monthName"}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={10}
+              interval={0}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Bar
+              dataKey="income"
+              type="natural"
+              stroke="var(--chart-2)"
+              fill="var(--chart-2)"
+              strokeWidth={2}
+            />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 };
 export default MonthlySalesChart;
