@@ -31,6 +31,11 @@ export function getMonthName(month: number): string {
   return months[month - 1] || "";
 }
 
+// Helper to detect "#" followed by exactly 6 digits
+export const hasInvoiceCode = (description: string): boolean => {
+  return /#\d{6}/.test(description);
+};
+
 // -------------------------------------------------------------
 // backend health helpers
 // -------------------------------------------------------------
@@ -50,4 +55,6 @@ export async function isBackendReachable(): Promise<boolean> {
 
 export const CATEGORIES = Object.keys(categoriesData) as string[];
 export const getSubcategories = (category: string): string[] =>
-  category ? (categoriesData as Record<string, string[]>)[category] ?? [] : [];
+  category
+    ? ((categoriesData as Record<string, string[]>)[category] ?? [])
+    : [];
