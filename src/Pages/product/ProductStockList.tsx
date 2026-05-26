@@ -59,7 +59,7 @@ const ProductStockList = () => {
     // Title
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    doc.text("Diseño 10 Olavarría - Lista de Stock", 10, 20);
+    doc.text("Diseño 10 Tandil - Lista de Stock", 10, 20);
     // Date
     const today = new Date().toLocaleDateString("es-AR");
     doc.setFontSize(10);
