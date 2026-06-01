@@ -72,6 +72,7 @@ const ProductAddToCart = () => {
       saleUnitQuantity: qty,
       individualDiscount,
       subtotal,
+      measurePerSaleUnit: product.measurePerSaleUnit,
     };
 
     setIsSubmitting(true);

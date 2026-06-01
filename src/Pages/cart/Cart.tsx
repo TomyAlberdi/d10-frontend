@@ -44,6 +44,7 @@ const Cart = () => {
     setPaymentMethod,
     setStockDecreased,
     removeProduct,
+    updateProduct,
     clearCart,
   } = useCartContext();
   const { createInvoice } = useInvoiceContext();
@@ -188,7 +189,24 @@ const Cart = () => {
                       {p.name}
                     </TableCell>
                     <TableCell className="text-right">
-                      {p.saleUnitQuantity} {p.saleUnitType}
+                      <div className="flex items-center gap-2 justify-end">
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={p.saleUnitQuantity}
+                          onChange={(e) => {
+                            const newQuantity = Number(e.target.value);
+                            if (Number.isFinite(newQuantity) && newQuantity >= 0) {
+                              updateProduct(p.id, newQuantity);
+                            }
+                          }}
+                          className="w-16 border rounded-md px-2 py-1 text-right"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {p.saleUnitType}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       {p.measureUnitQuantity} {p.measureType}

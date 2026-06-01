@@ -12,6 +12,7 @@ export interface CartContextType {
   setStockDecreased: (stockDecreased: boolean) => void;
   addProduct: (product: CartProduct) => void;
   removeProduct: (productId: string) => void;
+  updateProduct: (productId: string, saleUnitQuantity: number) => void;
   setDiscount: (discount: number) => void;
   clearCart: () => void;
 }
