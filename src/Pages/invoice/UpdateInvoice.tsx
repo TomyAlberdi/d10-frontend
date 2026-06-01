@@ -1,27 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type {
-  CreateInvoiceDTO,
-  Invoice,
-  InvoiceStatus,
+    CreateInvoiceDTO,
+    Invoice,
+    InvoiceStatus,
 } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { ChevronLeft, FileText, Trash2 } from "lucide-react";
@@ -30,7 +30,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
-  { value: "PENDIENTE", label: "Pendiente" },
+  { value: "PENDIENTE", label: "Presupuesto" },
   { value: "PAGO", label: "Pago" },
   { value: "ENVIADO", label: "Enviado" },
   { value: "ENTREGADO", label: "Entregado" },

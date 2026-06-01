@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
-  { value: "PENDIENTE", label: "Pendiente" },
+  { value: "PENDIENTE", label: "Presupuesto" },
   { value: "PAGO", label: "Pago" },
   { value: "ENTREGADO", label: "Entregado" },
   { value: "CANCELADO", label: "Cancelado" },
