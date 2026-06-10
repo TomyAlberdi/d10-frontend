@@ -10,4 +10,5 @@ export interface CartProduct {
   individualDiscount: number;
   subtotal: number;
   dimensions: string;
+  measurePerSaleUnit: number;
 }

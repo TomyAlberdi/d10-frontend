@@ -65,7 +65,10 @@ function loadCartFromStorage(): Invoice {
       total: Number.isFinite(total) ? total : 0,
       notes: typeof parsed.notes === "string" ? parsed.notes : undefined,
       paymentMethod: parsed.paymentMethod,
-      stockDecreased: typeof parsed.stockDecreased === "boolean" ? parsed.stockDecreased : false,
+      stockDecreased:
+        typeof parsed.stockDecreased === "boolean"
+          ? parsed.stockDecreased
+          : false,
     };
   } catch {
     return initialCart;
@@ -143,6 +146,40 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
     });
   }, []);
 
+  const updateProduct = useCallback(
+    (productId: string, saleUnitQuantity: number) => {
+      setCart((prev) => {
+        const products = prev.products.map((p) => {
+          if (p.id !== productId) return p;
+          let measurePerSaleUnit = 0.0;
+          if (p.measurePerSaleUnit) {
+            measurePerSaleUnit = p.measurePerSaleUnit;
+          } else {
+            measurePerSaleUnit = p.measureUnitQuantity / p.saleUnitQuantity;
+          }
+          const newMeasureUnitQuantity = parseFloat(
+            (saleUnitQuantity * measurePerSaleUnit).toFixed(2),
+          );
+          const newSubtotal =
+            saleUnitQuantity * p.priceBySaleUnit - p.individualDiscount;
+          return {
+            ...p,
+            saleUnitQuantity,
+            measureUnitQuantity: newMeasureUnitQuantity,
+            subtotal: Math.max(0, newSubtotal),
+          };
+        });
+        const total = computeTotal(products, prev.discount);
+        return {
+          ...prev,
+          products,
+          total,
+        };
+      });
+    },
+    [],
+  );
+
   const setDiscount = useCallback((discount: number) => {
     setCart((prev) => {
       const total = computeTotal(prev.products, discount);
@@ -181,6 +218,7 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
       setStockDecreased,
       addProduct,
       removeProduct,
+      updateProduct,
       setDiscount,
       clearCart,
     }),
@@ -193,6 +231,7 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
       setStockDecreased,
       addProduct,
       removeProduct,
+      updateProduct,
       setDiscount,
       clearCart,
     ],
