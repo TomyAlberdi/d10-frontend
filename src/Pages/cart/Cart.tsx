@@ -197,7 +197,11 @@ const Cart = () => {
                           value={p.saleUnitQuantity}
                           onChange={(e) => {
                             const newQuantity = Number(e.target.value);
-                            if (Number.isFinite(newQuantity) && newQuantity >= 0) {
+                            if (
+                              Number.isFinite(newQuantity) &&
+                              newQuantity >= 0
+                            ) {
+                              console.log(p);
                               updateProduct(p.id, newQuantity);
                             }
                           }}

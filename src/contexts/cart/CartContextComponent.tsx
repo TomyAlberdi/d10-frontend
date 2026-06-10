@@ -151,13 +151,17 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
       setCart((prev) => {
         const products = prev.products.map((p) => {
           if (p.id !== productId) return p;
-
+          let measurePerSaleUnit = 0.0;
+          if (p.measurePerSaleUnit) {
+            measurePerSaleUnit = p.measurePerSaleUnit;
+          } else {
+            measurePerSaleUnit = p.measureUnitQuantity / p.saleUnitQuantity;
+          }
           const newMeasureUnitQuantity = parseFloat(
-            (saleUnitQuantity * p.measurePerSaleUnit).toFixed(2),
+            (saleUnitQuantity * measurePerSaleUnit).toFixed(2),
           );
           const newSubtotal =
             saleUnitQuantity * p.priceBySaleUnit - p.individualDiscount;
-
           return {
             ...p,
             saleUnitQuantity,
