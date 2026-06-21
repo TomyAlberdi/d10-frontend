@@ -2,7 +2,7 @@ import type { CreateShipmentDTO, Shipment } from "@/interfaces/ShipmentInterface
 import { createContext } from "react";
 
 export interface ShipmentContextType {
-  getAllShipments: () => Promise<Shipment[]>;
+  getAllShipments: (date: string | null) => Promise<Shipment[]>;
   getShipmentById: (id: string) => Promise<Shipment | null>;
   searchShipments: (q: string) => Promise<Shipment[]>;
   createShipment: (dto: CreateShipmentDTO) => Promise<Shipment>;

@@ -91,10 +91,10 @@ const Home = () => {
             Notas
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-full md:w-64">
+        <Button size="lg" asChild className="h-25 col-span-2">
           <Link to="/shipment" className="flex items-center gap-3 text-xl">
             <Truck className="big-icon" />
-            Envíos
+            Envíos Diseño 10
           </Link>
         </Button>
       </div>

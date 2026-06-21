@@ -12,8 +12,9 @@ interface ShipmentContextComponentProps {
 const ShipmentContextComponent: React.FC<ShipmentContextComponentProps> = ({
   children,
 }) => {
-  const getAllShipments = async (): Promise<Shipment[]> => {
-    const response = await fetch(API_URL);
+  const getAllShipments = async (date: string | null): Promise<Shipment[]> => {
+    if (!date) return [];
+    const response = await fetch(`${API_URL}?date=${encodeURIComponent(date)}`);
     if (!response.ok) {
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);

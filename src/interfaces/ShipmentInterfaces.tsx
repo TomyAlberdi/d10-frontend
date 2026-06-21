@@ -5,9 +5,10 @@ export interface Shipment {
   city: string;
   phone: string;
   invoice: string;
-  partialAmount: number | null;
   finalAmount: number | null;
   details: string;
+  claim: boolean;
+  shipmentDate: string | null;
 }
 
 export interface CreateShipmentDTO {
@@ -16,7 +17,8 @@ export interface CreateShipmentDTO {
   city: string;
   phone: string;
   invoice: string;
-  partialAmount: number | null;
   finalAmount: number | null;
   details: string;
+  claim: boolean;
+  shipmentDate: string | null;
 }

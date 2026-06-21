@@ -1,43 +1,75 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useShipmentContext } from "@/contexts/shipment/UseShipmentContext";
 import type { Shipment } from "@/interfaces/ShipmentInterfaces";
-import { MapPin, Phone, Search, Trash2 } from "lucide-react";
+import { formatWednesdayDate, getNextWednesdays } from "@/lib/utils";
+import { Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
+const WEDNESDAYS = getNextWednesdays(5);
+const NO_DATE = "none";
 
 const ShipmentsList = () => {
   const navigate = useNavigate();
   const { getAllShipments, searchShipments, deleteShipment } = useShipmentContext();
   const [shipments, setShipments] = useState<Shipment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [date, setDate] = useState<string | null>(WEDNESDAYS[0]);
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
 
+  const loadForDate = async (d: string | null) => {
+    if (!d) {
+      setShipments([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await getAllShipments(d);
+      setShipments(data);
+    } catch (error) {
+      toast.error("Error al cargar envíos");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await getAllShipments();
-        setShipments(data);
-      } catch (error) {
-        toast.error("Error al cargar envíos");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [getAllShipments]);
+    loadForDate(date);
+  }, [date]);
+
+  const handleDateChange = (val: string) => {
+    const newDate = val === NO_DATE ? null : val;
+    setDate(newDate);
+    setSearching(false);
+    setQuery("");
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) {
       setSearching(false);
-      const data = await getAllShipments();
-      setShipments(data);
+      loadForDate(date);
       return;
     }
     setSearching(true);
@@ -50,15 +82,10 @@ const ShipmentsList = () => {
     }
   };
 
-  const handleClearSearch = async () => {
+  const handleClearSearch = () => {
     setQuery("");
     setSearching(false);
-    try {
-      const data = await getAllShipments();
-      setShipments(data);
-    } catch (error) {
-      console.error(error);
-    }
+    loadForDate(date);
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
@@ -77,18 +104,29 @@ const ShipmentsList = () => {
   const formatAmount = (val: number | null) =>
     val != null ? `$${val.toLocaleString("es-AR")}` : "-";
 
-  if (loading) {
-    return (
-      <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-4">
-        {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className="h-24 w-full" />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-0 md:pr-4">
+      <div className="flex gap-2 items-center">
+        <Select value={date ?? NO_DATE} onValueChange={handleDateChange}>
+          <SelectTrigger className="w-fit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NO_DATE}>Sin fecha</SelectItem>
+            {WEDNESDAYS.map((d) => (
+              <SelectItem key={d} value={d}>
+                {formatWednesdayDate(d)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {date && (
+          <span className="text-sm text-muted-foreground">
+            {shipments.length} envío{shipments.length !== 1 ? "s" : ""}
+          </span>
+        )}
+      </div>
+
       <form onSubmit={handleSearch} className="flex gap-2">
         <Input
           placeholder="Buscar por cliente o factura..."
@@ -105,50 +143,66 @@ const ShipmentsList = () => {
         )}
       </form>
 
-      {shipments.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col gap-2">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full" />
+          ))}
+        </div>
+      ) : !date && !searching ? (
+        <div className="w-full flex-1 flex items-center justify-center">
+          <p className="text-lg text-muted-foreground">
+            Seleccioná una fecha para ver los envíos
+          </p>
+        </div>
+      ) : shipments.length === 0 ? (
         <div className="w-full flex-1 flex items-center justify-center">
           <p className="text-lg text-muted-foreground">No hay envíos</p>
         </div>
       ) : (
-        shipments.map((s) => (
-          <Card
-            key={s.id}
-            className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => navigate(`/shipment/${s.id}`)}
-          >
-            <div className="flex justify-between items-start gap-4">
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-base truncate">{s.clientName}</p>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <MapPin className="w-3 h-3" />
-                  <span className="truncate">{s.address}, {s.city}</span>
-                </div>
-                {s.phone && (
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Phone className="w-3 h-3" />
-                    <span>{s.phone}</span>
-                  </div>
-                )}
-                <div className="flex gap-4 mt-1 text-sm">
-                  {s.invoice && (
-                    <span className="text-muted-foreground">Factura: <span className="font-medium text-foreground">{s.invoice}</span></span>
-                  )}
-                  {s.finalAmount != null && (
-                    <span className="text-muted-foreground">Total: <span className="font-medium text-foreground">{formatAmount(s.finalAmount)}</span></span>
-                  )}
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={(e) => handleDelete(s.id, e)}
-                className="text-destructive hover:text-destructive shrink-0"
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Cliente</TableHead>
+              <TableHead>Dirección</TableHead>
+              <TableHead>Ciudad</TableHead>
+              <TableHead>Teléfono</TableHead>
+              <TableHead>Factura</TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Reclamo</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {shipments.map((s) => (
+              <TableRow
+                key={s.id}
+                className="cursor-pointer"
+                onClick={() => navigate(`/shipment/${s.id}`)}
               >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </Card>
-        ))
+                <TableCell className="font-medium">{s.clientName}</TableCell>
+                <TableCell className="text-muted-foreground">{s.address || "-"}</TableCell>
+                <TableCell className="text-muted-foreground">{s.city || "-"}</TableCell>
+                <TableCell className="text-muted-foreground">{s.phone || "-"}</TableCell>
+                <TableCell className="text-muted-foreground">{s.invoice || "-"}</TableCell>
+                <TableCell>{formatAmount(s.finalAmount)}</TableCell>
+                <TableCell>
+                  {s.claim && <Badge variant="destructive">Reclamo</Badge>}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => handleDelete(s.id, e)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );

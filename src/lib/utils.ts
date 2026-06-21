@@ -53,6 +53,27 @@ export async function isBackendReachable(): Promise<boolean> {
   }
 }
 
+export function getNextWednesdays(count: number): string[] {
+  const result: string[] = [];
+  const now = new Date();
+  const daysUntilWed = (3 - now.getDay() + 7) % 7;
+  const date = new Date(now);
+  date.setDate(now.getDate() + daysUntilWed);
+  for (let i = 0; i < count; i++) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    result.push(`${y}-${m}-${d}`);
+    date.setDate(date.getDate() + 7);
+  }
+  return result;
+}
+
+export function formatWednesdayDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split("-");
+  return `Miércoles ${day}/${month}/${year}`;
+}
+
 export const CATEGORIES = Object.keys(categoriesData) as string[];
 export const getSubcategories = (category: string): string[] =>
   category
