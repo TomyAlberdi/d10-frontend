@@ -6,6 +6,7 @@ import {
   Package,
   ShoppingCart,
   StickyNote,
+  Truck,
   Users,
   Wallet,
 } from "lucide-react";
@@ -88,6 +89,12 @@ const Home = () => {
           <Link to="/note" className="flex items-center gap-3 text-xl">
             <StickyNote className="big-icon" />
             Notas
+          </Link>
+        </Button>
+        <Button size="lg" asChild className="h-25 w-full md:w-64">
+          <Link to="/shipment" className="flex items-center gap-3 text-xl">
+            <Truck className="big-icon" />
+            Envíos
           </Link>
         </Button>
       </div>
