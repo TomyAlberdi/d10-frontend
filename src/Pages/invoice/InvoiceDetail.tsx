@@ -8,16 +8,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { ChevronLeft, ReceiptText } from "lucide-react";
+import { ArrowRightLeft, ChevronLeft, ReceiptText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { generatePDF } from "./CreateInvoiceDetail";
 
 const STATUS_LABELS: Record<string, string> = {
-  PENDIENTE: "Pendiente",
+  PENDIENTE: "Presupuesto",
   PAGO: "Pago",
   ENVIADO: "Enviado",
   ENTREGADO: "Entregado",
@@ -48,7 +50,16 @@ function formatLocalDateToSpanish(dateStr: string): string {
 const InvoiceDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { getInvoiceById } = useInvoiceContext();
+  const { getInvoiceById, deleteInvoiceById } = useInvoiceContext();
+  const {
+    clearCart,
+    setCartClient,
+    addProduct,
+    setDiscount,
+    setCartNotes,
+    setPaymentMethod,
+    setStockDecreased,
+  } = useCartContext();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,6 +84,51 @@ const InvoiceDetail = () => {
     };
   }, [getInvoiceById, id]);
 
+  const handleSendToCart = () => {
+    if (!invoice) return;
+
+    toast.warning(
+      "¿Enviar venta al carrito? Se perderá el carrito actual y se eliminará la venta.",
+      {
+        action: {
+          label: "Confirmar",
+          onClick: async () => {
+            try {
+              // Clear current cart
+              clearCart();
+
+              // Fill cart with invoice data
+              setCartClient(invoice.client);
+              invoice.products.forEach((product) => {
+                addProduct(product);
+              });
+              setDiscount(invoice.discount);
+              if (invoice.notes) {
+                setCartNotes(invoice.notes);
+              }
+              if (invoice.paymentMethod) {
+                setPaymentMethod(invoice.paymentMethod);
+              }
+              if (invoice.stockDecreased !== undefined) {
+                setStockDecreased(invoice.stockDecreased);
+              }
+
+              // Delete the invoice
+              await deleteInvoiceById(invoice.id);
+
+              // Navigate to cart
+              navigate("/cart");
+              toast.success("Venta enviada al carrito");
+            } catch (error) {
+              toast.error("Error al enviar la venta al carrito");
+              console.error(error);
+            }
+          },
+        },
+      },
+    );
+  };
+
   const InvoiceDetail = useMemo(() => {
     return invoice ? generatePDF(invoice) : undefined;
   }, [invoice]);
@@ -85,7 +141,7 @@ const InvoiceDetail = () => {
             <ChevronLeft className="bigger-icon" />
           </Button>
           {invoice && (
-            <div className="flex gap-4 w-full md:w-auto">
+            <div className="flex gap-4 w-full md:w-auto flex-wrap">
               <Button
                 className="w-full md:w-fit"
                 disabled={!invoice}
@@ -100,9 +156,19 @@ const InvoiceDetail = () => {
                 <ReceiptText />
                 Descargar Detalle
               </Button>
+              {invoice.status === "PENDIENTE" && (
+                <Button
+                  onClick={handleSendToCart}
+                  variant="secondary"
+                  className="w-full md:w-fit"
+                >
+                  <ArrowRightLeft />
+                  Enviar al carrito
+                </Button>
+              )}
               <Button
                 onClick={() => navigate(`/invoice/${invoice.id}/update`)}
-                className="hidden md:flex"
+                className="w-full md:w-fit"
               >
                 Editar venta
               </Button>

@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
-  { value: "PENDIENTE", label: "Pendiente" },
+  { value: "PENDIENTE", label: "Presupuesto" },
   { value: "PAGO", label: "Pago" },
   { value: "ENTREGADO", label: "Entregado" },
   { value: "CANCELADO", label: "Cancelado" },
@@ -44,6 +44,7 @@ const Cart = () => {
     setPaymentMethod,
     setStockDecreased,
     removeProduct,
+    updateProduct,
     clearCart,
   } = useCartContext();
   const { createInvoice } = useInvoiceContext();
@@ -188,7 +189,28 @@ const Cart = () => {
                       {p.name}
                     </TableCell>
                     <TableCell className="text-right">
-                      {p.saleUnitQuantity} {p.saleUnitType}
+                      <div className="flex items-center gap-2 justify-end">
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={p.saleUnitQuantity}
+                          onChange={(e) => {
+                            const newQuantity = Number(e.target.value);
+                            if (
+                              Number.isFinite(newQuantity) &&
+                              newQuantity >= 0
+                            ) {
+                              console.log(p);
+                              updateProduct(p.id, newQuantity);
+                            }
+                          }}
+                          className="w-16 border rounded-md px-2 py-1 text-right"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {p.saleUnitType}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       {p.measureUnitQuantity} {p.measureType}

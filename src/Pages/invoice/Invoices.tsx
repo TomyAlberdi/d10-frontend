@@ -2,12 +2,12 @@ import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 const SEARCH_DEBOUNCE_MS = 300;
 
 const STATUS_LABELS: Record<string, string> = {
-  PENDIENTE: "Pendiente",
+  PENDIENTE: "Presupuesto",
   PAGO: "Pago",
   ENTREGADO: "Entregado",
   CANCELADO: "Cancelado",
