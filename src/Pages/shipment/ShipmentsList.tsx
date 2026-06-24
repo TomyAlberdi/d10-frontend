@@ -21,6 +21,7 @@ import { useShipmentContext } from "@/contexts/shipment/UseShipmentContext";
 import type { Shipment } from "@/interfaces/ShipmentInterfaces";
 import { formatWednesdayDate, getNextWednesdays } from "@/lib/utils";
 import { Search, Trash2 } from "lucide-react";
+import DownloadShipmentsButton from "./DownloadShipmentsButton";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -30,7 +31,8 @@ const NO_DATE = "none";
 
 const ShipmentsList = () => {
   const navigate = useNavigate();
-  const { getAllShipments, searchShipments, deleteShipment } = useShipmentContext();
+  const { getAllShipments, searchShipments, deleteShipment } =
+    useShipmentContext();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState<string | null>(WEDNESDAYS[0]);
@@ -55,7 +57,9 @@ const ShipmentsList = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadForDate(date);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   const handleDateChange = (val: string) => {
@@ -106,25 +110,28 @@ const ShipmentsList = () => {
 
   return (
     <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-0 md:pr-4">
-      <div className="flex gap-2 items-center">
-        <Select value={date ?? NO_DATE} onValueChange={handleDateChange}>
-          <SelectTrigger className="w-fit">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={NO_DATE}>Sin fecha</SelectItem>
-            {WEDNESDAYS.map((d) => (
-              <SelectItem key={d} value={d}>
-                {formatWednesdayDate(d)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {date && (
-          <span className="text-sm text-muted-foreground">
-            {shipments.length} envío{shipments.length !== 1 ? "s" : ""}
-          </span>
-        )}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2 items-center">
+          <Select value={date ?? NO_DATE} onValueChange={handleDateChange}>
+            <SelectTrigger className="w-fit">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_DATE}>Sin fecha</SelectItem>
+              {WEDNESDAYS.map((d) => (
+                <SelectItem key={d} value={d}>
+                  {formatWednesdayDate(d)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {date && (
+            <span className="text-sm text-muted-foreground">
+              {shipments.length} envío{shipments.length !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+        <DownloadShipmentsButton shipments={shipments} date={date} />
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2">
@@ -163,14 +170,14 @@ const ShipmentsList = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Cliente</TableHead>
-              <TableHead>Dirección</TableHead>
-              <TableHead>Ciudad</TableHead>
-              <TableHead>Teléfono</TableHead>
-              <TableHead>Factura</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Reclamo</TableHead>
-              <TableHead></TableHead>
+              <TableHead className="w-4/20">Cliente</TableHead>
+              <TableHead className="w-5/20">Dirección</TableHead>
+              <TableHead className="w-2/20">Ciudad</TableHead>
+              <TableHead className="w-3/20">Teléfono</TableHead>
+              <TableHead className="w-1/20">Factura</TableHead>
+              <TableHead className="w-3/20">Total</TableHead>
+              <TableHead className="w-1/20">Reclamo</TableHead>
+              <TableHead className="w-1/20"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -181,13 +188,25 @@ const ShipmentsList = () => {
                 onClick={() => navigate(`/shipment/${s.id}`)}
               >
                 <TableCell className="font-medium">{s.clientName}</TableCell>
-                <TableCell className="text-muted-foreground">{s.address || "-"}</TableCell>
-                <TableCell className="text-muted-foreground">{s.city || "-"}</TableCell>
-                <TableCell className="text-muted-foreground">{s.phone || "-"}</TableCell>
-                <TableCell className="text-muted-foreground">{s.invoice || "-"}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {s.address || "-"}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {s.city || "-"}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {s.phone || "-"}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {s.invoice || "-"}
+                </TableCell>
                 <TableCell>{formatAmount(s.finalAmount)}</TableCell>
                 <TableCell>
-                  {s.claim && <Badge variant="destructive">Reclamo</Badge>}
+                  {s.claim ? (
+                    <Badge variant="destructive">Sí</Badge>
+                  ) : (
+                    <Badge variant="secondary">No</Badge>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Button
