@@ -6,6 +6,7 @@ import ClientContextComponent from "./contexts/client/ClientContextComponent";
 import DataContextComponent from "./contexts/data/DataContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import NoteContextComponent from "./contexts/note/NoteContextComponent";
+import ShipmentContextComponent from "./contexts/shipment/ShipmentContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
 import Cart from "./Pages/cart/Cart";
 import CashRegister from "./Pages/cashRegister/CashRegister";
@@ -17,7 +18,6 @@ import ClientCreate from "./Pages/client/ClientCreate";
 import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
-import CategoryData from "./Pages/data/CategoryData";
 import Data from "./Pages/data/Data";
 import MainData from "./Pages/data/MainData";
 import Home from "./Pages/Home";
@@ -29,6 +29,10 @@ import NoteCreate from "./Pages/note/NoteCreate";
 import Notes from "./Pages/note/Notes";
 import NotesList from "./Pages/note/NotesList";
 import NoteUpdate from "./Pages/note/NoteUpdate";
+import ShipmentCreate from "./Pages/shipment/ShipmentCreate";
+import Shipments from "./Pages/shipment/Shipments";
+import ShipmentsList from "./Pages/shipment/ShipmentsList";
+import ShipmentUpdate from "./Pages/shipment/ShipmentUpdate";
 import DiscontinuedProductList from "./Pages/product/DiscontinuedProductList";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
@@ -50,6 +54,7 @@ export function App() {
                 <CashRegisterContextComponent>
                   <DataContextComponent>
                     <NoteContextComponent>
+                      <ShipmentContextComponent>
                       <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/product" element={<Products />}>
@@ -114,14 +119,19 @@ export function App() {
                         </Route>
                         <Route path="/data" element={<Data />}>
                           <Route index element={<MainData />} />
-                          <Route path="category" element={<CategoryData />} />
                         </Route>
                         <Route path="/note" element={<Notes />}>
                           <Route index element={<NotesList />} />
                           <Route path="create" element={<NoteCreate />} />
                           <Route path=":id" element={<NoteUpdate />} />
                         </Route>
+                        <Route path="/shipment" element={<Shipments />}>
+                          <Route index element={<ShipmentsList />} />
+                          <Route path="create" element={<ShipmentCreate />} />
+                          <Route path=":id" element={<ShipmentUpdate />} />
+                        </Route>
                       </Routes>
+                      </ShipmentContextComponent>
                       </NoteContextComponent>
                     </DataContextComponent>
                 </CashRegisterContextComponent>

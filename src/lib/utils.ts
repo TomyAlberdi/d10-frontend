@@ -31,6 +31,11 @@ export function getMonthName(month: number): string {
   return months[month - 1] || "";
 }
 
+// Helper to detect "#" followed by exactly 6 digits
+export const hasInvoiceCode = (description: string): boolean => {
+  return /#\d{6}/.test(description);
+};
+
 // -------------------------------------------------------------
 // backend health helpers
 // -------------------------------------------------------------
@@ -48,6 +53,29 @@ export async function isBackendReachable(): Promise<boolean> {
   }
 }
 
+export function getNextWednesdays(count: number): string[] {
+  const result: string[] = [];
+  const now = new Date();
+  const daysUntilWed = (3 - now.getDay() + 7) % 7;
+  const date = new Date(now);
+  date.setDate(now.getDate() + daysUntilWed);
+  for (let i = 0; i < count; i++) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    result.push(`${y}-${m}-${d}`);
+    date.setDate(date.getDate() + 7);
+  }
+  return result;
+}
+
+export function formatWednesdayDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split("-");
+  return `Miércoles ${day}/${month}/${year}`;
+}
+
 export const CATEGORIES = Object.keys(categoriesData) as string[];
 export const getSubcategories = (category: string): string[] =>
-  category ? (categoriesData as Record<string, string[]>)[category] ?? [] : [];
+  category
+    ? ((categoriesData as Record<string, string[]>)[category] ?? [])
+    : [];
