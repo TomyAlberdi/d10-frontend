@@ -6,9 +6,8 @@ import {
   Package,
   ShoppingCart,
   StickyNote,
-  Truck,
   Users,
-  Wallet,
+  Wallet
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -91,12 +90,12 @@ const Home = () => {
             Notas
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 col-span-2">
+{/*         <Button size="lg" asChild className="h-25 col-span-2">
           <Link to="/shipment" className="flex items-center gap-3 text-xl">
             <Truck className="big-icon" />
             Envíos Diseño 10
           </Link>
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
