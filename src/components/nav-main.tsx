@@ -29,6 +29,8 @@ type NavItem = {
   url: string
   icon?: ReactNode
   items?: NavSubItem[]
+  /** Hide this entry on mobile (sidebar sheet); only show from md up. */
+  desktopOnly?: boolean
 }
 
 export function NavMain({ items }: { items: NavItem[] }) {
@@ -47,7 +49,10 @@ export function NavMain({ items }: { items: NavItem[] }) {
           // Items without children render as a direct link.
           if (!item.items || item.items.length === 0) {
             return (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem
+                key={item.title}
+                className={item.desktopOnly ? "hidden md:block" : undefined}
+              >
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
@@ -68,7 +73,11 @@ export function NavMain({ items }: { items: NavItem[] }) {
               key={item.title}
               asChild
               defaultOpen={true}
-              className="group/collapsible"
+              className={
+                item.desktopOnly
+                  ? "group/collapsible hidden md:block"
+                  : "group/collapsible"
+              }
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>

@@ -11,7 +11,14 @@ import {
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { formatPrice } from "@/lib/utils";
-import { BanknoteArrowDown, BanknoteArrowUp, DollarSign, RefreshCcw } from "lucide-react";
+import {
+  Banknote,
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  CreditCard,
+  DollarSign,
+  RefreshCcw,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +31,12 @@ const TRANSACTION_ROW_CLASSES: Record<string, string> = {
   IN: "bg-green-50 hover:bg-green-100 dark:bg-green-950/30 dark:hover:bg-green-900/40",
   OUT: "bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-900/40",
 };
+
+const REGISTER_TILES = [
+  { key: "paper", label: "Efectivo", icon: Banknote },
+  { key: "digital", label: "Transferencia", icon: CreditCard },
+  { key: "usd", label: "USD", icon: DollarSign },
+] as const;
 
 const CashRegisterOverview = () => {
   const {
@@ -52,70 +65,41 @@ const CashRegisterOverview = () => {
     }
   }, [selectedDate, fetchTransactions, fetchDailyTotals]);
 
+  const amounts = { paper: paperAmount, digital: digitalAmount, usd: usdAmount };
+
   return (
-    <div className="h-auto md:h-full flex flex-col gap-3 md:gap-6">
-      {/* Overview Section */}
-      <div className="flex justify-center">
-        <Card className="w-full max-w-xl p-6 flex flex-col gap-6">
+    <div className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col md:flex-row gap-3 md:gap-5 px-2 md:px-5">
+      {/* Left: balances + actions */}
+      <aside className="w-full md:w-80 shrink-0">
+        <Card className="p-5 md:p-6 flex flex-col gap-5 overflow-y-auto">
           <div>
-            <h1 className="text-2xl font-bold mb-2">Caja</h1>
+            <h1 className="text-2xl font-bold">Caja</h1>
             <p className="text-sm text-muted-foreground">
-              Montos actuales registrados en las cajas.
+              Montos actuales registrados.
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-baseline gap-3">
-              <span className="text-muted-foreground text-lg">
-                Caja Efectivo:
-              </span>
-              {isLoadingAmount ? (
-                <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
-                  Cargando...
-                </span>
-              ) : (
-                <span className="text-2xl font-extrabold tracking-tight">
-                  $ {formatPrice(paperAmount)}
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-baseline gap-3">
-              <span className="text-muted-foreground text-lg">
-                Caja Transferencia:
-              </span>
-              {isLoadingAmount ? (
-                <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
-                  Cargando...
-                </span>
-              ) : (
-                <span className="text-2xl font-extrabold tracking-tight">
-                  $ {formatPrice(digitalAmount)}
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-baseline gap-3">
-              <span className="text-muted-foreground text-lg">
-                Caja USD:
-              </span>
-              {isLoadingAmount ? (
-                <span className="text-2xl font-extrabold tracking-tight text-muted-foreground">
-                  Cargando...
-                </span>
-              ) : (
-                <span className="text-2xl font-extrabold tracking-tight">
-                  $ {formatPrice(usdAmount)}
-                </span>
-              )}
-            </div>
+          <div className="grid grid-cols-1 gap-3">
+            {REGISTER_TILES.map(({ key, label, icon: Icon }) => (
+              <div
+                key={key}
+                className="flex items-center gap-3 rounded-lg border p-3"
+              >
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                  <Icon className="size-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="truncate text-xl font-bold tracking-tight">
+                    {isLoadingAmount ? "…" : `$ ${formatPrice(amounts[key])}`}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/cash-register/adjust")}
-            >
+          <div className="mt-auto flex flex-col gap-2">
+            <Button onClick={() => navigate("/cash-register/adjust")}>
               <DollarSign />
               Ajustar saldo
             </Button>
@@ -125,20 +109,20 @@ const CashRegisterOverview = () => {
             </Button>
           </div>
         </Card>
-      </div>
+      </aside>
 
-      {/* Transactions Section */}
-      <div className="flex-1">
-        <Card className="w-full h-full p-6 flex flex-col gap-4 overflow-hidden">
+      {/* Right: transactions */}
+      <div className="flex-1 min-w-0 min-h-0">
+        <Card className="h-full p-4 md:p-6 flex flex-col gap-4 overflow-hidden">
           <div>
-            <h1 className="text-2xl font-bold mb-2">Transacciones de caja</h1>
+            <h2 className="text-xl font-bold">Transacciones del día</h2>
             <p className="text-sm text-muted-foreground">
-              Seleccione una fecha para listar los movimientos registrados.
+              Seleccione una fecha para ver los movimientos.
             </p>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-5 items-center md:items-end">
-            <div className="w-full md:w-md">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="w-full sm:w-auto">
               <label
                 className="block text-sm font-medium mb-1"
                 htmlFor="transaction-date"
@@ -150,20 +134,21 @@ const CashRegisterOverview = () => {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full sm:w-48"
               />
             </div>
-            <div className="flex flex-row items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 text-sm font-medium">
               {isLoadingDailyTotals ? (
-                <span className="text-muted-foreground">
-                  Cargando totales...
-                </span>
+                <span className="text-muted-foreground">Cargando…</span>
               ) : (
                 <>
-                  <span className="flex gap-2">
-                    <BanknoteArrowUp color="green" /> $ {formatPrice(dailyTotals.inTotal)}
+                  <span className="flex items-center gap-1.5">
+                    <BanknoteArrowUp className="size-4 text-green-600" /> ${" "}
+                    {formatPrice(dailyTotals.inTotal)}
                   </span>
-                  <span className="flex gap-2">
-                    <BanknoteArrowDown color="red" /> $ {formatPrice(dailyTotals.outTotal)}
+                  <span className="flex items-center gap-1.5">
+                    <BanknoteArrowDown className="size-4 text-red-600" /> ${" "}
+                    {formatPrice(dailyTotals.outTotal)}
                   </span>
                 </>
               )}

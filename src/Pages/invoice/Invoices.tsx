@@ -1,17 +1,19 @@
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
-import { formatPrice } from "@/lib/utils";
-import { Check, Search, X } from "lucide-react";
+import { cn, formatPrice } from "@/lib/utils";
+import { Check, Filter, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -30,6 +32,13 @@ const STATUS_ROW_CLASSES: Record<string, string> = {
   ENVIADO: "bg-blue-50 dark:bg-blue-950/30",
   ENTREGADO: "bg-emerald-50 dark:bg-emerald-950/30",
   CANCELADO: "bg-red-50 dark:bg-red-950/30",
+};
+
+const STATUS_DOT: Record<string, string> = {
+  PENDIENTE: "bg-amber-500",
+  PAGO: "bg-green-500",
+  ENTREGADO: "bg-emerald-500",
+  CANCELADO: "bg-red-500",
 };
 
 const Invoices = () => {
@@ -163,61 +172,72 @@ const Invoices = () => {
   );
 
   return (
-    <div className="h-screen flex flex-col md:flex-row items-center justify-center gap-0 md:gap-5">
-      <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 pb-0 gap-3">
-        <Card className="p-4 gap-0">
-          <h3 className="text-sm font-medium mb-3">Filtrar por Estado</h3>
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
+    <div className="h-full flex flex-col md:flex-row gap-3 md:gap-5 p-3 md:p-5">
+      <aside className="w-full md:w-64 shrink-0">
+        <Card className="p-4 gap-4 overflow-y-auto">
+          <div className="flex flex-col gap-3">
+            <h3 className="flex items-center gap-2 text-sm font-semibold">
+              <Filter className="size-4" />
+              Filtros
+            </h3>
+            <label className="flex items-center gap-2 rounded-md px-2 py-2 text-sm cursor-pointer transition-colors hover:bg-accent/50">
+              <Checkbox
                 checked={showStockNotDecreased}
-                onChange={() =>
-                  setShowStockNotDecreased(!showStockNotDecreased)
-                }
-                className="w-4 h-4"
+                onCheckedChange={(v) => setShowStockNotDecreased(v === true)}
               />
-              <span className="text-sm">Sin retirar</span>
+              <span>Sin retirar</span>
             </label>
           </div>
-          <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={selectedStatus === null}
-                onChange={() => setSelectedStatus(null)}
-                className="w-4 h-4"
-              />
-              <span className="text-sm">Todos</span>
-            </label>
+
+          <Separator />
+
+          <div className="flex flex-col gap-1">
+            <h4 className="px-2 mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Estado
+            </h4>
+            <button
+              type="button"
+              onClick={() => setSelectedStatus(null)}
+              className={cn(
+                "flex items-center gap-2 rounded-md px-2 py-2 text-sm text-left transition-colors",
+                selectedStatus === null
+                  ? "bg-accent font-medium"
+                  : "hover:bg-accent/50",
+              )}
+            >
+              <span className="size-2.5 rounded-full bg-muted-foreground/40" />
+              Todos
+            </button>
             {Object.entries(STATUS_LABELS).map(([status, label]) => (
-              <label
+              <button
                 key={status}
-                className="flex items-center gap-2 cursor-pointer"
+                type="button"
+                disabled={showStockNotDecreased}
+                onClick={() => setSelectedStatus(status as Invoice["status"])}
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-2 py-2 text-sm text-left transition-colors",
+                  selectedStatus === status
+                    ? "bg-accent font-medium"
+                    : "hover:bg-accent/50",
+                  showStockNotDecreased && "opacity-40 pointer-events-none",
+                )}
               >
-                <input
-                  type="checkbox"
-                  checked={selectedStatus === status}
-                  onChange={() =>
-                    setSelectedStatus(status as Invoice["status"])
-                  }
-                  className="w-4 h-4"
-                  disabled={showStockNotDecreased}
+                <span
+                  className={cn("size-2.5 rounded-full", STATUS_DOT[status])}
                 />
-                <span className="text-sm">{label}</span>
-              </label>
+                {label}
+              </button>
             ))}
           </div>
         </Card>
-      </section>
-      <section className="w-full md:w-5/8 h-auto md:h-full py-3 md:py-5">
-        <div className="px-3 md:px-5 h-full flex flex-col gap-4">
-          <Card
-            ref={tableRef}
-            className="h-full flex flex-col overflow-hidden py-0 gap-0"
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-          >
+      </aside>
+      <div className="flex-1 min-w-0 min-h-0">
+        <Card
+          ref={tableRef}
+          className="h-full flex flex-col overflow-hidden py-0 gap-0"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+        >
             <div className="p-3 border-b shrink-0 flex items-center gap-2">
               <Search className="size-4 text-muted-foreground shrink-0" />
               <Input
@@ -253,7 +273,7 @@ const Invoices = () => {
                     !isLoadingRecent && (
                       <TableRow>
                         <TableCell
-                          colSpan={5}
+                          colSpan={7}
                           className="text-center text-muted-foreground py-8"
                         >
                           {hasQuery
@@ -267,7 +287,7 @@ const Invoices = () => {
                     !hasQuery && (
                       <TableRow>
                         <TableCell
-                          colSpan={5}
+                          colSpan={7}
                           className="text-center text-muted-foreground py-8"
                         >
                           Cargando ventas recientes…
@@ -318,7 +338,6 @@ const Invoices = () => {
             </div>
           </Card>
         </div>
-      </section>
     </div>
   );
 };

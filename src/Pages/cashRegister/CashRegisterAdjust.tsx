@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { formatPrice } from "@/lib/utils";
+import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
 import { useState } from "react";
 
 const CashRegisterAdjust = () => {
@@ -56,7 +57,7 @@ const CashRegisterAdjust = () => {
   };
 
   return (
-    <div className="h-auto md:h-full flex items-center justify-center">
+    <div className="min-h-full flex items-center justify-center px-3 py-3 md:px-0 md:py-0">
       <Card className="w-full max-w-xl p-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold mb-2">Ajustar caja</h1>
@@ -66,36 +67,33 @@ const CashRegisterAdjust = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Tipo de caja:</span>
-          <Button
-            variant={selectedType === "PAPER" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedType("PAPER")}
-          >
-            Efectivo
-          </Button>
-          <Button
-            variant={selectedType === "DIGITAL" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedType("DIGITAL")}
-          >
-            Transferencia
-          </Button>
-          <Button
-            variant={selectedType === "USD" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedType("USD")}
-          >
-            USD
-          </Button>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm text-muted-foreground">Tipo de caja</span>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant={selectedType === "PAPER" ? "default" : "outline"}
+              onClick={() => setSelectedType("PAPER")}
+            >
+              Efectivo
+            </Button>
+            <Button
+              variant={selectedType === "DIGITAL" ? "default" : "outline"}
+              onClick={() => setSelectedType("DIGITAL")}
+            >
+              Transferencia
+            </Button>
+            <Button
+              variant={selectedType === "USD" ? "default" : "outline"}
+              onClick={() => setSelectedType("USD")}
+            >
+              USD
+            </Button>
+          </div>
         </div>
 
-        <div>
+        <div className="rounded-lg border bg-muted/40 p-4">
           <p className="text-sm text-muted-foreground mb-1">Monto actual</p>
-          <p className="text-2xl font-semibold">
-            $ {formatPrice(currentAmount)}
-          </p>
+          <p className="text-2xl font-bold">$ {formatPrice(currentAmount)}</p>
         </div>
 
         <div className="space-y-3">
@@ -125,15 +123,22 @@ const CashRegisterAdjust = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <Button onClick={handleAdd} disabled={isDisabled}>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button
+            onClick={handleAdd}
+            disabled={isDisabled}
+            className="w-full sm:flex-1"
+          >
+            <BanknoteArrowUp />
             {isProcessing ? "Procesando..." : "Agregar a caja"}
           </Button>
           <Button
             variant="destructive"
             onClick={handleRemove}
             disabled={isDisabled}
+            className="w-full sm:flex-1"
           >
+            <BanknoteArrowDown />
             {isProcessing ? "Procesando..." : "Retirar de caja"}
           </Button>
         </div>

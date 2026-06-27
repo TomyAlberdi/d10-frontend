@@ -12,7 +12,7 @@ import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { ArrowRightLeft, ChevronLeft, ReceiptText } from "lucide-react";
+import { ArrowRightLeft, ReceiptText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -134,12 +134,9 @@ const InvoiceDetail = () => {
   }, [invoice]);
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-full p-3 md:p-6">
       <div className="max-w-6xl mx-auto flex flex-col gap-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-0">
-          <Button onClick={() => navigate(-1)} className="w-full md:w-fit">
-            <ChevronLeft className="bigger-icon" />
-          </Button>
           {invoice && (
             <div className="flex gap-4 w-full md:w-auto flex-wrap">
               <Button

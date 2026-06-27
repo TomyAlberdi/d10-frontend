@@ -71,7 +71,7 @@ const CashRegisterInvoiceTransaction = () => {
   }
 
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="min-h-full flex items-center justify-center px-3 py-3 md:px-0 md:py-0">
       <Card className="w-full max-w-xl p-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold mb-2">Registrar pago en caja</h1>
@@ -90,32 +90,31 @@ const CashRegisterInvoiceTransaction = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Tipo de caja:</span>
-            <Button
-              variant={registerType === "PAPER" ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleRegisterTypeChange("PAPER")}
-              disabled={isProcessing}
-            >
-              Efectivo
-            </Button>
-            <Button
-              variant={registerType === "DIGITAL" ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleRegisterTypeChange("DIGITAL")}
-              disabled={isProcessing}
-            >
-              Transferencia
-            </Button>
-            <Button
-              variant={registerType === "USD" ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleRegisterTypeChange("USD")}
-              disabled={isProcessing}
-            >
-              USD
-            </Button>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm text-muted-foreground">Tipo de caja</span>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant={registerType === "PAPER" ? "default" : "outline"}
+                onClick={() => handleRegisterTypeChange("PAPER")}
+                disabled={isProcessing}
+              >
+                Efectivo
+              </Button>
+              <Button
+                variant={registerType === "DIGITAL" ? "default" : "outline"}
+                onClick={() => handleRegisterTypeChange("DIGITAL")}
+                disabled={isProcessing}
+              >
+                Transferencia
+              </Button>
+              <Button
+                variant={registerType === "USD" ? "default" : "outline"}
+                onClick={() => handleRegisterTypeChange("USD")}
+                disabled={isProcessing}
+              >
+                USD
+              </Button>
+            </div>
           </div>
 
           <div>
@@ -146,20 +145,21 @@ const CashRegisterInvoiceTransaction = () => {
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <Button
-            onClick={handleSubmit}
-            disabled={isDisabled}
-            className="flex-1"
-          >
-            {isProcessing ? "Registrando…" : "Registrar pago"}
-          </Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-3">
           <Button
             variant="outline"
             onClick={() => navigate("/invoice")}
             disabled={isProcessing}
+            className="w-full sm:w-auto"
           >
             Omitir
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={isDisabled}
+            className="w-full sm:flex-1"
+          >
+            {isProcessing ? "Registrando…" : "Registrar pago"}
           </Button>
         </div>
       </Card>
