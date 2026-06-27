@@ -6,6 +6,7 @@ import ClientContextComponent from "./contexts/client/ClientContextComponent";
 import DataContextComponent from "./contexts/data/DataContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import NoteContextComponent from "./contexts/note/NoteContextComponent";
+import PackContextComponent from "./contexts/pack/PackContextComponent";
 import ShipmentContextComponent from "./contexts/shipment/ShipmentContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
 import Cart from "./Pages/cart/Cart";
@@ -29,6 +30,10 @@ import NoteCreate from "./Pages/note/NoteCreate";
 import Notes from "./Pages/note/Notes";
 import NotesList from "./Pages/note/NotesList";
 import NoteUpdate from "./Pages/note/NoteUpdate";
+import PackAddToCart from "./Pages/pack/PackAddToCart";
+import PackCreate from "./Pages/pack/PackCreate";
+import PacksList from "./Pages/pack/PacksList";
+import PackUpdate from "./Pages/pack/PackUpdate";
 import ShipmentCreate from "./Pages/shipment/ShipmentCreate";
 import Shipments from "./Pages/shipment/Shipments";
 import ShipmentsList from "./Pages/shipment/ShipmentsList";
@@ -54,6 +59,7 @@ export function App() {
                 <CashRegisterContextComponent>
                   <DataContextComponent>
                     <NoteContextComponent>
+                      <PackContextComponent>
                       <ShipmentContextComponent>
                       <Routes>
                         <Route path="/" element={<Home />} />
@@ -82,6 +88,10 @@ export function App() {
                             path="update-price"
                             element={<UpdatePrice />}
                           />
+                          <Route path="packs" element={<PacksList />} />
+                          <Route path="packs/create" element={<PackCreate />} />
+                          <Route path="packs/:id" element={<PackUpdate />} />
+                          <Route path="packs/:id/add" element={<PackAddToCart />} />
                         </Route>
                         <Route path="/client" element={<Clients />}>
                           <Route index element={<ClientsList />} />
@@ -130,8 +140,10 @@ export function App() {
                           <Route path="create" element={<ShipmentCreate />} />
                           <Route path=":id" element={<ShipmentUpdate />} />
                         </Route>
+
                       </Routes>
                       </ShipmentContextComponent>
+                      </PackContextComponent>
                       </NoteContextComponent>
                     </DataContextComponent>
                 </CashRegisterContextComponent>
