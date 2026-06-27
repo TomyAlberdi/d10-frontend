@@ -1,4 +1,3 @@
-import * as React from "react"
 import {
   Boxes,
   ChartNoAxesCombined,
@@ -16,6 +15,7 @@ import {
   Wallet,
   XCircle,
 } from "lucide-react"
+import * as React from "react"
 
 import { NavMain } from "@/components/nav-main"
 // import { NavUser } from "@/components/nav-user" // TODO: enable once the user/profile section is implemented
@@ -29,6 +29,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useNavigate } from "react-router-dom"
 
 // Navigation tree for the d10 admin. Icons are reused from the previous
 // navigation menus (home buttons + per-section side menus).
@@ -114,13 +115,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const navigate = useNavigate();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            {/* Static brand: just icon + text, no team switcher, no onclick. */}
-            <SidebarMenuButton size="lg" asChild className="pointer-events-none">
+            <SidebarMenuButton size="lg" asChild className="cursor-pointer" onClick={() => navigate("/")}>
               <div>
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <GalleryVerticalEndIcon className="size-4" />
