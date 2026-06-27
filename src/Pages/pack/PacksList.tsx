@@ -45,7 +45,10 @@ const PacksList = () => {
   };
 
   const getPackTotal = (pack: Pack): number =>
-    pack.items.reduce((sum, item) => sum + item.priceBySaleUnit * item.quantity, 0);
+    pack.items.reduce(
+      (sum, item) => sum + item.priceBySaleUnit * item.quantity,
+      0,
+    );
 
   if (loading) {
     return (
@@ -60,7 +63,9 @@ const PacksList = () => {
   if (packs.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-muted-foreground">No hay packs disponibles</p>
+        <p className="text-lg text-muted-foreground">
+          No hay packs disponibles
+        </p>
         <Button onClick={() => navigate("/product/packs/create")}>
           <CirclePlus className="w-4 h-4 mr-2" />
           Crear pack
@@ -70,10 +75,13 @@ const PacksList = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 md:gap-2 overflow-y-auto px-2">
+    <div className="w-full h-auto md:min-h-screen flex flex-col gap-3 md:gap-2 overflow-y-auto px-2">
       <div className="flex justify-end pt-2 md:p-0">
-        <Button onClick={() => navigate("/product/packs/create")} className="w-full md:w-auto h-12 md:h-8 text-lg md:text-sm">
-          <CirclePlus className="medium-icon mr-2" />
+        <Button
+          onClick={() => navigate("/product/packs/create")}
+          className="w-full md:w-auto h-12 md:h-8 text-xl md:text-base"
+        >
+          <CirclePlus className="mr-2" size={"4"} />
           Crear pack
         </Button>
       </div>
@@ -89,7 +97,9 @@ const PacksList = () => {
 
               <div className="flex flex-wrap gap-1 mb-3">
                 {pack.items.length === 0 ? (
-                  <span className="text-sm text-muted-foreground">Sin productos</span>
+                  <span className="text-sm text-muted-foreground">
+                    Sin productos
+                  </span>
                 ) : (
                   pack.items.map((item, idx) => (
                     <Badge key={idx} variant="secondary" className="text-xs">
