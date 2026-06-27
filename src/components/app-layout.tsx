@@ -17,8 +17,10 @@ export default function AppLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-background transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      {/* Lock the inset to the viewport height so the page body never scrolls;
+          the content region below the header scrolls internally instead. */}
+      <SidebarInset className="h-svh overflow-hidden">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex w-full items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
@@ -38,7 +40,9 @@ export default function AppLayout() {
             </div>
           </div>
         </header>
-        <Outlet />
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <Outlet />
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

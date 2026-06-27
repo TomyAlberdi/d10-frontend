@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 
 const Products = () => {
   return (
-    <div className="h-full flex flex-col items-center justify-center">
+    <div className="min-h-full flex flex-col items-center justify-center">
       <section className="w-full h-auto py-0 md:py-5">
         <Outlet />
       </section>
