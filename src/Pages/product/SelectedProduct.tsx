@@ -27,7 +27,7 @@ const SelectedProduct = ({
 
   if (!product) {
     return (
-      <Card className="h-full p-6 flex flex-col items-center justify-center gap-3 text-center">
+      <Card className="h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center">
         <ImageOff className="size-10 text-muted-foreground/40" />
         <p className="text-muted-foreground">
           Selecciona un producto de la lista para ver sus detalles
@@ -49,13 +49,13 @@ const SelectedProduct = ({
   return (
     <Card
       className={cn(
-        "h-full overflow-y-auto flex flex-col gap-4 p-4",
+        "h-[calc(100dvh-6.5rem)] overflow-hidden flex flex-col gap-4 p-4",
         isDiscontinued &&
           "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
     >
-      {/* Image */}
-      <div className="relative h-70 w-full shrink-0 overflow-hidden rounded-lg border bg-secondary">
+      {/* Image (flexes to fill the leftover height) */}
+      <div className="relative flex-1 min-h-0 w-full overflow-hidden rounded-lg border bg-secondary">
         {firstImage ? (
           <img
             src={firstImage}
