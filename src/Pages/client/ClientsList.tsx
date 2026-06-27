@@ -92,14 +92,19 @@ const ClientsList = () => {
   );
 
   return (
-    <div className="px-3 md:px-5 h-full flex flex-col gap-3 md:gap-4">
-      <SelectedClient client={displaySelected} />
-      <Card
-        ref={tableRef}
-        className="h-4/6 flex flex-col overflow-hidden py-0 gap-0"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-      >
+    <div className="px-2 md:px-5 h-full flex flex-col md:flex-row gap-4">
+      {/* Detail (left on desktop, top on mobile) */}
+      <div className="w-full md:w-1/3 min-w-0">
+        <SelectedClient client={displaySelected} />
+      </div>
+      {/* List (right) */}
+      <div className="w-full md:w-2/3 min-w-0">
+        <Card
+          ref={tableRef}
+          className="h-[calc(100dvh-6.5rem)] flex flex-col overflow-hidden py-0 gap-0"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+        >
         <div className="p-3 border-b shrink-0 flex items-center gap-2">
           <Search className="size-4 text-muted-foreground shrink-0" />
           <Input
@@ -161,7 +166,8 @@ const ClientsList = () => {
             </TableBody>
           </Table>
         </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };

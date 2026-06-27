@@ -47,8 +47,13 @@ const DesktopDiscontinuedProductList = () => {
 
   return (
     <div className="px-2 md:px-5 h-full hidden md:flex flex-row gap-4">
-      {/* Left: product list */}
-      <div className="flex-[3] min-w-0 h-full">
+      <div className="flex-1/3 min-w-0 h-min">
+        <SelectedProduct
+          product={selectedProduct}
+          updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}
+        />
+      </div>
+      <div className="w-2/3 min-w-0">
         <ProductTablePagination
           products={products}
           page={page}
@@ -59,13 +64,6 @@ const DesktopDiscontinuedProductList = () => {
           searchInput=""
           onSearchChange={() => {}}
           isSearching={isLoading}
-        />
-      </div>
-      {/* Right: selected product detail */}
-      <div className="flex-[2] min-w-0 h-full">
-        <SelectedProduct
-          product={selectedProduct}
-          updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}
         />
       </div>
     </div>

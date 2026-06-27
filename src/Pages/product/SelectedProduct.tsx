@@ -104,7 +104,7 @@ const SelectedProduct = ({
         {product.dimensions && (
           <div className="flex flex-col rounded-md border px-3 py-2">
             <span className="text-sm text-muted-foreground">Dimensiones</span>
-            <span className="font-medium text-lg">{product.dimensions}</span>
+            <span className="font-medium text-base">{product.dimensions}</span>
           </div>
         )}
         {product.stock && (
@@ -115,7 +115,7 @@ const SelectedProduct = ({
             )}
           >
             <span className="text-sm text-muted-foreground">Stock</span>
-            <span className="font-medium text-lg">{stockText}</span>
+            <span className="font-medium text-base">{stockText}</span>
           </div>
         )}
       </div>
