@@ -10,7 +10,7 @@ import {
   PencilLine,
   Route,
   RouteOff,
-  ShoppingCart
+  ShoppingCart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -129,43 +129,57 @@ const SelectedProduct = ({
           <ShoppingCart />
           Añadir al carrito
         </Button>
-        <Button size="lg" onClick={() => navigate(`/product/${product.id}`)} variant="secondary">
-          <Info />
-          Ver detalles
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={() => navigate(`/product/${product.id}/update`)}
-        >
-          <PencilLine />
-          Editar
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={() => navigate(`/product/${product.id}/stock`)}
-        >
-          <PackagePlus />
-          Actualizar stock
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={() => updateProductDiscontinuedLocal(!product.discontinued)}
-        >
-          {product.discontinued ? (
-            <>
-              <Route />
-              Reactivar
-            </>
-          ) : (
-            <>
-              <RouteOff />
-              Discontinuar
-            </>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="lg"
+            className="w-1/2"
+            onClick={() => navigate(`/product/${product.id}`)}
+            variant="secondary"
+          >
+            <Info />
+            Ver detalles
+          </Button>
+          <Button
+            variant="outline"
+            className="w-1/2"
+            size="lg"
+            onClick={() => navigate(`/product/${product.id}/update`)}
+          >
+            <PencilLine />
+            Editar
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-1/2"
+            onClick={() => navigate(`/product/${product.id}/stock`)}
+          >
+            <PackagePlus />
+            Actualizar stock
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-1/2"
+            onClick={() =>
+              updateProductDiscontinuedLocal(!product.discontinued)
+            }
+          >
+            {product.discontinued ? (
+              <>
+                <Route />
+                Reactivar
+              </>
+            ) : (
+              <>
+                <RouteOff />
+                Discontinuar
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </Card>
   );
