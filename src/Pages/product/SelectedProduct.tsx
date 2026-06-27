@@ -4,11 +4,13 @@ import { Card } from "@/components/ui/card";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { cn, formatPrice } from "@/lib/utils";
 import {
+  ImageOff,
+  Info,
   PackagePlus,
   PencilLine,
   Route,
   RouteOff,
-  ShoppingCart,
+  ShoppingCart
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -25,8 +27,11 @@ const SelectedProduct = ({
 
   if (!product) {
     return (
-      <Card className="h-2/6 p-4 flex items-center justify-center">
-        <p className="text-muted-foreground">No product selected</p>
+      <Card className="h-full p-6 flex flex-col items-center justify-center gap-3 text-center">
+        <ImageOff className="size-10 text-muted-foreground/40" />
+        <p className="text-muted-foreground">
+          Selecciona un producto de la lista para ver sus detalles
+        </p>
       </Card>
     );
   }
@@ -34,131 +39,120 @@ const SelectedProduct = ({
   const firstImage = product.images?.[0];
   const isDiscontinued = product.discontinued;
 
+  const stockText =
+    product.measureType === "UNIDAD" && product.saleUnitType === "UNIDAD"
+      ? `${product.stock?.quantity} ${product.measureType}`
+      : `${product.stock?.quantity} ${product.saleUnitType} (${(
+          Math.round((product.stock?.measureUnitEquivalent ?? 0) * 100) / 100
+        ).toFixed(2)} ${product.measureType})`;
+
   return (
     <Card
       className={cn(
-        "h-2/6 overflow-hidden grid grid-rows-7 grid-cols-3 p-2 gap-1",
+        "h-full overflow-y-auto flex flex-col gap-4 p-4",
         isDiscontinued &&
           "border-amber-600/60 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60",
       )}
     >
-      <div className="col-span-2 flex gap-3 flex-row items-center">
-        <span className="text-xl font-bold ml-1">{product.name}</span>
-        <div>
-          <Badge className="mr-3">Código {product.code}</Badge>
+      {/* Image */}
+      <div className="relative h-70 w-full shrink-0 overflow-hidden rounded-lg border bg-secondary">
+        {firstImage ? (
+          <img
+            src={firstImage}
+            alt={product.name}
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
+            <ImageOff className="size-10" />
+          </div>
+        )}
+      </div>
+
+      {/* Title + badges */}
+      <div className="flex shrink-0 flex-col gap-2">
+        <h2 className="text-2xl font-bold leading-tight">{product.name}</h2>
+        <div className="flex flex-wrap gap-2">
+          <Badge>Código {product.code}</Badge>
           {product.quality && (
-            <Badge className="mr-3" variant={"secondary"}>
-              {product.quality}
-            </Badge>
+            <Badge variant="secondary">{product.quality}</Badge>
           )}
-          {isDiscontinued && (
-            <Badge className="mr-3" variant="destructive">
-              Discontinuado
-            </Badge>
-          )}
+          {isDiscontinued && <Badge variant="destructive">Discontinuado</Badge>}
         </div>
       </div>
-      <div className="row-start-2 row-span-1 col-span-2 flex items-center gap-2">
-        {product.dimensions && (
-          <div className="h-full flex items-center gap-3 border-2 px-2">
-            <span className="text-muted-foreground">Dimensiones</span>
-            <span className="text-foreground">{product.dimensions}</span>
-          </div>
-        )}
-        {product.stock && (
-          <div
-            className={
-              "h-full flex items-center gap-3 border-2 px-2" +
-              (product.stock.quantity > 0 ? "" : " border border-red-500")
-            }
-          >
-            <span className="text-muted-foreground">Stock</span>
-            {product.measureType === "UNIDAD" &&
-            product.saleUnitType === "UNIDAD" ? (
-              <div className="text-foreground">
-                {product.stock.quantity} {product.measureType}
-              </div>
-            ) : (
-              <div className="text-foreground">
-                {product.stock.quantity} {product.saleUnitType} (
-                {(
-                  Math.round(product.stock.measureUnitEquivalent * 100) / 100
-                ).toFixed(2)}{" "}
-                {product.measureType})
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <div className="row-start-3 row-span-3 col-span-2 flex flex-col justify-center gap-2 pl-5">
+
+      {/* Prices */}
+      <div className="flex shrink-0 flex-col items-center gap-1">
         {product.priceByMeasureUnit && (
           <div className="text-3xl alternate-font">
-            $ {formatPrice(product.priceByMeasureUnit)} X {product.measureType}
+            $ {formatPrice(product.priceByMeasureUnit)}{" "}
+            <span className="text-lg text-muted-foreground">
+              X {product.measureType}
+            </span>
           </div>
         )}
         {product.priceBySaleUnit && (
-          <div className="text-2xl alternate-font">
+          <div className="text-lg text-muted-foreground alternate-font">
             $ {formatPrice(product.priceBySaleUnit)} X {product.saleUnitType} (
             {product.measurePerSaleUnit} {product.measureType})
           </div>
         )}
       </div>
-      <div
-        className="col-start-3 row-span-7 bg-secondary cursor-pointer hover:bg-secondary/80 transition-colors"
-        style={{
-          backgroundImage: `url(${firstImage})`,
-          backgroundSize: "contain",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-        onClick={() => navigate(`/product/${product.id}`)}
-        title="Ver detalles del producto"
-      />
-      <div className="row-start-6 row-span-2 col-span-2 flex items-center gap-3">
-        {/*         <Button
-          className="h-full"
-          disabled
-          variant="outline"
-          size="sm"
-          onClick={() => navigate(`/product/${product.id}`)}
-        >
-          <Eye />
-          Ver detalle
-        </Button> */}
+
+      {/* Dimensions + Stock */}
+      <div className="grid shrink-0 grid-cols-2 gap-2">
+        {product.dimensions && (
+          <div className="flex flex-col rounded-md border px-3 py-2">
+            <span className="text-sm text-muted-foreground">Dimensiones</span>
+            <span className="font-medium text-lg">{product.dimensions}</span>
+          </div>
+        )}
+        {product.stock && (
+          <div
+            className={cn(
+              "flex flex-col rounded-md border px-3 py-2",
+              product.stock.quantity <= 0 && "border-red-500",
+            )}
+          >
+            <span className="text-sm text-muted-foreground">Stock</span>
+            <span className="font-medium text-lg">{stockText}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="mt-auto flex flex-col shrink-0 grid-cols-2 gap-2 pt-2">
         <Button
-          className="h-full"
-          variant="outline"
-          size="sm"
+          size="lg"
           onClick={() => navigate(`/product/add/${product.id}`)}
         >
           <ShoppingCart />
           Añadir al carrito
         </Button>
+        <Button size="lg" onClick={() => navigate(`/product/${product.id}`)} variant="secondary">
+          <Info />
+          Ver detalles
+        </Button>
         <Button
-          className="h-full"
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={() => navigate(`/product/${product.id}/update`)}
         >
           <PencilLine />
           Editar
         </Button>
         <Button
-          className="h-full"
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={() => navigate(`/product/${product.id}/stock`)}
         >
           <PackagePlus />
           Actualizar stock
         </Button>
         <Button
-          className="h-full"
           variant="outline"
-          size="sm"
-          onClick={() => {
-            updateProductDiscontinuedLocal(!product.discontinued);
-          }}
+          size="lg"
+          onClick={() => updateProductDiscontinuedLocal(!product.discontinued)}
         >
           {product.discontinued ? (
             <>

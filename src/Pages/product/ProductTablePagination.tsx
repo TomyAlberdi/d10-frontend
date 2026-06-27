@@ -74,7 +74,10 @@ const ProductTablePagination = ({
   return (
     <Card
       ref={tableRef}
-      className="h-4/6 flex flex-col overflow-hidden py-0 gap-0"
+      // Lock to the viewport height minus the sticky header (~4rem) and the
+      // Products section padding (md:py-5 = 2.5rem) so the card fills the screen
+      // and the table scrolls internally instead of growing the page.
+      className="h-[calc(100dvh-6.5rem)] flex flex-col overflow-hidden py-0 gap-0"
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
@@ -107,6 +110,16 @@ const ProductTablePagination = ({
             </TableRow>
           </TableHeader>
           <TableBody>
+            {products.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground py-8"
+                >
+                  {isSearching ? "Buscando…" : "No se encontraron productos"}
+                </TableCell>
+              </TableRow>
+            )}
             {products.map((product) => (
               <TableRow
                 key={product.id}

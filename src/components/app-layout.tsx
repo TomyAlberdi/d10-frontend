@@ -1,8 +1,9 @@
-import { Outlet } from "react-router-dom"
+import { ChevronLeft } from "lucide-react"
+import { Outlet, useNavigate } from "react-router-dom"
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { AppSidebar } from "@/components/app-sidebar"
-import { ModeToggle } from "@/components/mode-toggle"
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
@@ -11,6 +12,8 @@ import {
 } from "@/components/ui/sidebar"
 
 export default function AppLayout() {
+  const navigate = useNavigate()
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -24,7 +27,14 @@ export default function AppLayout() {
             />
             <AppBreadcrumb />
             <div className="ml-auto">
-              <ModeToggle />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => navigate(-1)}
+                aria-label="Volver"
+              >
+                <ChevronLeft />
+              </Button>
             </div>
           </div>
         </header>
