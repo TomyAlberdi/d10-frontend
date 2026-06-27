@@ -92,7 +92,7 @@ const ClientsList = () => {
   );
 
   return (
-    <div className="px-2 md:px-5 h-full flex flex-col md:flex-row gap-4">
+    <div className="px-2 md:px-5 h-full flex flex-col md:flex-row gap-4 pt-4 md:pt-0">
       {/* Detail (left on desktop, top on mobile) */}
       <div className="w-full md:w-1/3 min-w-0">
         <SelectedClient client={displaySelected} />

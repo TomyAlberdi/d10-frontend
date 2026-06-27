@@ -1,25 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-	Field,
-	FieldGroup,
-	FieldLabel,
-	FieldSet,
-	FieldTitle,
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+  FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type {
-	CreateProduct,
-	ProductCharacteristic,
+  CreateProduct,
+  ProductCharacteristic,
 } from "@/interfaces/ProductInterfaces";
 import { CATEGORIES, getSubcategories } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -268,141 +268,55 @@ const ProductCreate = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Create Product</h1>
+    <div className="h-full w-full flex justify-center items-center p-2 md:p-0">
+      <Card className="p-6 w-full md:w-3/4">
+        <h1 className="text-2xl font-bold mb-4">Crear Producto</h1>
 
-      <form onSubmit={handleSubmit}>
-        <FieldSet className="grid gap-6 sm:grid-cols-2">
-          <Field>
-            <FieldLabel>Código</FieldLabel>
-            <Input
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Código del producto"
-              required
-            />
-          </Field>
+        <form onSubmit={handleSubmit}>
+          <FieldSet className="grid gap-6 sm:grid-cols-2">
+            <Field>
+              <FieldLabel>Código</FieldLabel>
+              <Input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Código del producto"
+                required
+              />
+            </Field>
 
-          <Field>
-            <FieldLabel>Nombre</FieldLabel>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre del producto"
-              required
-            />
-          </Field>
+            <Field>
+              <FieldLabel>Nombre</FieldLabel>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nombre del producto"
+                required
+              />
+            </Field>
 
-          <Field className="sm:col-span-2">
-            <FieldLabel>Descripción</FieldLabel>
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descripción"
-              rows={3}
-            />
-          </Field>
+            <Field className="sm:col-span-2">
+              <FieldLabel>Descripción</FieldLabel>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Descripción"
+                rows={3}
+              />
+            </Field>
 
-          <Field>
-            <FieldLabel>Calidad</FieldLabel>
-            <Select
-              value={quality}
-              onValueChange={(v) => setQuality(v as CreateProduct["quality"])}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {QUALITY_OPTIONS.map((q) => (
-                  <SelectItem key={q} value={q}>
-                    {q}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field>
-            <FieldLabel>Proveedor</FieldLabel>
-            <Input
-              list="provider-datalist"
-              value={providerName}
-              onChange={(e) => setProviderName(e.target.value)}
-              placeholder="Seleccionar o escribir proveedor"
-            />
-            <datalist id="provider-datalist">
-              {PROVIDERS.map((p) => (
-                <option key={p} value={p} />
-              ))}
-            </datalist>
-          </Field>
-
-          <Field>
-            <FieldLabel>Categoría</FieldLabel>
-            <Select
-              value={category}
-              onValueChange={(v) => {
-                setCategory(v);
-                setSubcategory("");
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar categoría" />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field>
-            <FieldLabel>Subcategoría</FieldLabel>
-            <Select
-              value={subcategory}
-              onValueChange={setSubcategory}
-              disabled={!category}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar subcategoría" />
-              </SelectTrigger>
-              <SelectContent>
-                {getSubcategories(category).map((sub) => (
-                  <SelectItem key={sub} value={sub}>
-                    {sub}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field>
-            <FieldLabel>Dimensiones</FieldLabel>
-            <Input
-              value={dimensions}
-              onChange={(e) => setDimensions(e.target.value)}
-              placeholder="Dimensiones"
-            />
-          </Field>
-          <div className="flex">
-            <Field className="mr-2">
-              <FieldLabel>Unidad de Medida</FieldLabel>
+            <Field>
+              <FieldLabel>Calidad</FieldLabel>
               <Select
-                value={measureType}
-                onValueChange={(v) =>
-                  setMeasureType(v as CreateProduct["measureType"])
-                }
+                value={quality}
+                onValueChange={(v) => setQuality(v as CreateProduct["quality"])}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {MEASURE_TYPE_OPTIONS.map((m) => (
-                    <SelectItem key={m} value={m}>
-                      {m}
+                  {QUALITY_OPTIONS.map((q) => (
+                    <SelectItem key={q} value={q}>
+                      {q}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -410,207 +324,295 @@ const ProductCreate = () => {
             </Field>
 
             <Field>
-              <FieldLabel>Unidad de Venta</FieldLabel>
+              <FieldLabel>Proveedor</FieldLabel>
+              <Input
+                list="provider-datalist"
+                value={providerName}
+                onChange={(e) => setProviderName(e.target.value)}
+                placeholder="Seleccionar o escribir proveedor"
+              />
+              <datalist id="provider-datalist">
+                {PROVIDERS.map((p) => (
+                  <option key={p} value={p} />
+                ))}
+              </datalist>
+            </Field>
+
+            <Field>
+              <FieldLabel>Categoría</FieldLabel>
               <Select
-                value={saleUnitType}
-                onValueChange={(v) =>
-                  setSaleUnitType(v as CreateProduct["saleUnitType"])
-                }
+                value={category}
+                onValueChange={(v) => {
+                  setCategory(v);
+                  setSubcategory("");
+                }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue placeholder="Seleccionar categoría" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SALE_UNIT_OPTIONS.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
+                  {CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </Field>
-          </div>
 
-          <div className="flex">
-            <Field className="mr-2">
-              <FieldLabel>Costo por {measureType}</FieldLabel>
+            <Field>
+              <FieldLabel>Subcategoría</FieldLabel>
+              <Select
+                value={subcategory}
+                onValueChange={setSubcategory}
+                disabled={!category}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar subcategoría" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getSubcategories(category).map((sub) => (
+                    <SelectItem key={sub} value={sub}>
+                      {sub}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field>
+              <FieldLabel>Dimensiones</FieldLabel>
+              <Input
+                value={dimensions}
+                onChange={(e) => setDimensions(e.target.value)}
+                placeholder="Dimensiones"
+              />
+            </Field>
+            <div className="flex">
+              <Field className="mr-2">
+                <FieldLabel>Unidad de Medida</FieldLabel>
+                <Select
+                  value={measureType}
+                  onValueChange={(v) =>
+                    setMeasureType(v as CreateProduct["measureType"])
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MEASURE_TYPE_OPTIONS.map((m) => (
+                      <SelectItem key={m} value={m}>
+                        {m}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Unidad de Venta</FieldLabel>
+                <Select
+                  value={saleUnitType}
+                  onValueChange={(v) =>
+                    setSaleUnitType(v as CreateProduct["saleUnitType"])
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SALE_UNIT_OPTIONS.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+
+            <div className="flex">
+              <Field className="mr-2">
+                <FieldLabel>Costo por {measureType}</FieldLabel>
+                <Input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={costByMeasureUnit}
+                  onChange={(e) => setCostByMeasureUnit(e.target.value)}
+                  placeholder="0.00"
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel>Ganancia (%)</FieldLabel>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={profitPercentage}
+                  onChange={(e) => setProfitPercentage(e.target.value)}
+                  placeholder="0.00"
+                  required
+                />
+              </Field>
+            </div>
+
+            <Card className="flex flex-col gap-2 row-span-2 p-3">
+              <Field>
+                <FieldLabel>Precio final por {measureType}</FieldLabel>
+                <Input
+                  type="number"
+                  value={calculatePriceByMeasureUnit()}
+                  readOnly
+                  placeholder="0.00"
+                  className="bg-muted cursor-not-allowed"
+                />
+              </Field>
+              <Field>
+                <FieldLabel>Precio final por {saleUnitType}</FieldLabel>
+                <Input
+                  type="number"
+                  value={calculatePriceBySaleUnit()}
+                  readOnly
+                  placeholder="0.00"
+                  className="bg-muted cursor-not-allowed"
+                />
+              </Field>
+            </Card>
+
+            <Field>
+              <FieldLabel>
+                {measureType} por {saleUnitType}
+              </FieldLabel>
               <Input
                 type="number"
-                min={0}
+                min="0"
                 step="0.01"
-                value={costByMeasureUnit}
-                onChange={(e) => setCostByMeasureUnit(e.target.value)}
+                value={measurePerSaleUnit}
+                onChange={(e) => setMeasurePerSaleUnit(e.target.value)}
                 placeholder="0.00"
                 required
               />
             </Field>
 
-            <Field>
-              <FieldLabel>Ganancia (%)</FieldLabel>
+            <Field className="sm:col-span-2">
+              <FieldTitle>Imágenes</FieldTitle>
               <Input
-                type="number"
-                step="0.01"
-                value={profitPercentage}
-                onChange={(e) => setProfitPercentage(e.target.value)}
-                placeholder="0.00"
-                required
+                type="file"
+                accept="image/*"
+                multiple
+                className="cursor-pointer"
+                onChange={handleFileUpload}
+                disabled={isSubmitting}
               />
+              {uploadState.previewUrls.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {uploadState.previewUrls.map((url) => (
+                    <div
+                      key={url}
+                      className="relative inline-block rounded-md border overflow-hidden bg-muted"
+                    >
+                      <img
+                        src={url}
+                        alt="Preview"
+                        className="h-20 w-20 object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon-xs"
+                        className="absolute top-0.5 right-0.5 h-5 w-5"
+                        onClick={() => removePreviewImage(url)}
+                        aria-label="Quitar imagen"
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Field>
-          </div>
 
-          <Card className="flex flex-col gap-2 row-span-2 p-3">
-            <Field>
-              <FieldLabel>Precio final por {measureType}</FieldLabel>
-              <Input
-                type="number"
-                value={calculatePriceByMeasureUnit()}
-                readOnly
-                placeholder="0.00"
-                className="bg-muted cursor-not-allowed"
-              />
-            </Field>
-            <Field>
-              <FieldLabel>Precio final por {saleUnitType}</FieldLabel>
-              <Input
-                type="number"
-                value={calculatePriceBySaleUnit()}
-                readOnly
-                placeholder="0.00"
-                className="bg-muted cursor-not-allowed"
-              />
-            </Field>
-          </Card>
-
-          <Field>
-            <FieldLabel>
-              {measureType} por {saleUnitType}
-            </FieldLabel>
-            <Input
-              type="number"
-              min="0"
-              step="0.01"
-              value={measurePerSaleUnit}
-              onChange={(e) => setMeasurePerSaleUnit(e.target.value)}
-              placeholder="0.00"
-              required
-            />
-          </Field>
-
-          <Field className="sm:col-span-2">
-            <FieldTitle>Imágenes</FieldTitle>
-            <Input
-              type="file"
-              accept="image/*"
-              multiple
-              className="cursor-pointer"
-              onChange={handleFileUpload}
-              disabled={isSubmitting}
-            />
-            {uploadState.previewUrls.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {uploadState.previewUrls.map((url) => (
-                  <div
-                    key={url}
-                    className="relative inline-block rounded-md border overflow-hidden bg-muted"
-                  >
-                    <img
-                      src={url}
-                      alt="Preview"
-                      className="h-20 w-20 object-cover"
-                    />
+            <Field className="sm:col-span-2">
+              <FieldGroup>
+                <FieldTitle>Características</FieldTitle>
+                {characteristics.map((c, index) => (
+                  <div key={index} className="flex gap-2 items-end flex-wrap">
+                    <Field className="flex-1 min-w-30">
+                      <FieldLabel className="sr-only">Clave</FieldLabel>
+                      <Select
+                        value={c.key}
+                        onValueChange={(v) =>
+                          updateCharacteristic(index, "key", v)
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CHARACTERISTIC_KEYS.map((k) => (
+                            <SelectItem key={k} value={k}>
+                              {k}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <Field className="flex-1 min-w-[120px]">
+                      <FieldLabel className="sr-only">Valor</FieldLabel>
+                      <Input
+                        value={c.value}
+                        onChange={(e) =>
+                          updateCharacteristic(index, "value", e.target.value)
+                        }
+                        placeholder="Valor"
+                      />
+                    </Field>
                     <Button
                       type="button"
-                      variant="destructive"
-                      size="icon-xs"
-                      className="absolute top-0.5 right-0.5 h-5 w-5"
-                      onClick={() => removePreviewImage(url)}
-                      aria-label="Quitar imagen"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeCharacteristic(index)}
+                      aria-label="Quitar característica"
                     >
-                      ×
+                      −
                     </Button>
                   </div>
                 ))}
-              </div>
-            )}
-          </Field>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addCharacteristic}
+                >
+                  Añadir característica
+                </Button>
+              </FieldGroup>
+            </Field>
+          </FieldSet>
 
-          <Field className="sm:col-span-2">
-            <FieldGroup>
-              <FieldTitle>Características</FieldTitle>
-              {characteristics.map((c, index) => (
-                <div key={index} className="flex gap-2 items-end flex-wrap">
-                  <Field className="flex-1 min-w-30">
-                    <FieldLabel className="sr-only">Clave</FieldLabel>
-                    <Select
-                      value={c.key}
-                      onValueChange={(v) =>
-                        updateCharacteristic(index, "key", v)
-                      }
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CHARACTERISTIC_KEYS.map((k) => (
-                          <SelectItem key={k} value={k}>
-                            {k}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field className="flex-1 min-w-[120px]">
-                    <FieldLabel className="sr-only">Valor</FieldLabel>
-                    <Input
-                      value={c.value}
-                      onChange={(e) =>
-                        updateCharacteristic(index, "value", e.target.value)
-                      }
-                      placeholder="Valor"
-                    />
-                  </Field>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => removeCharacteristic(index)}
-                    aria-label="Quitar característica"
-                  >
-                    −
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addCharacteristic}
-              >
-                Añadir característica
-              </Button>
-            </FieldGroup>
-          </Field>
-        </FieldSet>
-
-        <div className="mt-6 flex gap-2">
-          <Button
-            type="submit"
-            disabled={isSubmitting || uploadState.isUploading}
-          >
-            {uploadState.isUploading
-              ? "Subiendo imágenes…"
-              : isSubmitting
-                ? "Creando…"
-                : "Crear producto"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate("/product")}
-          >
-            Cancelar
-          </Button>
-        </div>
-      </form>
+          <div className="mt-6 flex gap-2">
+            <Button
+              type="submit"
+              disabled={isSubmitting || uploadState.isUploading}
+            >
+              {uploadState.isUploading
+                ? "Subiendo imágenes…"
+                : isSubmitting
+                  ? "Creando…"
+                  : "Crear producto"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/product")}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 };
