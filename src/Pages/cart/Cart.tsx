@@ -1,4 +1,3 @@
-import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -111,12 +110,7 @@ const Cart = () => {
 
   return (
     <div className="p-3 md:p-6 max-w-5xl mx-auto space-y-3 md:space-y-6">
-      <div className="w-full flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Carrito</h1>
-        <div className="w-4/6 md:w-1/6">
-          <FloatingGenericMenu />
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold">Carrito</h1>
       {/* Card 1: Client */}
       <Card className="p-3 md:p-4">
         <h2 className="text-lg font-semibold mb-0 md:mb-3">Cliente</h2>

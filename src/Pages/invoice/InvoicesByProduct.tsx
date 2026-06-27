@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -149,7 +148,6 @@ const InvoicesByProduct = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row items-center justify-start md:justify-center gap-0 md:gap-5">
       <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 gap-3">
-        <FloatingGenericMenu />
         <Card className="p-4">
           <div className="space-y-3">
             <div>

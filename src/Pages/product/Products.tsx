@@ -1,58 +1,8 @@
-import FloatingGenericMenu from "@/components/FloatingGenericMenu";
-import { Boxes, CirclePlus, ListOrdered, Package, TrendingUp, XCircle } from "lucide-react";
-import { Outlet, useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
+import { Outlet } from "react-router-dom";
 
 const Products = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-start md:justify-center gap-0 md:gap-5">
-      <section className="w-full md:w-1/8 flex flex-col justify-start p-2 pb-0 md:p-4 md:pb-2 gap-2 md:gap-3">
-        <FloatingGenericMenu />
-        <Button
-          onClick={() => navigate("/product")}
-          className="text-lg h-16 min-w-min"
-        >
-          <ListOrdered className="medium-icon" />
-          Lista
-        </Button>
-        <Button
-          onClick={() => navigate("/product/stock")}
-          className="text-lg h-16 min-w-min"
-        >
-          <Package className="medium-icon" />
-          Stock
-        </Button>
-        <Button
-          onClick={() => navigate("/product/packs")}
-          className="text-lg h-16 min-w-min"
-        >
-          <Boxes className="medium-icon" />
-          Packs
-        </Button>
-        <Button
-          onClick={() => navigate("/product/discontinued")}
-          className="text-lg h-16 min-w-min"
-        >
-          <XCircle className="medium-icon" />
-          Eliminados
-        </Button>
-        <Button
-          onClick={() => navigate("/product/create")}
-          className="text-lg h-16 min-w-min hidden md:flex"
-        >
-          <CirclePlus className="medium-icon" />
-          Crear
-        </Button>
-        <Button
-          onClick={() => navigate("/product/update-price")}
-          className="text-lg h-16 min-w-min hidden md:flex"
-        >
-          <TrendingUp className="medium-icon" />
-          Precios
-        </Button>
-      </section>
+    <div className="min-h-screen flex flex-col items-center justify-center">
       <section className="w-full md:w-5/8 h-auto md:h-screen py-0 md:py-5">
         <Outlet />
       </section>

@@ -1,4 +1,3 @@
-import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -166,7 +165,6 @@ const Invoices = () => {
   return (
     <div className="h-screen flex flex-col md:flex-row items-center justify-center gap-0 md:gap-5">
       <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 pb-0 gap-3">
-        <FloatingGenericMenu />
         <Card className="p-4 gap-0">
           <h3 className="text-sm font-medium mb-3">Filtrar por Estado</h3>
           <div className="flex flex-col gap-2">

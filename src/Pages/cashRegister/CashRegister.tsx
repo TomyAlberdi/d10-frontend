@@ -1,37 +1,8 @@
-import FloatingGenericMenu from "@/components/FloatingGenericMenu";
-import { Button } from "@/components/ui/button";
-import { CirclePlus, List, Wallet } from "lucide-react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const CashRegister = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-0 md:gap-5">
-      <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 gap-3">
-        <FloatingGenericMenu />
-        <Button
-          onClick={() => navigate("/cash-register")}
-          className="text-lg h-16"
-        >
-          <Wallet className="medium-icon" />
-          Resumen
-        </Button>
-        <Button
-          onClick={() => navigate("/cash-register/transactions")}
-          className="text-md h-16"
-        >
-          <List className="medium-icon" />
-          Transacciones
-        </Button>
-        <Button
-          onClick={() => navigate("/cash-register/adjust")}
-          className="text-lg h-16"
-        >
-          <CirclePlus className="medium-icon" />
-          Ajustar saldo
-        </Button>
-      </section>
+    <div className="min-h-screen flex flex-col items-center justify-center">
       <section className="w-full md:w-5/8 h-auto md:h-screen p-3 md:p-0 py-0 md:py-5">
         <Outlet />
       </section>

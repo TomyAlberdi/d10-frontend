@@ -1,4 +1,5 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import AppLayout from "./components/app-layout";
 import { TooltipProvider } from "./components/ui/tooltip";
 import CartContextComponent from "./contexts/cart/CartContextComponent";
 import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterContextComponent";
@@ -62,6 +63,7 @@ export function App() {
                       <PackContextComponent>
                       <ShipmentContextComponent>
                       <Routes>
+                        <Route element={<AppLayout />}>
                         <Route path="/" element={<Home />} />
                         <Route path="/product" element={<Products />}>
                           <Route index element={<ProductList />} />
@@ -141,6 +143,7 @@ export function App() {
                           <Route path=":id" element={<ShipmentUpdate />} />
                         </Route>
 
+                        </Route>
                       </Routes>
                       </ShipmentContextComponent>
                       </PackContextComponent>
