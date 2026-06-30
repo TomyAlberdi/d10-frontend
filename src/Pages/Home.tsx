@@ -1,16 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { isBackendReachable } from "@/lib/utils";
-import {
-  Database,
-  FileText,
-  Package,
-  ShoppingCart,
-  StickyNote,
-  Users,
-  Wallet
-} from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const Home = () => {
