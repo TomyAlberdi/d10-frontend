@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { isBackendReachable } from "@/lib/utils";
 import {
-  ChartPie,
+  Database,
   FileText,
   Package,
   ShoppingCart,
@@ -74,9 +74,13 @@ const Home = () => {
             Caja
           </Link>
         </Button>
-        <Button size="lg" asChild className="h-25 w-full md:w-64 hidden md:flex">
+        <Button
+          size="lg"
+          asChild
+          className="h-25 w-full md:w-64 hidden md:flex"
+        >
           <Link to="/data" className="flex items-center gap-3 text-xl">
-            <ChartPie className="big-icon" />
+            <Database className="big-icon" />
             Datos
           </Link>
         </Button>
@@ -86,6 +90,12 @@ const Home = () => {
             Notas
           </Link>
         </Button>
+{/*         <Button size="lg" asChild className="h-25 col-span-2">
+          <Link to="/shipment" className="flex items-center gap-3 text-xl">
+            <Truck className="big-icon" />
+            Envíos Diseño 10
+          </Link>
+        </Button> */}
       </div>
     </div>
   );

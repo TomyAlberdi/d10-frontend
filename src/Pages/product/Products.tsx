@@ -1,5 +1,5 @@
 import FloatingGenericMenu from "@/components/FloatingGenericMenu";
-import { CirclePlus, ListOrdered, Package, TrendingUp, XCircle } from "lucide-react";
+import { Boxes, CirclePlus, ListOrdered, Package, TrendingUp, XCircle } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 
@@ -23,6 +23,13 @@ const Products = () => {
         >
           <Package className="medium-icon" />
           Stock
+        </Button>
+        <Button
+          onClick={() => navigate("/product/packs")}
+          className="text-lg h-16 min-w-min"
+        >
+          <Boxes className="medium-icon" />
+          Packs
         </Button>
         <Button
           onClick={() => navigate("/product/discontinued")}

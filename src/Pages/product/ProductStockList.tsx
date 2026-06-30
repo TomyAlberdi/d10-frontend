@@ -67,14 +67,14 @@ const ProductStockList = () => {
     doc.text(`Fecha: ${today}`, 10, 30);
     // Table Headers
     const headers = [
-      "Código",
       "Fabricante",
       "Nombre",
       "Stock",
-      "Precio",
+      "Precio unitario",
+      "Precio medida",
       "Dimensiones",
     ];
-    const columnWidths = [15, 30, 60, 20, 25, 20];
+    const columnWidths = [30, 46, 24, 30, 30, 20];
     // Draw table
     let startY = 45;
     doc.setFontSize(9);
@@ -94,12 +94,14 @@ const ProductStockList = () => {
     // Draw rows
     products.forEach((product) => {
       const rowData = [
-        product.code,
         product.providerName || "N/A",
         product.name,
         `${product.stock.quantity} ${product.saleUnitType}`,
         product.priceBySaleUnit
           ? `$ ${formatPrice(product.priceBySaleUnit)}`
+          : "N/A",
+        product.priceByMeasureUnit
+          ? `$ ${formatPrice(product.priceByMeasureUnit)}`
           : "N/A",
         product.dimensions || "N/A",
       ];
@@ -107,8 +109,12 @@ const ProductStockList = () => {
       rowData.forEach((text, index) => {
         const xPos =
           10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
-        const splitText = doc.splitTextToSize(text, columnWidths[index] - 2);
-        doc.text(splitText, xPos, startY);
+        // Keep each cell on a single line and hide any overflow
+        const [firstLine = ""] = doc.splitTextToSize(
+          text,
+          columnWidths[index] - 2,
+        );
+        doc.text(firstLine, xPos, startY);
       });
       startY += 3;
       // Draw light gray separator line
