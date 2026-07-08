@@ -1,4 +1,5 @@
 import {
+  BookUser,
   Boxes,
   ChartNoAxesCombined,
   CirclePlus,
@@ -67,6 +68,15 @@ const data = {
       items: [
         { title: "Lista", url: "/client", icon: <ListOrdered /> },
         { title: "Crear", url: "/client/create", icon: <CirclePlus /> },
+      ],
+    },
+    {
+      title: "Agenda",
+      url: "/contact",
+      icon: <BookUser />,
+      items: [
+        { title: "Lista", url: "/contact", icon: <ListOrdered /> },
+        { title: "Crear", url: "/contact/create", icon: <CirclePlus /> },
       ],
     },
     {

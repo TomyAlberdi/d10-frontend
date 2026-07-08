@@ -4,6 +4,7 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import CartContextComponent from "./contexts/cart/CartContextComponent";
 import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterContextComponent";
 import ClientContextComponent from "./contexts/client/ClientContextComponent";
+import ContactContextComponent from "./contexts/contact/ContactContextComponent";
 import DataContextComponent from "./contexts/data/DataContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import NoteContextComponent from "./contexts/note/NoteContextComponent";
@@ -20,6 +21,10 @@ import ClientCreate from "./Pages/client/ClientCreate";
 import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
+import ContactCreate from "./Pages/contact/ContactCreate";
+import Contacts from "./Pages/contact/Contacts";
+import ContactsList from "./Pages/contact/ContactsList";
+import ContactUpdate from "./Pages/contact/ContactUpdate";
 import Data from "./Pages/data/Data";
 import MainData from "./Pages/data/MainData";
 import Home from "./Pages/Home";
@@ -56,6 +61,7 @@ export function App() {
         <ProductContextComponent>
           <CartContextComponent>
             <ClientContextComponent>
+              <ContactContextComponent>
               <InvoiceContextComponent>
                 <CashRegisterContextComponent>
                   <DataContextComponent>
@@ -99,6 +105,11 @@ export function App() {
                           <Route index element={<ClientsList />} />
                           <Route path="create" element={<ClientCreate />} />
                           <Route path=":id/update" element={<ClientUpdate />} />
+                        </Route>
+                        <Route path="/contact" element={<Contacts />}>
+                          <Route index element={<ContactsList />} />
+                          <Route path="create" element={<ContactCreate />} />
+                          <Route path=":id/update" element={<ContactUpdate />} />
                         </Route>
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/invoice" element={<Invoices />} />
@@ -151,6 +162,7 @@ export function App() {
                     </DataContextComponent>
                 </CashRegisterContextComponent>
               </InvoiceContextComponent>
+              </ContactContextComponent>
             </ClientContextComponent>
           </CartContextComponent>
         </ProductContextComponent>
