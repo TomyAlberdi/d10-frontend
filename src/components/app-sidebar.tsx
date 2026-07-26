@@ -1,12 +1,10 @@
 import {
   BookUser,
   Boxes,
-  ChartNoAxesCombined,
   CirclePlus,
   Database,
   FileText,
   GalleryVerticalEndIcon,
-  List,
   ListOrdered,
   Package,
   ShoppingCart,
@@ -14,7 +12,7 @@ import {
   TrendingUp,
   Users,
   Wallet,
-  XCircle,
+  XCircle
 } from "lucide-react";
 import * as React from "react";
 
@@ -65,19 +63,11 @@ const data = {
       title: "Clientes",
       url: "/client",
       icon: <Users />,
-      items: [
-        { title: "Lista", url: "/client", icon: <ListOrdered /> },
-        { title: "Crear", url: "/client/create", icon: <CirclePlus /> },
-      ],
     },
     {
       title: "Agenda",
       url: "/contact",
       icon: <BookUser />,
-      items: [
-        { title: "Lista", url: "/contact", icon: <ListOrdered /> },
-        { title: "Crear", url: "/contact/create", icon: <CirclePlus /> },
-      ],
     },
     {
       title: "Ventas",
@@ -88,37 +78,17 @@ const data = {
       title: "Caja",
       url: "/cash-register",
       icon: <Wallet />,
-      items: [
-        { title: "Resumen", url: "/cash-register", icon: <Wallet /> },
-        {
-          title: "Transacciones",
-          url: "/cash-register/transactions",
-          icon: <List />,
-        },
-        {
-          title: "Ajustar saldo",
-          url: "/cash-register/adjust",
-          icon: <CirclePlus />,
-        },
-      ],
     },
     {
       title: "Datos",
       url: "/data",
       icon: <Database />,
       desktopOnly: true,
-      items: [
-        { title: "Ingresos", url: "/data", icon: <ChartNoAxesCombined /> },
-      ],
     },
     {
       title: "Notas",
       url: "/note",
       icon: <StickyNote />,
-      items: [
-        { title: "Lista", url: "/note", icon: <ListOrdered /> },
-        { title: "Crear", url: "/note/create", icon: <CirclePlus /> },
-      ],
     },
     // Envíos: the route exists but is currently disabled in the home menu.
     // Uncomment to bring it back into the sidebar.

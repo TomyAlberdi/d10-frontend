@@ -17,6 +17,7 @@ import {
   BanknoteArrowUp,
   CreditCard,
   DollarSign,
+  List,
   RefreshCcw,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -65,7 +66,11 @@ const CashRegisterOverview = () => {
     }
   }, [selectedDate, fetchTransactions, fetchDailyTotals]);
 
-  const amounts = { paper: paperAmount, digital: digitalAmount, usd: usdAmount };
+  const amounts = {
+    paper: paperAmount,
+    digital: digitalAmount,
+    usd: usdAmount,
+  };
 
   return (
     <div className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col md:flex-row gap-3 md:gap-5 px-2 md:px-5">
@@ -106,6 +111,10 @@ const CashRegisterOverview = () => {
             <Button variant="outline" onClick={fetchCurrentAmounts}>
               <RefreshCcw />
               Actualizar
+            </Button>
+            <Button onClick={() => navigate("/cash-register/transactions")}>
+              <List />
+              Ver transacciones
             </Button>
           </div>
         </Card>
