@@ -8,6 +8,7 @@ import ContactContextComponent from "./contexts/contact/ContactContextComponent"
 import DataContextComponent from "./contexts/data/DataContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import NoteContextComponent from "./contexts/note/NoteContextComponent";
+import OrderContextComponent from "./contexts/order/OrderContextComponent";
 import PackContextComponent from "./contexts/pack/PackContextComponent";
 import ShipmentContextComponent from "./contexts/shipment/ShipmentContextComponent";
 import StockLogContextComponent from "./contexts/stockLog/StockLogContextComponent";
@@ -37,6 +38,10 @@ import NoteCreate from "./Pages/note/NoteCreate";
 import Notes from "./Pages/note/Notes";
 import NotesList from "./Pages/note/NotesList";
 import NoteUpdate from "./Pages/note/NoteUpdate";
+import OrderCreate from "./Pages/order/OrderCreate";
+import Orders from "./Pages/order/Orders";
+import OrdersList from "./Pages/order/OrdersList";
+import OrderUpdate from "./Pages/order/OrderUpdate";
 import PackAddToCart from "./Pages/pack/PackAddToCart";
 import PackCreate from "./Pages/pack/PackCreate";
 import PacksList from "./Pages/pack/PacksList";
@@ -73,6 +78,7 @@ export function App() {
                       <PackContextComponent>
                       <ShipmentContextComponent>
                       <StockLogContextComponent>
+                      <OrderContextComponent>
                       <Routes>
                         <Route element={<AppLayout />}>
                         <Route path="/" element={<Home />} />
@@ -165,9 +171,15 @@ export function App() {
                         <Route path="/stock-log" element={<StockLogs />}>
                           <Route index element={<StockLogsList />} />
                         </Route>
+                        <Route path="/order" element={<Orders />}>
+                          <Route index element={<OrdersList />} />
+                          <Route path="create" element={<OrderCreate />} />
+                          <Route path=":id" element={<OrderUpdate />} />
+                        </Route>
 
                         </Route>
                       </Routes>
+                      </OrderContextComponent>
                       </StockLogContextComponent>
                       </ShipmentContextComponent>
                       </PackContextComponent>

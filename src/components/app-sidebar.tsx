@@ -3,6 +3,7 @@ import {
   BookUser,
   Boxes,
   CirclePlus,
+  ClipboardList,
   Database,
   FileText,
   GalleryVerticalEndIcon,
@@ -47,6 +48,7 @@ const data = {
         { title: "Lista", url: "/product", icon: <ListOrdered /> },
         { title: "Lista Stock", url: "/product/stock", icon: <Package /> },
         { title: "Movimientos Stock", url: "/stock-log", icon: <ArrowDownUp /> },
+        { title: "Pedidos", url: "/order", icon: <ClipboardList /> },
         { title: "Packs", url: "/product/packs", icon: <Boxes /> },
         {
           title: "Eliminados",
