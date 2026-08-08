@@ -22,6 +22,8 @@ const SEGMENT_LABELS: Record<string, string> = {
   data: "Datos",
   note: "Notas",
   shipment: "Envíos",
+  "stock-log": "Movimientos de stock",
+  "stock-records": "Movimientos de stock",
   // sub-sections
   create: "Crear",
   update: "Editar",

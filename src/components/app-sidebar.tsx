@@ -1,4 +1,5 @@
 import {
+  ArrowDownUp,
   BookUser,
   Boxes,
   CirclePlus,
@@ -44,7 +45,8 @@ const data = {
       icon: <Package />,
       items: [
         { title: "Lista", url: "/product", icon: <ListOrdered /> },
-        { title: "Stock", url: "/product/stock", icon: <Package /> },
+        { title: "Lista Stock", url: "/product/stock", icon: <Package /> },
+        { title: "Movimientos Stock", url: "/stock-log", icon: <ArrowDownUp /> },
         { title: "Packs", url: "/product/packs", icon: <Boxes /> },
         {
           title: "Eliminados",

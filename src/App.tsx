@@ -10,6 +10,7 @@ import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent"
 import NoteContextComponent from "./contexts/note/NoteContextComponent";
 import PackContextComponent from "./contexts/pack/PackContextComponent";
 import ShipmentContextComponent from "./contexts/shipment/ShipmentContextComponent";
+import StockLogContextComponent from "./contexts/stockLog/StockLogContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
 import Cart from "./Pages/cart/Cart";
 import CashRegister from "./Pages/cashRegister/CashRegister";
@@ -44,6 +45,8 @@ import ShipmentCreate from "./Pages/shipment/ShipmentCreate";
 import Shipments from "./Pages/shipment/Shipments";
 import ShipmentsList from "./Pages/shipment/ShipmentsList";
 import ShipmentUpdate from "./Pages/shipment/ShipmentUpdate";
+import StockLogs from "./Pages/stockLog/StockLogs";
+import StockLogsList from "./Pages/stockLog/StockLogsList";
 import DiscontinuedProductList from "./Pages/product/DiscontinuedProductList";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
@@ -51,6 +54,7 @@ import ProductDetail from "./Pages/product/ProductDetail";
 import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
 import ProductStockList from "./Pages/product/ProductStockList";
+import ProductStockRecords from "./Pages/product/ProductStockRecords";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import UpdatePrice from "./Pages/product/UpdatePrice";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
@@ -68,6 +72,7 @@ export function App() {
                     <NoteContextComponent>
                       <PackContextComponent>
                       <ShipmentContextComponent>
+                      <StockLogContextComponent>
                       <Routes>
                         <Route element={<AppLayout />}>
                         <Route path="/" element={<Home />} />
@@ -86,6 +91,10 @@ export function App() {
                           <Route
                             path=":id/stock"
                             element={<UpdateProductStock />}
+                          />
+                          <Route
+                            path=":id/stock-records"
+                            element={<ProductStockRecords />}
                           />
                           <Route path="stock" element={<ProductStockList />} />
                           <Route
@@ -153,9 +162,13 @@ export function App() {
                           <Route path="create" element={<ShipmentCreate />} />
                           <Route path=":id" element={<ShipmentUpdate />} />
                         </Route>
+                        <Route path="/stock-log" element={<StockLogs />}>
+                          <Route index element={<StockLogsList />} />
+                        </Route>
 
                         </Route>
                       </Routes>
+                      </StockLogContextComponent>
                       </ShipmentContextComponent>
                       </PackContextComponent>
                       </NoteContextComponent>

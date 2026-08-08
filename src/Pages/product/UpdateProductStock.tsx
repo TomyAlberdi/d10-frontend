@@ -9,14 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useProductContext } from "@/contexts/product/UseProductContext";
-import type { ProductStockRecord } from "@/interfaces/ProductInterfaces";
+import type { UpdateProductStockDTO } from "@/interfaces/ProductInterfaces";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-const OPERATION_OPTIONS: ProductStockRecord["type"][] = ["IN", "OUT"];
+const OPERATION_OPTIONS: UpdateProductStockDTO["type"][] = ["IN", "OUT"];
 
 const UpdateProductStock = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,8 +27,10 @@ const UpdateProductStock = () => {
   const [product, setProduct] =
     useState<Awaited<ReturnType<typeof getProductById>>>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [operation, setOperation] = useState<ProductStockRecord["type"]>("IN");
+  const [operation, setOperation] =
+    useState<UpdateProductStockDTO["type"]>("IN");
   const [amount, setAmount] = useState("");
+  const [detail, setDetail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -63,7 +66,11 @@ const UpdateProductStock = () => {
 
     setIsSubmitting(true);
     try {
-      await updateProductStock(id, { type: operation, quantity: qty });
+      await updateProductStock(id, {
+        type: operation,
+        quantity: qty,
+        detail: detail.trim() || undefined,
+      });
       toast.success(
         operation === "IN"
           ? "Stock actualizado correctamente (entrada)."
@@ -72,6 +79,7 @@ const UpdateProductStock = () => {
       const updated = await getProductById(id);
       if (updated) setProduct(updated);
       setAmount("");
+      setDetail("");
     } catch {
       // Error already shown by context (e.g. insufficient stock from API)
     } finally {
@@ -135,7 +143,7 @@ const UpdateProductStock = () => {
               <Select
                 value={operation}
                 onValueChange={(v) =>
-                  setOperation(v as ProductStockRecord["type"])
+                  setOperation(v as UpdateProductStockDTO["type"])
                 }
               >
                 <SelectTrigger>
@@ -168,6 +176,15 @@ const UpdateProductStock = () => {
                 {product.measureType}
               </div>
             )}
+            <Field className="sm:col-span-2">
+              <FieldLabel>Detalle (opcional)</FieldLabel>
+              <Textarea
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
+                placeholder="Motivo del movimiento, por ejemplo: Compra a proveedor, Rotura, Ajuste de inventario…"
+                rows={3}
+              />
+            </Field>
           </FieldSet>
 
           <div className="mt-6 flex gap-2">
