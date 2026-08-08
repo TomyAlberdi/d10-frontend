@@ -22,13 +22,18 @@ const SEARCH_DEBOUNCE_MS = 300;
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Presupuesto",
   PAGO: "Pago",
+  DEUDA: "Deuda",
   ENTREGADO: "Entregado",
   CANCELADO: "Cancelado",
 };
 
+/** Statuses that still owe money, so the pending balance is worth showing. */
+const UNPAID_STATUSES = new Set(["PENDIENTE", "DEUDA"]);
+
 const STATUS_ROW_CLASSES: Record<string, string> = {
   PENDIENTE: "bg-amber-50 dark:bg-amber-950/30",
   PAGO: "bg-green-50 dark:bg-green-950/30",
+  DEUDA: "bg-orange-50 dark:bg-orange-950/30",
   ENVIADO: "bg-blue-50 dark:bg-blue-950/30",
   ENTREGADO: "bg-emerald-50 dark:bg-emerald-950/30",
   CANCELADO: "bg-red-50 dark:bg-red-950/30",
@@ -37,6 +42,7 @@ const STATUS_ROW_CLASSES: Record<string, string> = {
 const STATUS_DOT: Record<string, string> = {
   PENDIENTE: "bg-amber-500",
   PAGO: "bg-green-500",
+  DEUDA: "bg-orange-500",
   ENTREGADO: "bg-emerald-500",
   CANCELADO: "bg-red-500",
 };
@@ -318,7 +324,7 @@ const Invoices = () => {
                       </TableCell>
                       <TableCell className="font-medium">
                         ${" "}
-                        {invoice.status === "PENDIENTE"
+                        {UNPAID_STATUSES.has(invoice.status)
                           ? formatPrice(
                               invoice.total - (invoice.partialPayment ?? 0),
                             )

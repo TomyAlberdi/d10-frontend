@@ -41,6 +41,7 @@ const initialCart: Invoice = {
 const VALID_STATUSES: InvoiceStatus[] = [
   "PENDIENTE",
   "PAGO",
+  "DEUDA",
   "ENVIADO",
   "ENTREGADO",
   "CANCELADO",

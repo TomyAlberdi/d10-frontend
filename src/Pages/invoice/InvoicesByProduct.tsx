@@ -22,17 +22,25 @@ import { toast } from "sonner";
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Pendiente",
   PAGO: "Pago",
+  DEUDA: "Deuda",
   ENVIADO: "Enviado",
   ENTREGADO: "Entregado",
   CANCELADO: "Cancelado",
 };
 
-/** Only these statuses count as realized revenue (a "Presupuesto" is not a sale). */
+/**
+ * Only these statuses count as realized revenue (a "Presupuesto" is not a sale
+ * and a "Deuda" is not collected yet).
+ */
 const REVENUE_STATUSES = new Set(["PAGO", "ENTREGADO"]);
+
+/** Statuses that still owe money, so the pending balance is worth showing. */
+const UNPAID_STATUSES = new Set(["PENDIENTE", "DEUDA"]);
 
 const STATUS_ROW_CLASSES: Record<string, string> = {
   PENDIENTE: "bg-amber-50 dark:bg-amber-950/30",
   PAGO: "bg-green-50 dark:bg-green-950/30",
+  DEUDA: "bg-orange-50 dark:bg-orange-950/30",
   ENVIADO: "bg-blue-50 dark:bg-blue-950/30",
   ENTREGADO: "bg-emerald-50 dark:bg-emerald-950/30",
   CANCELADO: "bg-red-50 dark:bg-red-950/30",
@@ -247,7 +255,7 @@ const InvoicesByProduct = () => {
                       </TableCell>
                       <TableCell className="font-medium">
                         ${" "}
-                        {invoice.status === "PENDIENTE"
+                        {UNPAID_STATUSES.has(invoice.status)
                           ? formatPrice(
                               invoice.total - (invoice.partialPayment ?? 0),
                             )
