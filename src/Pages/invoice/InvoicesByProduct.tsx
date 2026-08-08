@@ -27,6 +27,9 @@ const STATUS_LABELS: Record<string, string> = {
   CANCELADO: "Cancelado",
 };
 
+/** Only these statuses count as realized revenue (a "Presupuesto" is not a sale). */
+const REVENUE_STATUSES = new Set(["PAGO", "ENTREGADO"]);
+
 const STATUS_ROW_CLASSES: Record<string, string> = {
   PENDIENTE: "bg-amber-50 dark:bg-amber-950/30",
   PAGO: "bg-green-50 dark:bg-green-950/30",
@@ -57,7 +60,11 @@ const InvoicesByProduct = () => {
     [displayInvoices, selectedInvoice],
   );
   const totalRevenue = useMemo(
-    () => displayInvoices.reduce((sum, i) => sum + i.total, 0),
+    () =>
+      displayInvoices.reduce(
+        (sum, i) => (REVENUE_STATUSES.has(i.status) ? sum + i.total : sum),
+        0,
+      ),
     [displayInvoices],
   );
 

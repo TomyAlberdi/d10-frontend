@@ -22,7 +22,9 @@ import type {
   CreateInvoiceDTO,
   Invoice,
   InvoiceStatus,
+  PaymentMethod,
 } from "@/interfaces/InvoiceInterfaces";
+import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
 import { ChevronLeft, FileText, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -63,9 +65,9 @@ const UpdateInvoice = () => {
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
-  const [paymentMethod, setPaymentMethod] = useState<
-    "CASH" | "DIGITAL" | "USD" | undefined
-  >(undefined);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | undefined>(
+    undefined,
+  );
   const [stockDecreased, setStockDecreased] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -351,17 +353,17 @@ const UpdateInvoice = () => {
             </label>
             <Select
               value={paymentMethod || "CASH"}
-              onValueChange={(value) =>
-                setPaymentMethod(value as "CASH" | "DIGITAL" | "USD")
-              }
+              onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
             >
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue placeholder="Método de pago" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="CASH">Efectivo</SelectItem>
-                <SelectItem value="DIGITAL">Transferencia</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                {PAYMENT_METHODS.map((method) => (
+                  <SelectItem key={method} value={method}>
+                    {PAYMENT_METHOD_LABELS[method]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

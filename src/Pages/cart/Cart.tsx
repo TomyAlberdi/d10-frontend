@@ -18,7 +18,11 @@ import {
 } from "@/components/ui/table";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
-import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
+import type {
+  InvoiceStatus,
+  PaymentMethod,
+} from "@/interfaces/InvoiceInterfaces";
+import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
 import { FileText, PackagePlus, Trash2, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -335,17 +339,17 @@ const Cart = () => {
             </label>
             <Select
               value={cart.paymentMethod || "CASH"}
-              onValueChange={(value) =>
-                setPaymentMethod(value as "CASH" | "DIGITAL" | "USD")
-              }
+              onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
             >
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue placeholder="Método de pago" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="CASH">Efectivo</SelectItem>
-                <SelectItem value="DIGITAL">Transferencia</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                {PAYMENT_METHODS.map((method) => (
+                  <SelectItem key={method} value={method}>
+                    {PAYMENT_METHOD_LABELS[method]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
+import type { CashRegisterType } from "@/interfaces/CashRegisterInterfaces";
+import { REGISTER_TYPE_LABELS, REGISTER_TYPES } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
 import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
 import { useState } from "react";
@@ -25,12 +27,12 @@ const CashRegisterAdjust = () => {
   const isValidAmount = Number.isFinite(parsedAmount) && parsedAmount > 0;
   const isDisabled = !isValidAmount || isProcessing;
 
-  const currentAmount =
-    selectedType === "PAPER"
-      ? paperAmount
-      : selectedType === "DIGITAL"
-        ? digitalAmount
-        : usdAmount;
+  const amounts: Record<CashRegisterType, number> = {
+    PAPER: paperAmount,
+    DIGITAL: digitalAmount,
+    USD: usdAmount,
+  };
+  const currentAmount = amounts[selectedType];
 
   const handleAdd = async () => {
     if (!isValidAmount) return;
@@ -70,24 +72,15 @@ const CashRegisterAdjust = () => {
         <div className="flex flex-col gap-2">
           <span className="text-sm text-muted-foreground">Tipo de caja</span>
           <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant={selectedType === "PAPER" ? "default" : "outline"}
-              onClick={() => setSelectedType("PAPER")}
-            >
-              Efectivo
-            </Button>
-            <Button
-              variant={selectedType === "DIGITAL" ? "default" : "outline"}
-              onClick={() => setSelectedType("DIGITAL")}
-            >
-              Transferencia
-            </Button>
-            <Button
-              variant={selectedType === "USD" ? "default" : "outline"}
-              onClick={() => setSelectedType("USD")}
-            >
-              USD
-            </Button>
+            {REGISTER_TYPES.map((type) => (
+              <Button
+                key={type}
+                variant={selectedType === type ? "default" : "outline"}
+                onClick={() => setSelectedType(type)}
+              >
+                {REGISTER_TYPE_LABELS[type]}
+              </Button>
+            ))}
           </div>
         </div>
 

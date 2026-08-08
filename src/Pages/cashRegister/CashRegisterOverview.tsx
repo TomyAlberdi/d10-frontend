@@ -10,7 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
+import type { CashRegisterType } from "@/interfaces/CashRegisterInterfaces";
+import { REGISTER_TYPE_LABELS, REGISTER_TYPES } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
 import {
   Banknote,
   BanknoteArrowDown,
@@ -33,11 +36,11 @@ const TRANSACTION_ROW_CLASSES: Record<string, string> = {
   OUT: "bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-900/40",
 };
 
-const REGISTER_TILES = [
-  { key: "paper", label: "Efectivo", icon: Banknote },
-  { key: "digital", label: "Transferencia", icon: CreditCard },
-  { key: "usd", label: "USD", icon: DollarSign },
-] as const;
+const REGISTER_TILE_ICONS: Record<CashRegisterType, LucideIcon> = {
+  PAPER: Banknote,
+  DIGITAL: CreditCard,
+  USD: DollarSign,
+};
 
 const CashRegisterOverview = () => {
   const {
@@ -66,10 +69,10 @@ const CashRegisterOverview = () => {
     }
   }, [selectedDate, fetchTransactions, fetchDailyTotals]);
 
-  const amounts = {
-    paper: paperAmount,
-    digital: digitalAmount,
-    usd: usdAmount,
+  const amounts: Record<CashRegisterType, number> = {
+    PAPER: paperAmount,
+    DIGITAL: digitalAmount,
+    USD: usdAmount,
   };
 
   return (
@@ -85,22 +88,27 @@ const CashRegisterOverview = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-3">
-            {REGISTER_TILES.map(({ key, label, icon: Icon }) => (
-              <div
-                key={key}
-                className="flex items-center gap-3 rounded-lg border p-3"
-              >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                  <Icon className="size-5" />
+            {REGISTER_TYPES.map((type) => {
+              const Icon = REGISTER_TILE_ICONS[type];
+              return (
+                <div
+                  key={type}
+                  className="flex items-center gap-3 rounded-lg border p-3"
+                >
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                    <Icon className="size-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">
+                      {REGISTER_TYPE_LABELS[type]}
+                    </p>
+                    <p className="truncate text-xl font-bold tracking-tight">
+                      {isLoadingAmount ? "…" : `$ ${formatPrice(amounts[type])}`}
+                    </p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">{label}</p>
-                  <p className="truncate text-xl font-bold tracking-tight">
-                    {isLoadingAmount ? "…" : `$ ${formatPrice(amounts[key])}`}
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-auto flex flex-col gap-2">
@@ -211,11 +219,8 @@ const CashRegisterOverview = () => {
                         transaction.type}
                     </TableCell>
                     <TableCell>
-                      {transaction.registerType === "PAPER"
-                        ? "Efectivo"
-                        : transaction.registerType === "DIGITAL"
-                          ? "Transferencia"
-                          : "USD"}
+                      {REGISTER_TYPE_LABELS[transaction.registerType] ??
+                        transaction.registerType}
                     </TableCell>
                     <TableCell className="font-medium">
                       $ {formatPrice(transaction.amount)}

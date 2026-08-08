@@ -1,4 +1,7 @@
-import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
+import type {
+  InvoiceStatus,
+  PaymentMethod,
+} from "@/interfaces/InvoiceInterfaces";
 
 export type CashRegisterType = "PAPER" | "DIGITAL" | "USD";
 
@@ -31,7 +34,7 @@ export interface CashRegisterStatusChangePayload {
   previousStatus: InvoiceStatus | null;
   nextStatus: InvoiceStatus;
   total: number;
-  paymentMethod?: "CASH" | "DIGITAL";
+  paymentMethod?: PaymentMethod;
   /**
    * Whether the invoice had `stockDecreased` set to true
    * in the first version we received from the backend.
