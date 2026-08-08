@@ -124,7 +124,7 @@ const ClientsList = () => {
             <Button
               className="h-full"
               size="sm"
-              onClick={() => navigate("/clients/create")}
+              onClick={() => navigate("/client/create")}
             >
               <CirclePlus className="size-4" />
               <span className="ml-2">Crear Cliente</span>
