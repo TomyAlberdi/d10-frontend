@@ -49,7 +49,7 @@ const PacksList = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-0 md:pr-4">
+      <div className="w-full h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 overflow-y-auto pr-0 md:pr-4">
         {[...Array(4)].map((_, i) => (
           <Skeleton key={i} className="h-32 w-full" />
         ))}
@@ -59,7 +59,7 @@ const PacksList = () => {
 
   if (packs.length === 0) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+      <div className="w-full h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col items-center justify-center gap-4">
         <p className="text-lg text-muted-foreground">No hay packs disponibles</p>
         <Button onClick={() => navigate("/product/packs/create")}>
           <CirclePlus className="w-4 h-4 mr-2" />
@@ -70,7 +70,7 @@ const PacksList = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 md:gap-2 overflow-y-auto px-2">
+    <div className="w-full h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 md:gap-2 overflow-y-auto px-2">
       <div className="flex justify-end pt-2 md:p-0">
         <Button onClick={() => navigate("/product/packs/create")} className="w-full md:w-auto h-12 md:h-8 text-lg md:text-sm">
           <CirclePlus className="medium-icon mr-2" />

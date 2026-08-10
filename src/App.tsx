@@ -1,13 +1,20 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import AppLayout from "./components/app-layout";
 import { TooltipProvider } from "./components/ui/tooltip";
 import CartContextComponent from "./contexts/cart/CartContextComponent";
 import CashRegisterContextComponent from "./contexts/cashRegister/CashRegisterContextComponent";
 import ClientContextComponent from "./contexts/client/ClientContextComponent";
+import ContactContextComponent from "./contexts/contact/ContactContextComponent";
 import DataContextComponent from "./contexts/data/DataContextComponent";
 import InvoiceContextComponent from "./contexts/invoice/InvoiceContextComponent";
 import NoteContextComponent from "./contexts/note/NoteContextComponent";
+// Pedidos: feature not ready to deploy. The pages and context live in
+// src/Pages/order and src/contexts/order; uncomment here and in app-sidebar.tsx
+// and app-breadcrumb.tsx to bring it back.
+// import OrderContextComponent from "./contexts/order/OrderContextComponent";
 import PackContextComponent from "./contexts/pack/PackContextComponent";
 import ShipmentContextComponent from "./contexts/shipment/ShipmentContextComponent";
+import StockLogContextComponent from "./contexts/stockLog/StockLogContextComponent";
 import ProductContextComponent from "./contexts/product/ProductContextComponent";
 import Cart from "./Pages/cart/Cart";
 import CashRegister from "./Pages/cashRegister/CashRegister";
@@ -19,6 +26,10 @@ import ClientCreate from "./Pages/client/ClientCreate";
 import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
+import ContactCreate from "./Pages/contact/ContactCreate";
+import Contacts from "./Pages/contact/Contacts";
+import ContactsList from "./Pages/contact/ContactsList";
+import ContactUpdate from "./Pages/contact/ContactUpdate";
 import Data from "./Pages/data/Data";
 import MainData from "./Pages/data/MainData";
 import Home from "./Pages/Home";
@@ -30,6 +41,11 @@ import NoteCreate from "./Pages/note/NoteCreate";
 import Notes from "./Pages/note/Notes";
 import NotesList from "./Pages/note/NotesList";
 import NoteUpdate from "./Pages/note/NoteUpdate";
+// Pedidos: see the note next to the OrderContextComponent import above.
+// import OrderCreate from "./Pages/order/OrderCreate";
+// import Orders from "./Pages/order/Orders";
+// import OrdersList from "./Pages/order/OrdersList";
+// import OrderUpdate from "./Pages/order/OrderUpdate";
 import PackAddToCart from "./Pages/pack/PackAddToCart";
 import PackCreate from "./Pages/pack/PackCreate";
 import PacksList from "./Pages/pack/PacksList";
@@ -38,6 +54,8 @@ import ShipmentCreate from "./Pages/shipment/ShipmentCreate";
 import Shipments from "./Pages/shipment/Shipments";
 import ShipmentsList from "./Pages/shipment/ShipmentsList";
 import ShipmentUpdate from "./Pages/shipment/ShipmentUpdate";
+import StockLogs from "./Pages/stockLog/StockLogs";
+import StockLogsList from "./Pages/stockLog/StockLogsList";
 import DiscontinuedProductList from "./Pages/product/DiscontinuedProductList";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
@@ -45,6 +63,7 @@ import ProductDetail from "./Pages/product/ProductDetail";
 import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
 import ProductStockList from "./Pages/product/ProductStockList";
+import ProductStockRecords from "./Pages/product/ProductStockRecords";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import UpdatePrice from "./Pages/product/UpdatePrice";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
@@ -55,13 +74,17 @@ export function App() {
         <ProductContextComponent>
           <CartContextComponent>
             <ClientContextComponent>
+              <ContactContextComponent>
               <InvoiceContextComponent>
                 <CashRegisterContextComponent>
                   <DataContextComponent>
                     <NoteContextComponent>
                       <PackContextComponent>
                       <ShipmentContextComponent>
+                      <StockLogContextComponent>
+                      {/* Pedidos: <OrderContextComponent> disabled until the feature is ready */}
                       <Routes>
+                        <Route element={<AppLayout />}>
                         <Route path="/" element={<Home />} />
                         <Route path="/product" element={<Products />}>
                           <Route index element={<ProductList />} />
@@ -78,6 +101,10 @@ export function App() {
                           <Route
                             path=":id/stock"
                             element={<UpdateProductStock />}
+                          />
+                          <Route
+                            path=":id/stock-records"
+                            element={<ProductStockRecords />}
                           />
                           <Route path="stock" element={<ProductStockList />} />
                           <Route
@@ -97,6 +124,11 @@ export function App() {
                           <Route index element={<ClientsList />} />
                           <Route path="create" element={<ClientCreate />} />
                           <Route path=":id/update" element={<ClientUpdate />} />
+                        </Route>
+                        <Route path="/contact" element={<Contacts />}>
+                          <Route index element={<ContactsList />} />
+                          <Route path="create" element={<ContactCreate />} />
+                          <Route path=":id/update" element={<ContactUpdate />} />
                         </Route>
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/invoice" element={<Invoices />} />
@@ -140,14 +172,27 @@ export function App() {
                           <Route path="create" element={<ShipmentCreate />} />
                           <Route path=":id" element={<ShipmentUpdate />} />
                         </Route>
+                        <Route path="/stock-log" element={<StockLogs />}>
+                          <Route index element={<StockLogsList />} />
+                        </Route>
+                        {/* Pedidos: routes disabled until the feature is ready
+                        <Route path="/order" element={<Orders />}>
+                          <Route index element={<OrdersList />} />
+                          <Route path="create" element={<OrderCreate />} />
+                          <Route path=":id" element={<OrderUpdate />} />
+                        </Route>
+                        */}
 
+                        </Route>
                       </Routes>
+                      </StockLogContextComponent>
                       </ShipmentContextComponent>
                       </PackContextComponent>
                       </NoteContextComponent>
                     </DataContextComponent>
                 </CashRegisterContextComponent>
               </InvoiceContextComponent>
+              </ContactContextComponent>
             </ClientContextComponent>
           </CartContextComponent>
         </ProductContextComponent>

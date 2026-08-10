@@ -12,6 +12,7 @@ interface SelectedInvoiceProps {
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Presupuesto",
   PAGO: "Pago",
+  DEUDA: "Deuda",
   ENVIADO: "Enviado",
   ENTREGADO: "Entregado",
   CANCELADO: "Cancelado",

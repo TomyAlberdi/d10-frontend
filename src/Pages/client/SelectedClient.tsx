@@ -1,8 +1,9 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import type { Client } from "@/interfaces/ClientInterfaces";
-import { PencilLine, ShoppingCart } from "lucide-react";
+import { PencilLine, ShoppingCart, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -18,8 +19,11 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
 
   if (!client) {
     return (
-      <Card className="h-2/6 p-4 flex items-center justify-center">
-        <p className="text-muted-foreground">No client selected</p>
+      <Card className="h-auto md:h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center">
+        <Users className="size-10 text-muted-foreground/40" />
+        <p className="text-muted-foreground">
+          Busca y selecciona un cliente para ver sus detalles
+        </p>
       </Card>
     );
   }
@@ -40,56 +44,65 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
   };
 
   return (
-    <Card className="h-auto md:h-2/6 overflow-hidden flex flex-col md:grid grid-cols-5 grid-rows-5 md:grid-rows-4 gap-1 p-2">
-      <div className="col-span-4 flex items-center">
-        <span className="text-xl font-bold ml-1">{client.name}</span>
-        {isCartClient && (
-          <span className="ml-2 text-xs font-normal text-muted-foreground">
-            (Cliente del carrito)
+    <Card className="h-auto md:h-[calc(100dvh-6.5rem)] overflow-hidden flex flex-col gap-4 p-4">
+      {/* Name + type */}
+      <div className="flex shrink-0 flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-2xl font-bold leading-tight">{client.name}</h2>
+          {isCartClient && (
+            <Badge variant="secondary">Cliente del carrito</Badge>
+          )}
+        </div>
+        <Badge className="w-fit">{typeLabel}</Badge>
+      </div>
+
+      {/* Info */}
+      <div className="grid shrink-0 grid-cols-1 gap-2">
+        <div className="flex flex-col rounded-md border px-3 py-2">
+          <span className="text-sm text-muted-foreground">
+            {client.type === "CONSUMIDOR_FINAL" ? "DNI" : "CUIT"}
           </span>
-        )}
+          <span className="font-medium text-base break-words">
+            {client.cuitDni || "—"}
+          </span>
+        </div>
+        <div className="flex flex-col rounded-md border px-3 py-2">
+          <span className="text-sm text-muted-foreground">Email</span>
+          <span className="font-medium text-base break-words">
+            {client.email || "—"}
+          </span>
+        </div>
+        <div className="flex flex-col rounded-md border px-3 py-2">
+          <span className="text-sm text-muted-foreground">Teléfono</span>
+          <span className="font-medium text-base break-words">
+            {client.phone || "—"}
+          </span>
+        </div>
+        <div className="flex flex-col rounded-md border px-3 py-2">
+          <span className="text-sm text-muted-foreground">Dirección</span>
+          <span className="font-medium text-base break-words">
+            {client.address || "—"}
+          </span>
+        </div>
       </div>
-      <div className="col-span-2 row-start-2 flex items-center gap-3 border-2 p-2">
-        <span className="text-muted-foreground">Tipo</span>
-        <span className="text-foreground">{typeLabel}</span>
-      </div>
-      <div className="col-span-2 row-start-2 flex items-center gap-3 border-2 p-2">
-        <span className="text-muted-foreground">Email</span>
-        <span className="text-foreground">{client.email}</span>
-      </div>
-      <div className="col-span-2 row-start-3 flex items-center gap-3 border-2 p-2">
-        <span className="text-muted-foreground">
-          {client.type === "CONSUMIDOR_FINAL" ? "DNI" : "CUIT"}
-        </span>
-        <span className="text-foreground">{client.cuitDni}</span>
-      </div>
-      <div className="col-span-2 row-start-3 flex items-center gap-3 border-2 p-2">
-        <span className="text-muted-foreground">Teléfono</span>
-        <span className="text-foreground">{client.phone}</span>
-      </div>
-      <div className="col-span-2 row-start-4 flex items-center gap-3 border-2 p-2 w-full">
-        <span className="text-muted-foreground">Dirección</span>
-        <span className="text-foreground">{client.address}</span>
-      </div>
-      <div className="row-start-5 col-span-full md:col-span-1 md:row-span-full flex flex-col justify-between">
+
+      {/* Actions */}
+      <div className="mt-auto flex shrink-0 flex-col gap-2 pt-2">
         <Button
-          className="h-[49%] w-full hidden md:flex"
-          variant="outline"
-          size="sm"
-          onClick={() => navigate(`/client/${client.id}/update`)}
-        >
-          <PencilLine />
-          Editar
-        </Button>
-        <Button
-          className="md:h-[49%] w-full"
-          variant="outline"
-          size="sm"
+          size="lg"
           onClick={handleSetAsCartClient}
           disabled={!!isCartClient}
         >
           <ShoppingCart />
           {isCartClient ? "Cliente del carrito" : "Usar en carrito"}
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => navigate(`/client/${client.id}/update`)}
+        >
+          <PencilLine />
+          Editar
         </Button>
       </div>
     </Card>

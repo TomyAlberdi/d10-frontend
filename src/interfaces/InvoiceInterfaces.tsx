@@ -4,6 +4,7 @@ import type { Client } from "@/interfaces/ClientInterfaces";
 export type InvoiceStatus =
   | "PENDIENTE"
   | "PAGO"
+  | "DEUDA"
   | "ENVIADO"
   | "ENTREGADO"
   | "CANCELADO";

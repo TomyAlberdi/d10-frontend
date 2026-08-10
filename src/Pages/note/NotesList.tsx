@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNoteContext } from "@/contexts/note/UseNoteContext";
 import type { Note } from "@/interfaces/NoteInterfaces";
-import { Trash2 } from "lucide-react";
+import { CirclePlus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -55,13 +55,13 @@ const NotesList = () => {
   };
 
   const formatDueDate = (dateString: string) => {
-    const [year, month, day] = dateString.split('-');
+    const [year, month, day] = dateString.split("-");
     return `${day}/${month}/${year}`;
   };
 
   if (loading) {
     return (
-      <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-4">
+      <div className="w-full h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 overflow-y-auto px-3 md:px-0 md:pr-4">
         {[...Array(5)].map((_, i) => (
           <Skeleton key={i} className="h-24 w-full" />
         ))}
@@ -71,7 +71,7 @@ const NotesList = () => {
 
   if (notes.length === 0) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex items-center justify-center">
         <p className="text-lg text-muted-foreground">
           No hay notas disponibles
         </p>
@@ -80,7 +80,11 @@ const NotesList = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 overflow-y-auto pr-0 md:pr-4">
+    <div className="w-full h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 overflow-y-auto px-3 md:px-0 md:pr-4">
+      <Button onClick={() => navigate("/note/create")} className="w-min">
+        <CirclePlus />
+        Crear nota
+      </Button>
       {notes.map((note) => {
         return (
           <Card

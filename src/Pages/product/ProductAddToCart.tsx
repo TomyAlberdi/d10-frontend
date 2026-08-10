@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
@@ -122,77 +123,79 @@ const ProductAddToCart = () => {
     : null;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-2">Añadir al carrito</h1>
-      <p className="text-muted-foreground mb-4">{product.name}</p>
+    <div className="h-full w-full flex justify-center items-center px-3 md:px-0 pt-4 md:pt-0">
+      <Card className="p-6 w-full md:w-1/4">
+        <h1 className="text-2xl font-bold mb-2">Añadir al carrito</h1>
+        <p className="text-muted-foreground mb-4">{product.name}</p>
 
-      <div className="mb-6 p-4 rounded-lg border bg-muted/50 space-y-1">
-        <p className="text-sm">
-          <span className="text-muted-foreground">
-            Precio por {product.saleUnitType}:
-          </span>{" "}
-          $ {formatPrice(product.priceBySaleUnit)}
-        </p>
-        <p className="text-sm">
-          <span className="text-muted-foreground">
-            Medida por {product.saleUnitType}:
-          </span>{" "}
-          {product.measurePerSaleUnit} {product.measureType}
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit}>
-        <FieldSet className="grid gap-6 sm:grid-cols-2 max-w-md">
-          <Field>
-            <FieldLabel>Cantidad ({product.saleUnitType})</FieldLabel>
-            <Input
-              type="number"
-              min={1}
-              step={1}
-              value={saleUnitQuantity}
-              onChange={(e) => setSaleUnitQuantity(e.target.value)}
-              required
-            />
-          </Field>
-          <Field>
-            <FieldLabel>Descuento sobre subtotal: {percent}%</FieldLabel>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={percent}
-              onChange={(e) =>
-                setIndividualDiscountPercent(Number(e.target.value))
-              }
-              className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-primary"
-            />
-          </Field>
-          {measureTotalPreview !== null && (
-            <div className="sm:col-span-2 text-lg font-medium">
-              Total medida: {measureTotalPreview} {product.measureType}
-            </div>
-          )}
-          {subtotalPreview !== null && (
-            <div className="sm:col-span-2 text-lg font-medium">
-              Subtotal: $ {formatPrice(subtotalPreview)}
-            </div>
-          )}
-        </FieldSet>
-
-        <div className="mt-6 flex gap-2">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Añadiendo…" : "Añadir al carrito"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate("/product")}
-          >
-            Cancelar
-          </Button>
+        <div className="mb-6 p-4 rounded-lg border bg-muted/50 space-y-1">
+          <p className="text-sm">
+            <span className="text-muted-foreground">
+              Precio por {product.saleUnitType}:
+            </span>{" "}
+            $ {formatPrice(product.priceBySaleUnit)}
+          </p>
+          <p className="text-sm">
+            <span className="text-muted-foreground">
+              Medida por {product.saleUnitType}:
+            </span>{" "}
+            {product.measurePerSaleUnit} {product.measureType}
+          </p>
         </div>
-      </form>
+
+        <form onSubmit={handleSubmit}>
+          <FieldSet className="grid gap-6 sm:grid-cols-2 max-w-md">
+            <Field>
+              <FieldLabel>Cantidad ({product.saleUnitType})</FieldLabel>
+              <Input
+                type="number"
+                min={1}
+                step={1}
+                value={saleUnitQuantity}
+                onChange={(e) => setSaleUnitQuantity(e.target.value)}
+                required
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Descuento sobre subtotal: {percent}%</FieldLabel>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={percent}
+                onChange={(e) =>
+                  setIndividualDiscountPercent(Number(e.target.value))
+                }
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-primary"
+              />
+            </Field>
+            {measureTotalPreview !== null && (
+              <div className="sm:col-span-2 text-lg font-medium">
+                Total medida: {measureTotalPreview} {product.measureType}
+              </div>
+            )}
+            {subtotalPreview !== null && (
+              <div className="sm:col-span-2 text-lg font-medium">
+                Subtotal: $ {formatPrice(subtotalPreview)}
+              </div>
+            )}
+          </FieldSet>
+
+          <div className="mt-6 flex gap-2">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Añadiendo…" : "Añadir al carrito"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/product")}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 };

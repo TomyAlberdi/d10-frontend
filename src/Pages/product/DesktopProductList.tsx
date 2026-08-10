@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import ProductTablePagination from "./ProductTablePagination";
 import SelectedProduct from "./SelectedProduct";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 25;
 const SEARCH_DEBOUNCE_MS = 300;
 
 const DesktopProductList = () => {
@@ -55,22 +55,26 @@ const DesktopProductList = () => {
   }, [listProducts, page, searchQuery]);
 
   return (
-    <div className="px-2 md:px-5 h-full hidden md:flex flex-col gap-4">
-      <SelectedProduct
-        product={selectedProduct}
-        updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}
-      />
-      <ProductTablePagination
-        products={products}
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-        selectedProduct={selectedProduct}
-        onSelectProduct={setSelectedProduct}
-        searchInput={searchInput}
-        onSearchChange={setSearchInput}
-        isSearching={isSearching}
-      />
+    <div className="px-2 md:px-5 h-full hidden md:flex flex-row gap-4">
+      <div className="flex-1/3 min-w-0 h-min">
+        <SelectedProduct
+          product={selectedProduct}
+          updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}
+        />
+      </div>
+      <div className="w-2/3 min-w-0">
+        <ProductTablePagination
+          products={products}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          selectedProduct={selectedProduct}
+          onSelectProduct={setSelectedProduct}
+          searchInput={searchInput}
+          onSearchChange={setSearchInput}
+          isSearching={isSearching}
+        />
+      </div>
     </div>
   );
 };

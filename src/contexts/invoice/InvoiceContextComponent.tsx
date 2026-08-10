@@ -117,6 +117,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
 
   const searchInvoices = async (q: string, status?: InvoiceStatus): Promise<Invoice[]> => {
     const params = new URLSearchParams({ q });
+    params.append('size', '25');
     if (status) params.append('status', status);
     const response = await fetch(`${API_URL}/search?${params.toString()}`);
     if (!response.ok) {

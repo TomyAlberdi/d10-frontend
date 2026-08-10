@@ -1,5 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -10,11 +13,29 @@ import {
 } from "@/components/ui/table";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
-import { formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import jsPDF from "jspdf";
-import { Download } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Download,
+  Layers,
+  Package,
+  Search,
+  Wallet,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+type SortKey = "code" | "name" | "providerName" | "quantity" | "value";
+type SortDirection = "asc" | "desc";
+
+const PAGE_SHELL =
+  "h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 md:gap-4 p-3 md:p-5";
+
+const stockValue = (product: Product): number =>
+  product.priceBySaleUnit * product.stock.quantity;
 
 const calculateM2Total = (products: Product[]): number => {
   const total = products
@@ -26,10 +47,69 @@ const calculateM2Total = (products: Product[]): number => {
 };
 
 const calculateTotalValue = (products: Product[]): number => {
-  const total = products.reduce((sum, product) => {
-    return sum + product.priceBySaleUnit * product.stock.quantity;
-  }, 0);
+  const total = products.reduce((sum, product) => sum + stockValue(product), 0);
   return Math.round(total * 100) / 100;
+};
+
+const sortableValue = (product: Product, key: SortKey): string | number => {
+  switch (key) {
+    case "quantity":
+      return product.stock.quantity;
+    case "value":
+      return stockValue(product);
+    case "providerName":
+      return product.providerName ?? "";
+    case "code":
+      return product.code ?? "";
+    default:
+      return product.name ?? "";
+  }
+};
+
+interface SortableHeadProps {
+  label: string;
+  columnKey: SortKey;
+  activeKey: SortKey;
+  direction: SortDirection;
+  onSort: (key: SortKey) => void;
+  className?: string;
+  align?: "left" | "right";
+}
+
+const SortableHead = ({
+  label,
+  columnKey,
+  activeKey,
+  direction,
+  onSort,
+  className,
+  align = "left",
+}: SortableHeadProps) => {
+  const isActive = activeKey === columnKey;
+  return (
+    <TableHead className={cn("bg-card", className)}>
+      <button
+        type="button"
+        onClick={() => onSort(columnKey)}
+        className={cn(
+          "inline-flex items-center gap-1 transition-colors hover:text-foreground",
+          isActive ? "text-foreground font-medium" : "text-muted-foreground",
+          align === "right" && "flex-row-reverse",
+        )}
+      >
+        {label}
+        {isActive ? (
+          direction === "asc" ? (
+            <ArrowUp className="size-3.5" />
+          ) : (
+            <ArrowDown className="size-3.5" />
+          )
+        ) : (
+          <ArrowUpDown className="size-3.5 opacity-40" />
+        )}
+      </button>
+    </TableHead>
+  );
 };
 
 const ProductStockList = () => {
@@ -37,8 +117,9 @@ const ProductStockList = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [m2Total, setM2Total] = useState(0);
-  const [totalValue, setTotalValue] = useState(0);
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   useEffect(() => {
     getProductsWithStock()
@@ -49,10 +130,53 @@ const ProductStockList = () => {
       .finally(() => setLoading(false));
   }, [getProductsWithStock]);
 
-  useEffect(() => {
-    setM2Total(calculateM2Total(products));
-    setTotalValue(calculateTotalValue(products));
-  }, [products]);
+  const visibleProducts = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const filtered = query
+      ? products.filter((product) =>
+          [
+            product.code,
+            product.name,
+            product.providerName,
+            product.dimensions,
+          ]
+            .filter(Boolean)
+            .some((field) => field.toLowerCase().includes(query)),
+        )
+      : products;
+
+    return [...filtered].sort((a, b) => {
+      const left = sortableValue(a, sortKey);
+      const right = sortableValue(b, sortKey);
+      const comparison =
+        typeof left === "number" && typeof right === "number"
+          ? left - right
+          : String(left).localeCompare(String(right), "es", {
+              sensitivity: "base",
+              numeric: true,
+            });
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
+  }, [products, search, sortKey, sortDirection]);
+
+  const m2Total = useMemo(
+    () => calculateM2Total(visibleProducts),
+    [visibleProducts],
+  );
+  const totalValue = useMemo(
+    () => calculateTotalValue(visibleProducts),
+    [visibleProducts],
+  );
+
+  const handleSort = (key: SortKey) => {
+    if (key === sortKey) {
+      setSortDirection((current) => (current === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortKey(key);
+    // Numeric columns are most useful highest-first, text columns A-Z.
+    setSortDirection(key === "quantity" || key === "value" ? "desc" : "asc");
+  };
 
   const generateStockPDF = () => {
     const doc = new jsPDF();
@@ -91,8 +215,8 @@ const ProductStockList = () => {
     doc.line(10, startY + 2, 190, startY + 2);
     startY += 10;
     doc.setFont("helvetica", "normal");
-    // Draw rows
-    products.forEach((product) => {
+    // Draw rows, following the order and filter currently shown on screen
+    visibleProducts.forEach((product) => {
       const rowData = [
         product.providerName || "N/A",
         product.name,
@@ -133,75 +257,194 @@ const ProductStockList = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <div className="text-lg">Cargando productos...</div>
+      <div className={PAGE_SHELL}>
+        <div className="flex items-end justify-between gap-3">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-56" />
+            <Skeleton className="h-4 w-40" />
+          </div>
+          <Skeleton className="h-9 w-40" />
+        </div>
+        <div className="grid grid-cols-2 gap-2 md:gap-3 sm:grid-cols-3">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full col-span-2 sm:col-span-1" />
+        </div>
+        <Skeleton className="flex-1 w-full" />
       </div>
     );
   }
 
+  const isSearching = search.trim().length > 0;
+
   return (
-    <div className="px-5 h-full flex flex-col gap-4">
-      <div className="flex flex-col md:flex-row justify-center md:justify-between items-center mt-3 md:mt-0 gap-2 md:gap-0">
-        <h2 className="text-2xl font-bold">Productos en Stock </h2>
-        <Button onClick={generateStockPDF} className="text-xl md:text-base">
-          <Download size={"4"} />
-          Descargar Stock
+    <div className={PAGE_SHELL}>
+      {/* Header */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Productos en stock</h1>
+          <p className="text-sm text-muted-foreground">
+            {isSearching
+              ? `${visibleProducts.length} de ${products.length} productos`
+              : `${products.length} productos con stock disponible`}
+          </p>
+        </div>
+        <Button
+          onClick={generateStockPDF}
+          disabled={visibleProducts.length === 0}
+          className="w-full md:w-auto"
+        >
+          <Download className="size-4" />
+          Descargar stock
         </Button>
       </div>
-      <div className="flex flex-col gap-2 bg-card p-2 rounded-md w-fit self-center md:self-auto">
-        <span className="text-xl md:text-lg">
-          Superficie total: {m2Total} M2
-        </span>
-        <span className="text-xl md:text-lg">
-          Valor total: $ {formatPrice(totalValue)}
-        </span>
+
+      {/* Totals */}
+      <div className="grid grid-cols-2 gap-2 md:gap-3 sm:grid-cols-3">
+        <Card className="p-3 md:p-4 gap-1 justify-center">
+          <span className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <Package className="size-3.5" />
+            Productos
+          </span>
+          <p className="text-2xl font-bold tabular-nums">
+            {visibleProducts.length}
+          </p>
+        </Card>
+        <Card className="p-3 md:p-4 gap-1 justify-center">
+          <span className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <Layers className="size-3.5" />
+            Superficie total
+          </span>
+          <p className="text-2xl font-bold tabular-nums">
+            {m2Total} <span className="text-base font-medium">M2</span>
+          </p>
+        </Card>
+        <Card className="p-3 md:p-4 gap-1 justify-center col-span-2 sm:col-span-1">
+          <span className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <Wallet className="size-3.5" />
+            Valor total
+          </span>
+          <p className="text-2xl font-bold tabular-nums">
+            $ {formatPrice(totalValue)}
+          </p>
+        </Card>
       </div>
-      <div className="bg-card p-2 rounded-xl">
-        <Table>
-          <TableHeader>
-            <TableRow className="sticky top-0 z-10 shadow-[0_1px_0_0_hsl(var(--border))]">
-              <TableHead>Código</TableHead>
-              <TableHead className="w-4/12">Nombre</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Stock valorizado</TableHead>
-              <TableHead>Dimensiones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow
-                key={product.id}
-                className="cursor-pointer"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                <TableCell>
-                  <Badge variant={"secondary"}>{product.code}</Badge>
-                </TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>
-                  <Badge>
-                    {product.stock.quantity} {product.saleUnitType}{" "}
-                    {product.measureType !== product.saleUnitType &&
-                      `(${product.stock.measureUnitEquivalent.toFixed(2) + " " + product.measureType})`}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  ${" "}
-                  {formatPrice(
-                    product.priceBySaleUnit * product.stock.quantity,
-                  )}
-                </TableCell>
-                <TableCell>{product.dimensions}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      {products.length === 0 && (
-        <div className="text-center text-muted-foreground py-8">
-          No hay productos en stock
+
+      {/* Table */}
+      <Card className="flex-1 flex flex-col overflow-hidden py-0 gap-0">
+        <div className="p-3 border-b shrink-0 flex items-center gap-2">
+          <Search className="size-4 text-muted-foreground shrink-0" />
+          <Input
+            type="search"
+            placeholder="Buscar por código, nombre, fabricante o dimensiones"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1"
+            aria-label="Buscar productos en stock"
+          />
         </div>
-      )}
+
+        <div className="flex-1 overflow-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
+                <SortableHead
+                  label="Código"
+                  columnKey="code"
+                  activeKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                  className="w-1/12"
+                />
+                <SortableHead
+                  label="Nombre"
+                  columnKey="name"
+                  activeKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                  className="w-4/12"
+                />
+                <SortableHead
+                  label="Fabricante"
+                  columnKey="providerName"
+                  activeKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                  className="w-2/12 hidden lg:table-cell"
+                />
+                <SortableHead
+                  label="Stock"
+                  columnKey="quantity"
+                  activeKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                  className="w-2/12"
+                />
+                <SortableHead
+                  label="Stock valorizado"
+                  columnKey="value"
+                  activeKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                  className="w-2/12 text-right"
+                  align="right"
+                />
+                <TableHead className="w-1/12 bg-card hidden md:table-cell">
+                  Dimensiones
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {visibleProducts.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-muted-foreground py-12"
+                  >
+                    {isSearching
+                      ? `No se encontraron productos para "${search.trim()}"`
+                      : "No hay productos en stock"}
+                  </TableCell>
+                </TableRow>
+              )}
+              {visibleProducts.map((product) => (
+                <TableRow
+                  key={product.id}
+                  className="cursor-pointer"
+                  onClick={() => navigate(`/product/${product.id}`)}
+                >
+                  <TableCell>
+                    <Badge variant="secondary">{product.code}</Badge>
+                  </TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="hidden lg:table-cell text-muted-foreground">
+                    {product.providerName || "—"}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col items-start gap-1">
+                      <Badge className="tabular-nums">
+                        {product.stock.quantity} {product.saleUnitType}
+                      </Badge>
+                      {product.measureType !== product.saleUnitType && (
+                        <span className="text-xs text-muted-foreground tabular-nums">
+                          {(product.stock.measureUnitEquivalent ?? 0).toFixed(2)}{" "}
+                          {product.measureType}
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-medium tabular-nums">
+                    $ {formatPrice(stockValue(product))}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell text-muted-foreground">
+                    {product.dimensions || "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
     </div>
   );
 };

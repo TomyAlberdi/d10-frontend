@@ -22,7 +22,10 @@ import type {
   CreateInvoiceDTO,
   Invoice,
   InvoiceStatus,
+  PaymentMethod,
 } from "@/interfaces/InvoiceInterfaces";
+import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
+import { resolveInvoiceStatus, SETTLED_STATUSES } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { ChevronLeft, FileText, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,6 +35,7 @@ import { toast } from "sonner";
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Presupuesto" },
   { value: "PAGO", label: "Pago" },
+  { value: "DEUDA", label: "Deuda" },
   { value: "ENTREGADO", label: "Entregado" },
   { value: "CANCELADO", label: "Cancelado" },
 ];
@@ -63,9 +67,9 @@ const UpdateInvoice = () => {
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
-  const [paymentMethod, setPaymentMethod] = useState<
-    "CASH" | "DIGITAL" | "USD" | undefined
-  >(undefined);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | undefined>(
+    undefined,
+  );
   const [stockDecreased, setStockDecreased] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -118,6 +122,15 @@ const UpdateInvoice = () => {
   const partialPayment =
     invoice?.partialPayment ?? initialInvoice?.partialPayment ?? 0;
   const remainingAmount = Math.max(0, total - partialPayment);
+  // Status the backend will store, which is a debt when stock leaves without
+  // the total being covered.
+  const effectiveStatus = resolveInvoiceStatus({
+    status,
+    total,
+    partialPayment,
+    stockDecreased,
+  });
+  const isForcedToDebt = effectiveStatus !== status;
 
   const handleDiscountPercentChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -136,7 +149,14 @@ const UpdateInvoice = () => {
     });
   };
 
-  const handleStatusChange = (value: InvoiceStatus) => setStatus(value);
+  // A settled sale is fully paid, so the paid amount follows the total.
+  const handleStatusChange = (value: string) => {
+    const nextStatus = value as InvoiceStatus;
+    setStatus(nextStatus);
+    if (SETTLED_STATUSES.includes(nextStatus)) {
+      setInvoice((prev) => (prev ? { ...prev, partialPayment: total } : prev));
+    }
+  };
 
   const handleUpdateInvoice = async () => {
     if (!id || !invoice) return;
@@ -145,7 +165,7 @@ const UpdateInvoice = () => {
       const updatedInvoice = await updateInvoice(id, {
         client: invoice.client,
         products: invoice.products,
-        status,
+        status: effectiveStatus,
         discount,
         total,
         notes: invoice.notes,
@@ -155,8 +175,9 @@ const UpdateInvoice = () => {
       });
       toast.success("venta actualizada correctamente");
 
-      // Check if we need to register cash transaction
-      if (["PAGO", "ENVIADO", "ENTREGADO"].includes(status)) {
+      // Check if we need to register cash transaction. A debt is left out:
+      // partial payments are not registered in the cash register.
+      if (SETTLED_STATUSES.includes(effectiveStatus)) {
         navigate("/cash-register/invoice-transaction", {
           state: { invoice: updatedInvoice },
         });
@@ -330,6 +351,12 @@ const UpdateInvoice = () => {
                 ))}
               </SelectContent>
             </Select>
+            {isForcedToDebt && (
+              <p className="text-sm text-orange-600 dark:text-orange-400 mt-2">
+                Se guardará como Deuda: se descuenta stock y quedan ${" "}
+                {formatPrice(remainingAmount)} sin pagar.
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Switch
@@ -351,17 +378,17 @@ const UpdateInvoice = () => {
             </label>
             <Select
               value={paymentMethod || "CASH"}
-              onValueChange={(value) =>
-                setPaymentMethod(value as "CASH" | "DIGITAL" | "USD")
-              }
+              onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
             >
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue placeholder="Método de pago" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="CASH">Efectivo</SelectItem>
-                <SelectItem value="DIGITAL">Transferencia</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                {PAYMENT_METHODS.map((method) => (
+                  <SelectItem key={method} value={method}>
+                    {PAYMENT_METHOD_LABELS[method]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

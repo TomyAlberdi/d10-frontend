@@ -9,6 +9,7 @@ import type {
   CreateCashRegisterTransactionDTO,
 } from "@/interfaces/CashRegisterInterfaces";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
+import { PAYMENT_METHOD_REGISTER_TYPE } from "@/lib/cashRegister";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -309,21 +310,12 @@ const CashRegisterContextComponent: React.FC<
 
       if (!paymentMethod) return;
 
-      let registerType: CashRegisterType;
-      if (paymentMethod === "CASH") {
-        registerType = "PAPER";
-      } else if (paymentMethod === "DIGITAL") {
-        registerType = "DIGITAL";
-      } else {
-        registerType = "USD";
-      }
-
       try {
         const dto: CreateCashRegisterTransactionDTO = {
           amount: total,
           type: "IN",
           description: `Pago ${clientName}`,
-          registerType,
+          registerType: PAYMENT_METHOD_REGISTER_TYPE[paymentMethod],
         };
         const response = await fetch(`${API_URL}/transactions`, {
           method: "POST",
