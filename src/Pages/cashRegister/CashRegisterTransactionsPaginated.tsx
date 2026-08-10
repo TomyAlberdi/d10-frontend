@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
+import { REGISTER_TYPE_LABELS } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
 import { useEffect } from "react";
 
@@ -48,7 +49,7 @@ const CashRegisterTransactionsPaginated = () => {
     paginatedCurrentPage < paginatedTotalPages - 1 && !isPaginatedLoading;
 
   return (
-    <div className="h-full flex flex-col gap-6 p-2 md:p-6">
+    <div className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-4 p-2 md:p-5">
       <div>
         <h1 className="text-2xl font-bold mb-2">Transacciones de caja</h1>
         <p className="text-sm text-muted-foreground">
@@ -99,11 +100,8 @@ const CashRegisterTransactionsPaginated = () => {
                       transaction.type}
                   </TableCell>
                   <TableCell>
-                    {transaction.registerType === "PAPER"
-                      ? "Efectivo"
-                      : transaction.registerType === "DIGITAL"
-                        ? "Transferencia"
-                        : "USD"}
+                    {REGISTER_TYPE_LABELS[transaction.registerType] ??
+                      transaction.registerType}
                   </TableCell>
                   <TableCell className="font-medium">
                     $ {formatPrice(transaction.amount)}

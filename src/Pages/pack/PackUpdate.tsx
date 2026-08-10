@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -187,10 +188,12 @@ const PackUpdate = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-full flex flex-col gap-4 p-4">
-        <Skeleton className="h-10 w-40" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-32 w-full" />
+      <div className="h-full w-full flex justify-center items-center px-3 md:px-0 pt-4 md:pt-0">
+        <Card className="w-full md:w-1/2 flex flex-col gap-4 p-6">
+          <Skeleton className="h-10 w-40" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </Card>
       </div>
     );
   }
@@ -198,7 +201,8 @@ const PackUpdate = () => {
   if (!pack) return null;
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 p-4 overflow-y-auto">
+    <div className="h-full w-full flex justify-center items-center px-3 md:px-0 pt-4 md:pt-0">
+      <Card className="w-full md:w-1/2 flex flex-col gap-4 p-6">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-4 h-4" />
@@ -364,6 +368,7 @@ const PackUpdate = () => {
           </div>
         </div>
       </form>
+      </Card>
     </div>
   );
 };

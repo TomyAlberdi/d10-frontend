@@ -2,7 +2,7 @@ import type {
     CreateProduct,
     PaginatedResult,
     Product,
-    ProductStockRecord,
+    UpdateProductStockDTO,
 } from "@/interfaces/ProductInterfaces";
 import { createContext } from "react";
 
@@ -25,7 +25,10 @@ export interface ProductContextType {
     id: string,
     discontinued: boolean,
   ) => Promise<void>;
-  updateProductStock: (id: string, record: ProductStockRecord) => Promise<void>;
+  updateProductStock: (
+    id: string,
+    stockUpdate: UpdateProductStockDTO,
+  ) => Promise<void>;
   getProviders: () => Promise<string[]>;
   updateCostsByProvider: (providerName: string, percentageChange: number) => Promise<Product[]>;
 }

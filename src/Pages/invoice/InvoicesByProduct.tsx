@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { formatPrice } from "@/lib/utils";
-import { Check, ChevronLeft, X } from "lucide-react";
+import { Check, ChevronLeft, Package, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -22,14 +22,25 @@ import { toast } from "sonner";
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Pendiente",
   PAGO: "Pago",
+  DEUDA: "Deuda",
   ENVIADO: "Enviado",
   ENTREGADO: "Entregado",
   CANCELADO: "Cancelado",
 };
 
+/**
+ * Only these statuses count as realized revenue (a "Presupuesto" is not a sale
+ * and a "Deuda" is not collected yet).
+ */
+const REVENUE_STATUSES = new Set(["PAGO", "ENTREGADO"]);
+
+/** Statuses that still owe money, so the pending balance is worth showing. */
+const UNPAID_STATUSES = new Set(["PENDIENTE", "DEUDA"]);
+
 const STATUS_ROW_CLASSES: Record<string, string> = {
   PENDIENTE: "bg-amber-50 dark:bg-amber-950/30",
   PAGO: "bg-green-50 dark:bg-green-950/30",
+  DEUDA: "bg-orange-50 dark:bg-orange-950/30",
   ENVIADO: "bg-blue-50 dark:bg-blue-950/30",
   ENTREGADO: "bg-emerald-50 dark:bg-emerald-950/30",
   CANCELADO: "bg-red-50 dark:bg-red-950/30",
@@ -55,6 +66,14 @@ const InvoicesByProduct = () => {
         ? selectedInvoice
         : null,
     [displayInvoices, selectedInvoice],
+  );
+  const totalRevenue = useMemo(
+    () =>
+      displayInvoices.reduce(
+        (sum, i) => (REVENUE_STATUSES.has(i.status) ? sum + i.total : sum),
+        0,
+      ),
+    [displayInvoices],
   );
 
   useEffect(() => {
@@ -127,7 +146,7 @@ const InvoicesByProduct = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <div className="text-lg">Cargando ventas por producto...</div>
       </div>
     );
@@ -135,7 +154,7 @@ const InvoicesByProduct = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-4">
           <div className="text-lg text-destructive">{error}</div>
           <Button onClick={() => navigate(-1)}>
@@ -147,34 +166,40 @@ const InvoicesByProduct = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-start md:justify-center gap-0 md:gap-5">
-      <section className="w-full md:w-1/8 flex flex-col justify-start p-3 md:p-4 gap-3">
-        <FloatingGenericMenu />
-        <Card className="p-4">
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">
-                Producto
-              </label>
-              <p className="text-sm font-semibold">{productName}</p>
+    <div className="h-full flex flex-col md:flex-row gap-3 md:gap-5 p-3 md:p-5">
+      <aside className="w-full md:w-64 shrink-0">
+        <Card className="p-4 gap-4 overflow-y-auto">
+          <div className="flex flex-col gap-1">
+            <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <Package className="size-3.5" />
+              Producto
+            </span>
+            <h2 className="text-lg font-bold leading-tight break-words">
+              {productName || "—"}
+            </h2>
+          </div>
+
+          <Separator />
+
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-1">
+            <div className="rounded-md border p-3">
+              <p className="text-xs text-muted-foreground">Total de ventas</p>
+              <p className="text-2xl font-bold">{displayInvoices.length}</p>
             </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">
-                Total de Ventas
-              </label>
-              <p className="text-lg font-bold">{displayInvoices.length}</p>
+            <div className="rounded-md border p-3">
+              <p className="text-xs text-muted-foreground">Total facturado</p>
+              <p className="text-2xl font-bold">$ {formatPrice(totalRevenue)}</p>
             </div>
           </div>
         </Card>
-      </section>
-      <section className="w-full md:w-5/8 h-auto md:h-screen py-0 md:py-5">
-        <div className="px-3 md:px-5 h-full flex flex-col gap-4">
-          <Card
-            ref={tableRef}
-            className="h-full flex flex-col overflow-hidden py-0 gap-0"
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-          >
+      </aside>
+      <div className="flex-1 min-w-0 min-h-0">
+        <Card
+          ref={tableRef}
+          className="h-full flex flex-col overflow-hidden py-0 gap-0"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+        >
             <div className="p-3 border-b shrink-0">
               <h2 className="text-lg font-semibold">
                 Ventas que contienen el producto "{productName}"
@@ -230,7 +255,7 @@ const InvoicesByProduct = () => {
                       </TableCell>
                       <TableCell className="font-medium">
                         ${" "}
-                        {invoice.status === "PENDIENTE"
+                        {UNPAID_STATUSES.has(invoice.status)
                           ? formatPrice(
                               invoice.total - (invoice.partialPayment ?? 0),
                             )
@@ -250,7 +275,6 @@ const InvoicesByProduct = () => {
             </div>
           </Card>
         </div>
-      </section>
     </div>
   );
 };

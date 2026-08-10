@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
@@ -158,12 +159,14 @@ const PackAddToCart = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-full flex flex-col gap-4 p-4">
-        <Skeleton className="h-10 w-48" />
-        <Skeleton className="h-6 w-32" />
-        {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} className="h-20 w-full" />
-        ))}
+      <div className="h-full w-full flex justify-center items-center px-3 md:px-0 pt-4 md:pt-0">
+        <Card className="w-full md:w-1/2 flex flex-col gap-4 p-6">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-6 w-32" />
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full" />
+          ))}
+        </Card>
       </div>
     );
   }
@@ -174,7 +177,8 @@ const PackAddToCart = () => {
   const missingEntries = entries.filter((e) => e.notFound || !e.product);
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 p-4 overflow-y-auto">
+    <div className="h-full w-full flex justify-center items-center px-3 md:px-0 pt-4 md:pt-0">
+      <Card className="w-full md:w-1/2 flex flex-col gap-4 p-6">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-4 h-4" />
@@ -299,6 +303,7 @@ const PackAddToCart = () => {
             : `Agregar ${availableEntries.length} producto(s) al carrito`}
         </Button>
       </div>
+      </Card>
     </div>
   );
 };

@@ -1,13 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Pagination,
@@ -19,13 +12,7 @@ import {
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
-import {
-  ChevronDown,
-  Eye,
-  PackagePlus,
-  Search,
-  ShoppingCart,
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -87,7 +74,11 @@ const MobileProductList = () => {
         <Search className="size-4 text-muted-foreground shrink-0" />
       </Card>
       {products.map((product) => (
-        <Card key={product.id} className="p-2 gap-2">
+        <Card
+          key={product.id}
+          onClick={() => navigate(`/product/${product.id}`)}
+          className="p-2 gap-2 cursor-pointer transition-colors hover:border-primary active:bg-accent/50"
+        >
           <section className="flex flex-col justify-start gap-2">
             <CardTitle className="text-xl font-bold">{product.name}</CardTitle>
             <div className="flex gap-2">
@@ -148,37 +139,6 @@ const MobileProductList = () => {
               </div>
             )}
           </section>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button>
-                Acciones
-                <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white">
-              <DropdownMenuItem
-                className="bg-accent"
-                onClick={() => navigate(`/product/add/${product.id}`)}
-              >
-                <ShoppingCart />
-                Añadir al carrito
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="bg-accent"
-                onClick={() => navigate(`/product/${product.id}/stock`)}
-              >
-                <PackagePlus />
-                Actualizar stock
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="bg-accent"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                <Eye />
-                Ver detalle
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </Card>
       ))}
       <Pagination className="shrink-0">

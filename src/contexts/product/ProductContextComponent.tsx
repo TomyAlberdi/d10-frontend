@@ -2,7 +2,7 @@ import type {
     CreateProduct,
     PaginatedResult,
     Product,
-    ProductStockRecord,
+    UpdateProductStockDTO,
 } from "@/interfaces/ProductInterfaces";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
@@ -126,13 +126,16 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     return;
   };
 
-  const updateProductStock = async (id: string, record: ProductStockRecord) => {
+  const updateProductStock = async (
+    id: string,
+    stockUpdate: UpdateProductStockDTO,
+  ) => {
     const response = await fetch(`${API_URL}/${id}/stock`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(record),
+      body: JSON.stringify(stockUpdate),
     });
     if (!response.ok) {
       let message: string | null = null;
