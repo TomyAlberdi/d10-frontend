@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -54,95 +55,97 @@ const ClientCreate = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Crear cliente</h1>
+    <div className="h-full w-full flex justify-center items-center p-2 md:p-0">
+      <Card className="p-6 w-full md:w-3/4">
+        <h1 className="text-2xl font-bold mb-4">Crear cliente</h1>
 
-      <form onSubmit={handleSubmit}>
-        <FieldSet className="grid gap-6 sm:grid-cols-2">
-          <Field>
-            <FieldLabel>Tipo</FieldLabel>
-            <Select
-              value={type}
-              onValueChange={(v) => setType(v as CreateClientDTO["type"])}
+        <form onSubmit={handleSubmit}>
+          <FieldSet className="grid gap-6 sm:grid-cols-2">
+            <Field>
+              <FieldLabel>Tipo</FieldLabel>
+              <Select
+                value={type}
+                onValueChange={(v) => setType(v as CreateClientDTO["type"])}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CLIENT_TYPE_OPTIONS.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t === "CONSUMIDOR_FINAL"
+                        ? "Consumidor Final"
+                        : "Responsable Inscripto"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field>
+              <FieldLabel>Nombre</FieldLabel>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nombre o razón social"
+                required
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>CUIT / DNI</FieldLabel>
+              <Input
+                value={cuitDni}
+                onChange={(e) => setCuitDni(e.target.value)}
+                placeholder="CUIT o DNI"
+                required
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Email</FieldLabel>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@ejemplo.com"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Teléfono</FieldLabel>
+              <Input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Teléfono"
+              />
+            </Field>
+
+            <Field className="sm:col-span-2">
+              <FieldLabel>Dirección</FieldLabel>
+              <Input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Dirección"
+              />
+            </Field>
+          </FieldSet>
+
+          <div className="mt-6 flex gap-2">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creando…" : "Crear cliente"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/client")}
             >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CLIENT_TYPE_OPTIONS.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t === "CONSUMIDOR_FINAL"
-                      ? "Consumidor Final"
-                      : "Responsable Inscripto"}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field>
-            <FieldLabel>Nombre</FieldLabel>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre o razón social"
-              required
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>CUIT / DNI</FieldLabel>
-            <Input
-              value={cuitDni}
-              onChange={(e) => setCuitDni(e.target.value)}
-              placeholder="CUIT o DNI"
-              required
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>Email</FieldLabel>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@ejemplo.com"
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>Teléfono</FieldLabel>
-            <Input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Teléfono"
-            />
-          </Field>
-
-          <Field className="sm:col-span-2">
-            <FieldLabel>Dirección</FieldLabel>
-            <Input
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Dirección"
-            />
-          </Field>
-        </FieldSet>
-
-        <div className="mt-6 flex gap-2">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creando…" : "Crear cliente"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate("/client")}
-          >
-            Cancelar
-          </Button>
-        </div>
-      </form>
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 };

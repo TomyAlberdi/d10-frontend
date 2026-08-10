@@ -1,12 +1,13 @@
 export interface ProductStock {
   quantity: number;
   measureUnitEquivalent: number;
-  recordList: ProductStockRecord[];
 }
 
-export interface ProductStockRecord {
+/** Payload of a manual stock update. The detail is stored in the stock log. */
+export interface UpdateProductStockDTO {
   type: "IN" | "OUT";
   quantity: number;
+  detail?: string;
 }
 
 export interface ProductCharacteristic {

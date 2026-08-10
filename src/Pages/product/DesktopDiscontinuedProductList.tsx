@@ -46,22 +46,26 @@ const DesktopDiscontinuedProductList = () => {
   }, [listDiscontinuedProducts, page]);
 
   return (
-    <div className="px-2 md:px-5 h-full hidden md:flex flex-col gap-4">
-      <SelectedProduct
-        product={selectedProduct}
-        updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}
-      />
-      <ProductTablePagination
-        products={products}
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-        selectedProduct={selectedProduct}
-        onSelectProduct={setSelectedProduct}
-        searchInput=""
-        onSearchChange={() => {}}
-        isSearching={isLoading}
-      />
+    <div className="px-2 md:px-5 h-full hidden md:flex flex-row gap-4">
+      <div className="flex-1/3 min-w-0 h-min">
+        <SelectedProduct
+          product={selectedProduct}
+          updateProductDiscontinuedLocal={updateProductDiscontinuedLocal}
+        />
+      </div>
+      <div className="w-2/3 min-w-0">
+        <ProductTablePagination
+          products={products}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          selectedProduct={selectedProduct}
+          onSelectProduct={setSelectedProduct}
+          searchInput=""
+          onSearchChange={() => {}}
+          isSearching={isLoading}
+        />
+      </div>
     </div>
   );
 };

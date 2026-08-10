@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import ClientsChart from "./charts/ClientsChart";
-import MonthlyExpensesChart from "./charts/MonthlyExpensesChart";
 import MonthlySalesChart from "./charts/MonthlySalesChart";
 
 const MainData = () => {
@@ -20,8 +18,6 @@ const MainData = () => {
           2026
         </Button>
       </div>
-      <MonthlyExpensesChart SelectedYear={SelectedYear} />
-      <ClientsChart SelectedYear={SelectedYear} />
     </div>
   );
 };

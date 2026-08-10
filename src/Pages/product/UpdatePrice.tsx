@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { FieldLabel, FieldSet } from "@/components/ui/field";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import { ChevronLeft } from "lucide-react";
@@ -92,80 +93,82 @@ const UpdatePrice = () => {
   }
 
   return (
-    <div className="p-6 max-w-2xl">
-      <h1 className="text-2xl font-bold mb-2">
-        Actualizar precios por proveedor
-      </h1>
-      <p className="text-muted-foreground mb-6">
-        Selecciona los proveedores e ingresa el porcentaje de cambio en los
-        costos. Los precios se recalcularán automáticamente usando el margen de
-        ganancia existente.
-      </p>
+    <div className="h-full w-full flex justify-center items-center p-2 md:p-0">
+      <Card className="p-6 max-w-2xl md:max-w-none">
+        <h1 className="text-2xl font-bold mb-2">
+          Actualizar precios por proveedor
+        </h1>
+        <p className="text-muted-foreground mb-6">
+          Selecciona los proveedores e ingresa el porcentaje de cambio en los
+          costos. Los precios se recalcularán automáticamente usando el margen
+          de ganancia existente.
+        </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <FieldSet className="">
-          <FieldLabel>Proveedores</FieldLabel>
-          <div className="space-y-3 p-4 border rounded-lg bg-muted/30 max-h-[33vh] overflow-y-auto">
-            {providers.map((provider) => (
-              <label
-                key={provider}
-                className="flex items-center gap-3 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedProviders.has(provider)}
-                  onChange={() => toggleProvider(provider)}
-                  className="w-4 h-4 cursor-pointer"
-                />
-                <span className="text-sm font-medium">{provider}</span>
-              </label>
-            ))}
-          </div>
-        </FieldSet>
-
-        <FieldSet className="">
-          <FieldLabel>Cambio de costo (%)</FieldLabel>
-          <div className="space-y-3">
-            <div className="flex items-center gap-4">
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={percentage}
-                onChange={(e) => setPercentage(Number(e.target.value))}
-                className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                disabled={isSubmitting}
-              />
-              <span className="text-lg font-semibold min-w-fit">
-                {percentage > 0 ? "+" : ""}
-                {percentage}%
-              </span>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <FieldSet className="">
+            <FieldLabel>Proveedores</FieldLabel>
+            <div className="space-y-3 p-4 border rounded-lg bg-muted/30 max-h-[33vh] overflow-y-auto">
+              {providers.map((provider) => (
+                <label
+                  key={provider}
+                  className="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedProviders.has(provider)}
+                    onChange={() => toggleProvider(provider)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                  <span className="text-sm font-medium">{provider}</span>
+                </label>
+              ))}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {percentage > 0 ? "Incremento" : "Decremento"} de costos en{" "}
-              {Math.abs(percentage)}%
-            </p>
-          </div>
-        </FieldSet>
+          </FieldSet>
 
-        <div className="flex gap-3 pt-4">
-          <Button
-            type="submit"
-            disabled={isSubmitting || selectedProviders.size === 0}
-            className="flex-1"
-          >
-            {isSubmitting ? "Actualizando..." : "Actualizar precios"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate("/product")}
-            disabled={isSubmitting}
-          >
-            Cancelar
-          </Button>
-        </div>
-      </form>
+          <FieldSet className="">
+            <FieldLabel>Cambio de costo (%)</FieldLabel>
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="1"
+                  max="100"
+                  value={percentage}
+                  onChange={(e) => setPercentage(Number(e.target.value))}
+                  className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                  disabled={isSubmitting}
+                />
+                <span className="text-lg font-semibold min-w-fit">
+                  {percentage > 0 ? "+" : ""}
+                  {percentage}%
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {percentage > 0 ? "Incremento" : "Decremento"} de costos en{" "}
+                {Math.abs(percentage)}%
+              </p>
+            </div>
+          </FieldSet>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              type="submit"
+              disabled={isSubmitting || selectedProviders.size === 0}
+              className="flex-1"
+            >
+              {isSubmitting ? "Actualizando..." : "Actualizar precios"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/product")}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
 import {
+  ArrowDownUp,
   ChevronLeft,
   FileText,
   Package,
@@ -210,6 +211,15 @@ const ProductDetail = () => {
                 <FileText className="w-4 h-4 mr-2" />
                 Ver Ventas
               </Button>
+              <Button
+                onClick={() => navigate(`/product/${product.id}/stock-records`)}
+                className="w-full"
+                size="lg"
+                variant="outline"
+              >
+                <ArrowDownUp className="w-4 h-4 mr-2" />
+                Movimientos de Stock
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -334,32 +344,6 @@ const ProductDetail = () => {
                     </p>
                   </div>
                 </div>
-
-                {product.stock.recordList &&
-                  product.stock.recordList.length > 0 && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">
-                        Historial de Movimientos
-                      </label>
-                      <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
-                        {product.stock.recordList
-                          .slice(-5)
-                          .map((record, index) => (
-                            <div
-                              key={index}
-                              className="flex justify-between items-center p-2 bg-secondary rounded text-sm"
-                            >
-                              <span
-                                className={`font-medium ${record.type === "IN" ? "text-green-600" : "text-red-600"}`}
-                              >
-                                {record.type === "IN" ? "Entrada" : "Salida"}
-                              </span>
-                              <span>{record.quantity} unidades</span>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
               </CardContent>
             </Card>
           </div>

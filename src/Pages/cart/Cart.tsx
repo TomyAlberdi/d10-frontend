@@ -1,4 +1,3 @@
-import FloatingGenericMenu from "@/components/FloatingGenericMenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -19,7 +18,12 @@ import {
 } from "@/components/ui/table";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
-import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
+import type {
+  InvoiceStatus,
+  PaymentMethod,
+} from "@/interfaces/InvoiceInterfaces";
+import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
+import { resolveInvoiceStatus, SETTLED_STATUSES } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { FileText, PackagePlus, Trash2, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -30,6 +34,7 @@ import { toast } from "sonner";
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Presupuesto" },
   { value: "PAGO", label: "Pago" },
+  { value: "DEUDA", label: "Deuda" },
   { value: "ENTREGADO", label: "Entregado" },
   { value: "CANCELADO", label: "Cancelado" },
 ];
@@ -64,6 +69,15 @@ const Cart = () => {
     subtotalSum > 0 ? (cart.discount / subtotalSum) * 100 : 0;
   const canCreateInvoice =
     hasClient && cart.products.length > 0 && cart.total >= 0;
+  // Status the backend will store, which is a debt when stock leaves without
+  // the total being covered.
+  const effectiveStatus = resolveInvoiceStatus({
+    status: cart.status,
+    total: cart.total,
+    partialPayment,
+    stockDecreased: cart.stockDecreased,
+  });
+  const isForcedToDebt = effectiveStatus !== cart.status;
 
   const handleDiscountPercentChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -74,6 +88,15 @@ const Cart = () => {
     }
   };
 
+  // A settled sale is fully paid, so the paid amount follows the total.
+  const handleStatusChange = (value: string) => {
+    const nextStatus = value as InvoiceStatus;
+    setCartStatus(nextStatus);
+    if (SETTLED_STATUSES.includes(nextStatus)) {
+      setpartialPayment(cart.total);
+    }
+  };
+
   const handleCreateInvoice = async () => {
     if (!canCreateInvoice) return;
     setIsCreating(true);
@@ -81,7 +104,7 @@ const Cart = () => {
       const createdInvoice = await createInvoice({
         client: cart.client,
         products: cart.products,
-        status: cart.status,
+        status: effectiveStatus,
         discount: cart.discount,
         total: cart.total,
         notes: cart.notes,
@@ -94,8 +117,9 @@ const Cart = () => {
       });
       toast.success("venta creada correctamente");
 
-      // Check if we need to register cash transaction
-      if (["PAGO", "ENVIADO", "ENTREGADO"].includes(cart.status)) {
+      // Check if we need to register cash transaction. A debt is left out:
+      // partial payments are not registered in the cash register.
+      if (SETTLED_STATUSES.includes(effectiveStatus)) {
         navigate("/cash-register/invoice-transaction", {
           state: { invoice: createdInvoice },
         });
@@ -111,12 +135,7 @@ const Cart = () => {
 
   return (
     <div className="p-3 md:p-6 max-w-5xl mx-auto space-y-3 md:space-y-6">
-      <div className="w-full flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Carrito</h1>
-        <div className="w-4/6 md:w-1/6">
-          <FloatingGenericMenu />
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold">Carrito</h1>
       {/* Card 1: Client */}
       <Card className="p-3 md:p-4">
         <h2 className="text-lg font-semibold mb-0 md:mb-3">Cliente</h2>
@@ -306,10 +325,7 @@ const Cart = () => {
             <label className="text-sm font-medium text-muted-foreground block mb-2">
               Estado de la venta
             </label>
-            <Select
-              value={cart.status}
-              onValueChange={(value) => setCartStatus(value as InvoiceStatus)}
-            >
+            <Select value={cart.status} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
@@ -321,6 +337,13 @@ const Cart = () => {
                 ))}
               </SelectContent>
             </Select>
+            {isForcedToDebt && (
+              <p className="text-sm text-orange-600 dark:text-orange-400 mt-2">
+                Se guardará como Deuda: se descuenta stock y quedan ${" "}
+                {formatPrice(Math.max(0, cart.total - partialPayment))} sin
+                pagar.
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Switch
@@ -341,17 +364,17 @@ const Cart = () => {
             </label>
             <Select
               value={cart.paymentMethod || "CASH"}
-              onValueChange={(value) =>
-                setPaymentMethod(value as "CASH" | "DIGITAL" | "USD")
-              }
+              onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
             >
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue placeholder="Método de pago" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="CASH">Efectivo</SelectItem>
-                <SelectItem value="DIGITAL">Transferencia</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                {PAYMENT_METHODS.map((method) => (
+                  <SelectItem key={method} value={method}>
+                    {PAYMENT_METHOD_LABELS[method]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
