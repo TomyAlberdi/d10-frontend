@@ -27,8 +27,12 @@ import ContactCreate from "./Pages/contact/ContactCreate";
 import Contacts from "./Pages/contact/Contacts";
 import ContactsList from "./Pages/contact/ContactsList";
 import ContactUpdate from "./Pages/contact/ContactUpdate";
+import CashData from "./Pages/data/CashData";
+import CatalogData from "./Pages/data/CatalogData";
+import ClientData from "./Pages/data/ClientData";
 import Data from "./Pages/data/Data";
 import MainData from "./Pages/data/MainData";
+import StockData from "./Pages/data/StockData";
 import Home from "./Pages/Home";
 import InvoiceDetail from "./Pages/invoice/InvoiceDetail";
 import Invoices from "./Pages/invoice/Invoices";
@@ -157,6 +161,10 @@ export function App() {
                         </Route>
                         <Route path="/data" element={<Data />}>
                           <Route index element={<MainData />} />
+                          <Route path="caja" element={<CashData />} />
+                          <Route path="stock" element={<StockData />} />
+                          <Route path="clientes" element={<ClientData />} />
+                          <Route path="catalogo" element={<CatalogData />} />
                         </Route>
                         <Route path="/note" element={<Notes />}>
                           <Route index element={<NotesList />} />

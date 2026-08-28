@@ -1,24 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import MonthlySalesChart from "./charts/MonthlySalesChart";
+import BestSellingProducts from "./charts/BestSellingProducts";
+import CategoryRevenueChart from "./charts/CategoryRevenueChart";
+import KpiSummaryStrip from "./charts/KpiSummaryStrip";
+import MonthlySalesComparison from "./charts/MonthlySalesComparison";
+import PaymentMethodChart from "./charts/PaymentMethodChart";
 
-const MainData = () => {
-  const [SelectedYear, setSelectedYear] = useState(2026);
+const MainData = () => (
+  <div className="grid grid-cols-4 gap-3">
+    <KpiSummaryStrip />
+    <MonthlySalesComparison />
+    <CategoryRevenueChart />
+    <PaymentMethodChart />
+    <BestSellingProducts />
+  </div>
+);
 
-  return (
-    <div className="grid grid-cols-4 gap-3">
-      <MonthlySalesChart SelectedYear={SelectedYear} />
-      <div className="flex flex-col items-center gap-3 col-span-1">
-        <h3 className="text-xl font-semibold">Seleccionar Año</h3>
-        <Button
-          className="w-full"
-          variant={"secondary"}
-          onClick={() => setSelectedYear(2026)}
-        >
-          2026
-        </Button>
-      </div>
-    </div>
-  );
-};
 export default MainData;

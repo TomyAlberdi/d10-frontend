@@ -26,6 +26,7 @@ import type {
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDataFilters } from "../useDataFilters";
 
 const getTimeSpanLabel = (timeSpan: TimeSpanEnum) => {
   switch (timeSpan) {
@@ -36,21 +37,28 @@ const getTimeSpanLabel = (timeSpan: TimeSpanEnum) => {
     case "ALL_TIME":
       return "General";
     default:
-      return "Último Mes";
+      return "Este Mes";
   }
 };
 
 const BestSellingProducts = () => {
   const navigate = useNavigate();
   const { getBestSellingProducts } = useDataContext();
+  const { basis } = useDataFilters();
   const [products, setProducts] = useState<BestSellingProductDTO[]>([]);
   const [SelectedTimespan, setSelectedTimespan] =
     useState<TimeSpanEnum>("THIS_MONTH");
   const [sortBy, setSortBy] = useState<SortByEnum>("GROSS_INCOME");
 
   useEffect(() => {
-    getBestSellingProducts(SelectedTimespan, sortBy).then(setProducts);
-  }, [getBestSellingProducts, SelectedTimespan, sortBy]);
+    getBestSellingProducts(SelectedTimespan, sortBy, basis).then(setProducts);
+  }, [getBestSellingProducts, SelectedTimespan, sortBy, basis]);
+
+  // Margins of sales made before the cost snapshot existed are worked out with
+  // the current product cost, so they are marked instead of shown as fact.
+  const hasEstimatedMargins = products.some(
+    (product) => product.costBasisEstimated,
+  );
 
   return (
     <Card className="col-span-4">
@@ -68,14 +76,14 @@ const BestSellingProducts = () => {
             }
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="THIS_MONTH" id="last-month" />
-              <Label htmlFor="last-month" className="cursor-pointer">
+              <RadioGroupItem value="THIS_MONTH" id="this-month" />
+              <Label htmlFor="this-month" className="cursor-pointer">
                 Este Mes
               </Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="THIS_YEAR" id="last-year" />
-              <Label htmlFor="last-year" className="cursor-pointer">
+              <RadioGroupItem value="THIS_YEAR" id="this-year" />
+              <Label htmlFor="this-year" className="cursor-pointer">
                 Este Año
               </Label>
             </div>
@@ -99,16 +107,22 @@ const BestSellingProducts = () => {
                 Ingresos Brutos
               </Label>
             </div>
-{/*             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="NET_INCOME" id="net-income" disabled />
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="NET_INCOME" id="net-income" />
               <Label htmlFor="net-income" className="cursor-pointer">
                 Ingresos Netos
               </Label>
-            </div> */}
+            </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="SALES_AMOUNT" id="sales-amount" />
-              <Label htmlFor="sales-amount" className="cursor-pointer">
+              <RadioGroupItem value="INVOICE_COUNT" id="invoice-count" />
+              <Label htmlFor="invoice-count" className="cursor-pointer">
                 Cantidad de Ventas
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="UNITS_SOLD" id="units-sold" />
+              <Label htmlFor="units-sold" className="cursor-pointer">
+                Unidades Vendidas
               </Label>
             </div>
           </RadioGroup>
@@ -116,42 +130,57 @@ const BestSellingProducts = () => {
       </CardFooter>
       <CardContent className="px-3">
         {products.length > 0 && (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Código</TableHead>
-                <TableHead className="w-1/4">Nombre</TableHead>
-                <TableHead>N° Ventas</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Ingresos Brutos</TableHead>
-                <TableHead>Ingresos Netos</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow
-                  key={product.product.id}
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/product/${product.product.id}`)}
-                >
-                  <TableCell>
-                    <Badge variant={"secondary"}>{product.product.code}</Badge>
-                  </TableCell>
-                  <TableCell>{product.product.name}</TableCell>
-                  <TableCell>{product.salesAmount}</TableCell>
-                  <TableCell>
-                    {product.totalSurface.toFixed(2)}{" "}
-                    {product.product.measureType}
-                  </TableCell>
-                  <TableCell>$ {formatPrice(product.totalIncome)}</TableCell>
-                  <TableCell>
-                    ${" "}
-                    {product.netIncome ? formatPrice(product.netIncome) : "N/A"}
-                  </TableCell>
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Código</TableHead>
+                  <TableHead className="w-1/4">Nombre</TableHead>
+                  <TableHead>N° Ventas</TableHead>
+                  <TableHead>Unidades</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Ingresos Brutos</TableHead>
+                  <TableHead>Ingresos Netos</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {products.map((product) => (
+                  <TableRow
+                    key={product.product.id}
+                    className="cursor-pointer"
+                    onClick={() => navigate(`/product/${product.product.id}`)}
+                  >
+                    <TableCell>
+                      <Badge variant={"secondary"}>
+                        {product.product.code}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{product.product.name}</TableCell>
+                    <TableCell>{product.invoiceCount}</TableCell>
+                    <TableCell>
+                      {product.unitsSold} {product.product.saleUnitType}
+                    </TableCell>
+                    <TableCell>
+                      {product.totalSurface.toFixed(2)}{" "}
+                      {product.product.measureType}
+                    </TableCell>
+                    <TableCell>$ {formatPrice(product.totalIncome)}</TableCell>
+                    <TableCell>
+                      {product.netIncome !== null
+                        ? `${product.costBasisEstimated ? "~ " : ""}$ ${formatPrice(product.netIncome)}`
+                        : "N/A"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {hasEstimatedMargins && (
+              <p className="text-xs text-muted-foreground mt-3">
+                ~ Margen estimado: la venta es anterior al registro del costo,
+                por lo que se calcula con el costo actual del producto.
+              </p>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
