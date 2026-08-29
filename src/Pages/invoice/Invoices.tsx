@@ -178,8 +178,8 @@ const Invoices = () => {
   );
 
   return (
-    <div className="h-full flex flex-col md:flex-row gap-3 md:gap-5 p-3 md:p-5">
-      <aside className="w-full md:w-64 shrink-0">
+    <div className="flex flex-col gap-3 p-3 md:h-full md:flex-row md:gap-5 md:p-5">
+      <aside className="w-full md:w-64 shrink-0 order-2 md:order-none">
         <Card className="p-4 gap-4 overflow-y-auto">
           <div className="flex flex-col gap-3">
             <h3 className="flex items-center gap-2 text-sm font-semibold">
@@ -237,10 +237,10 @@ const Invoices = () => {
           </div>
         </Card>
       </aside>
-      <div className="flex-1 min-w-0 min-h-0">
+      <div className="flex-1 min-w-0 min-h-0 order-1 md:order-none">
         <Card
           ref={tableRef}
-          className="h-full flex flex-col overflow-hidden py-0 gap-0"
+          className="flex flex-col overflow-hidden py-0 gap-0 md:h-full"
           tabIndex={0}
           onKeyDown={handleKeyDown}
         >
@@ -258,7 +258,7 @@ const Invoices = () => {
                 <span className="text-sm text-muted-foreground">Buscando…</span>
               )}
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="md:flex-1 md:overflow-y-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))] py-4">
