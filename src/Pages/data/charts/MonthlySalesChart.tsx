@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/card";
 import {
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -17,10 +19,20 @@ import { getMonthName } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
+/**
+ * The bar is the money the month took in, split by where it came from. A sale
+ * left on account still brings cash in when the client pays part of it, and
+ * showing that part next to the settled sales is what keeps the month from
+ * looking emptier than it was.
+ */
 const chartConfig = {
-  income: {
-    label: "Ingresos $",
+  settledIncome: {
+    label: "Ventas cobradas $",
     color: "var(--chart-2)",
+  },
+  debtPayments: {
+    label: "Pagos de deudas $",
+    color: "var(--chart-4)",
   },
 } satisfies ChartConfig;
 
@@ -30,10 +42,12 @@ const MonthlySalesChart = ({ SelectedYear }: { SelectedYear: number }) => {
   const [MonthlyData, setMonthlyData] = useState<MonthlySummaryRecord[]>([]);
 
   const fillData = useCallback((data: MonthlySummaryRecord[]) => {
-    const filledData = data.map((record, index) => ({
+    const filledData = data.map((record) => ({
       ...record,
       income: parseFloat(record.income.toFixed(2)),
-      monthName: getMonthName(index + 1),
+      settledIncome: parseFloat(record.settledIncome.toFixed(2)),
+      debtPayments: parseFloat(record.debtPayments.toFixed(2)),
+      monthName: getMonthName(record.month),
     }));
     return filledData;
   }, []);
@@ -63,15 +77,20 @@ const MonthlySalesChart = ({ SelectedYear }: { SelectedYear: number }) => {
               tickMargin={10}
               interval={0}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar
+              dataKey="settledIncome"
+              stackId="income"
+              stroke="var(--color-settledIncome)"
+              fill="var(--color-settledIncome)"
+              strokeWidth={2}
             />
             <Bar
-              dataKey="income"
-              type="natural"
-              stroke="var(--chart-2)"
-              fill="var(--chart-2)"
+              dataKey="debtPayments"
+              stackId="income"
+              stroke="var(--color-debtPayments)"
+              fill="var(--color-debtPayments)"
               strokeWidth={2}
             />
           </BarChart>
