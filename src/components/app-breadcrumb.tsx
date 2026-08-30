@@ -24,8 +24,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   shipment: "Envíos",
   "stock-log": "Movimientos de stock",
   "stock-records": "Movimientos de stock",
-  // Pedidos: feature not ready to deploy, re-enable with the routes in App.tsx
-  // order: "Pedidos",
+  order: "Pedidos",
   // sub-sections
   create: "Crear",
   update: "Editar",

@@ -76,7 +76,7 @@ const CashRegisterOverview = () => {
   };
 
   return (
-    <div className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col md:flex-row gap-3 md:gap-5 px-2 md:px-5">
+    <div className="flex flex-col gap-3 px-2 py-3 md:h-[calc(100dvh-6.5rem)] md:flex-row md:gap-5 md:px-5 md:py-0">
       {/* Left: balances + actions */}
       <aside className="w-full md:w-80 shrink-0">
         <Card className="p-5 md:p-6 flex flex-col gap-5 overflow-y-auto">
@@ -130,7 +130,7 @@ const CashRegisterOverview = () => {
 
       {/* Right: transactions */}
       <div className="flex-1 min-w-0 min-h-0">
-        <Card className="h-full p-4 md:p-6 flex flex-col gap-4 overflow-hidden">
+        <Card className="p-4 md:p-6 flex flex-col gap-4 md:h-full md:overflow-hidden">
           <div>
             <h2 className="text-xl font-bold">Transacciones del día</h2>
             <p className="text-sm text-muted-foreground">
@@ -172,7 +172,7 @@ const CashRegisterOverview = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto border rounded-md">
+          <div className="border rounded-md md:flex-1 md:overflow-y-auto">
             <Table>
               <TableHeader>
                 <TableRow className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">

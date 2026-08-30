@@ -6,7 +6,12 @@ export type SortByEnum = "SALES_AMOUNT" | "GROSS_INCOME" | "NET_INCOME";
 export interface MonthlySummaryRecord {
   month: number;
   year: number;
+  /** Everything the month collected: settledIncome + debtPayments. */
   income: number;
+  /** Invoices whose payment covered the total. */
+  settledIncome: number;
+  /** Money already paid on invoices that are still a debt. */
+  debtPayments: number;
   // filled data
   monthName?: string;
 }

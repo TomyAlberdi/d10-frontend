@@ -3,7 +3,7 @@ import {
   BookUser,
   Boxes,
   CirclePlus,
-  // ClipboardList, // Pedidos: re-enable together with the sidebar entry below
+  ClipboardList,
   Database,
   FileText,
   GalleryVerticalEndIcon,
@@ -48,9 +48,7 @@ const data = {
         { title: "Lista", url: "/product", icon: <ListOrdered /> },
         { title: "Lista Stock", url: "/product/stock", icon: <Package /> },
         { title: "Movimientos Stock", url: "/stock-log", icon: <ArrowDownUp /> },
-        // Pedidos: feature not ready to deploy. Uncomment together with the
-        // ClipboardList icon import and the routes in App.tsx.
-        // { title: "Pedidos", url: "/order", icon: <ClipboardList /> },
+        { title: "Pedidos", url: "/order", icon: <ClipboardList /> },
         { title: "Packs", url: "/product/packs", icon: <Boxes /> },
         {
           title: "Eliminados",
