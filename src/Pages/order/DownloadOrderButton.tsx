@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
-import type { Order } from "@/interfaces/OrderInterfaces";
+import type { Order, OrderProduct } from "@/interfaces/OrderInterfaces";
 import { Download } from "lucide-react";
+import { formatShortDate } from "./orderFormat";
 
 interface Props {
-  orders: Order[];
-  /** Batch date shown above the quantity column, as `yyyy-MM-dd`. */
-  date: string | null;
+  order: Order;
 }
 
 const CODE_WIDTH = 90;
@@ -21,12 +20,6 @@ const FONT_SIZE = 12;
 const HEADER_BG = "#FFFFFF";
 const CODE_COLOR = "#C55A11";
 const PRODUCT_COLOR = "#0070C0";
-
-/** `yyyy-MM-dd` → `dd-MM`, the short label used on the printed list. */
-function formatShortDate(d: string): string {
-  const [, month, day] = d.split("-");
-  return `${day}-${month}`;
-}
 
 function fontFor(bold: boolean): string {
   return `${bold ? "bold " : ""}${FONT_SIZE}px Arial, sans-serif`;
@@ -78,12 +71,12 @@ function drawCell(
 }
 
 /** Width the product column needs so the longest name fits without clipping. */
-function measureProductWidth(orders: Order[]): number {
+function measureProductWidth(products: OrderProduct[]): number {
   const probe = document.createElement("canvas").getContext("2d");
   if (!probe) return PRODUCT_MIN_WIDTH;
   probe.font = fontFor(false);
-  const widest = orders.reduce(
-    (max, order) => Math.max(max, probe.measureText(order.productName).width),
+  const widest = products.reduce(
+    (max, product) => Math.max(max, probe.measureText(product.productName).width),
     0,
   );
   return Math.min(
@@ -92,14 +85,15 @@ function measureProductWidth(orders: Order[]): number {
   );
 }
 
-function buildCanvas(orders: Order[], date: string | null): HTMLCanvasElement {
-  const productWidth = measureProductWidth(orders);
+function buildCanvas(order: Order): HTMLCanvasElement {
+  const products = order.products;
+  const productWidth = measureProductWidth(products);
   const widths = [CODE_WIDTH, productWidth, QUANTITY_WIDTH];
   const x = [0, CODE_WIDTH, CODE_WIDTH + productWidth];
 
   const totalWidth = widths.reduce((sum, w) => sum + w, 0);
-  // Date row + header row + one row per order
-  const totalHeight = (2 + orders.length) * ROW_H;
+  // Date row + header row + one row per product
+  const totalHeight = (2 + products.length) * ROW_H;
 
   const SCALE = 2;
   const canvas = document.createElement("canvas");
@@ -111,8 +105,8 @@ function buildCanvas(orders: Order[], date: string | null): HTMLCanvasElement {
   ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, totalWidth + 1, totalHeight + 1);
 
-  // Row 0 — only the quantity column is boxed, carrying the batch date
-  drawCell(ctx, x[2], 0, widths[2], date ? formatShortDate(date) : "", {
+  // Row 0 — only the quantity column is boxed, carrying the order date
+  drawCell(ctx, x[2], 0, widths[2], formatShortDate(order.date), {
     bold: true,
     align: "center",
     bg: HEADER_BG,
@@ -128,16 +122,16 @@ function buildCanvas(orders: Order[], date: string | null): HTMLCanvasElement {
   });
 
   // One row per ordered product
-  orders.forEach((order, idx) => {
+  products.forEach((product, idx) => {
     const y = (2 + idx) * ROW_H;
-    drawCell(ctx, x[0], y, widths[0], order.productCode ?? "", {
+    drawCell(ctx, x[0], y, widths[0], product.productCode ?? "", {
       align: "center",
       color: CODE_COLOR,
     });
-    drawCell(ctx, x[1], y, widths[1], order.productName, {
+    drawCell(ctx, x[1], y, widths[1], product.productName, {
       color: PRODUCT_COLOR,
     });
-    drawCell(ctx, x[2], y, widths[2], String(order.saleUnitQuantity), {
+    drawCell(ctx, x[2], y, widths[2], String(product.saleUnitQuantity), {
       align: "center",
       color: PRODUCT_COLOR,
     });
@@ -146,21 +140,28 @@ function buildCanvas(orders: Order[], date: string | null): HTMLCanvasElement {
   return canvas;
 }
 
-const DownloadOrdersButton = ({ orders, date }: Props) => {
-  const handleDownload = () => {
-    const canvas = buildCanvas(orders, date);
+/** Downloads the order as the printable PNG list used to buy the products. */
+const DownloadOrderButton = ({ order }: Props) => {
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const canvas = buildCanvas(order);
     const link = document.createElement("a");
-    link.download = `pedidos-${date ?? "todos"}.png`;
+    link.download = `pedido-${order.date ?? "sin-fecha"}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
 
   return (
-    <Button variant="outline" onClick={handleDownload} disabled={orders.length === 0}>
-      <Download className="w-4 h-4 mr-2" />
-      Descargar
+    <Button
+      variant="ghost"
+      size="icon"
+      title="Descargar la lista del pedido"
+      disabled={order.products.length === 0}
+      onClick={handleDownload}
+    >
+      <Download className="w-4 h-4" />
     </Button>
   );
 };
 
-export default DownloadOrdersButton;
+export default DownloadOrderButton;

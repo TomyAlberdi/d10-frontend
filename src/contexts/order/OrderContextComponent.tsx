@@ -2,7 +2,6 @@ import type {
   CreateOrderDTO,
   Order,
   OrderContextType,
-  OrderFilters,
 } from "@/interfaces/OrderInterfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
@@ -34,22 +33,10 @@ interface OrderContextComponentProps {
 const OrderContextComponent: React.FC<OrderContextComponentProps> = ({
   children,
 }) => {
-  const getOrders = async (filters: OrderFilters = {}): Promise<Order[]> => {
-    const params = new URLSearchParams();
-    if (filters.date) params.append("date", filters.date);
-    if (filters.received != null)
-      params.append("received", String(filters.received));
-
-    const query = params.toString();
-    const response = await fetch(query ? `${API_URL}?${query}` : API_URL);
+  const getOrders = async (): Promise<Order[]> => {
+    const response = await fetch(API_URL);
     if (!response.ok) return failWith(response);
     return (await response.json()) as Order[];
-  };
-
-  const getOrderDates = async (): Promise<string[]> => {
-    const response = await fetch(`${API_URL}/dates`);
-    if (!response.ok) return failWith(response);
-    return (await response.json()) as string[];
   };
 
   const getOrderById = async (id: string): Promise<Order | null> => {
@@ -94,15 +81,6 @@ const OrderContextComponent: React.FC<OrderContextComponentProps> = ({
     return (await response.json()) as Order;
   };
 
-  const receiveOrdersByDate = async (date: string): Promise<Order[]> => {
-    const response = await fetch(
-      `${API_URL}/received?date=${encodeURIComponent(date)}`,
-      { method: "PATCH" },
-    );
-    if (!response.ok) return failWith(response);
-    return (await response.json()) as Order[];
-  };
-
   const deleteOrder = async (id: string): Promise<void> => {
     const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
     if (!response.ok) await failWith(response);
@@ -110,12 +88,10 @@ const OrderContextComponent: React.FC<OrderContextComponentProps> = ({
 
   const exportData: OrderContextType = {
     getOrders,
-    getOrderDates,
     getOrderById,
     createOrder,
     updateOrder,
     updateOrderReceived,
-    receiveOrdersByDate,
     deleteOrder,
   };
 

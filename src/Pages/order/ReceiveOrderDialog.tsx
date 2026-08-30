@@ -9,10 +9,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { Order } from "@/interfaces/OrderInterfaces";
+import { formatDate } from "./orderFormat";
 
-interface ReceiveOrdersDialogProps {
-  /** Orders whose sale units are about to be added to the stock. */
-  orders: Order[];
+interface ReceiveOrderDialogProps {
+  /** Order whose sale units are about to be added to the stock. */
+  order: Order | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
@@ -20,27 +21,25 @@ interface ReceiveOrdersDialogProps {
 }
 
 /**
- * Confirmation shown before receiving one or many orders. It spells out exactly
- * how much stock each product is going to gain, since the operation writes a
- * stock movement per product and is only undone one order at a time.
+ * Confirmation shown before receiving an order. It spells out exactly how much
+ * stock each product is going to gain, since the operation writes a stock
+ * movement per product.
  */
-const ReceiveOrdersDialog = ({
-  orders,
+const ReceiveOrderDialog = ({
+  order,
   open,
   onOpenChange,
   onConfirm,
   isSubmitting = false,
-}: ReceiveOrdersDialogProps) => {
-  const isSingle = orders.length === 1;
-
+}: ReceiveOrderDialogProps) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {isSingle
-              ? "¿Marcar el pedido como recibido?"
-              : `¿Marcar ${orders.length} pedidos como recibidos?`}
+            {order
+              ? `¿Marcar el pedido del ${formatDate(order.date)} como recibido?`
+              : "¿Marcar el pedido como recibido?"}
           </AlertDialogTitle>
           <AlertDialogDescription>
             Se van a sumar las siguientes cantidades al stock actual de cada
@@ -49,19 +48,19 @@ const ReceiveOrdersDialog = ({
         </AlertDialogHeader>
 
         <div className="max-h-64 overflow-y-auto rounded-md border divide-y">
-          {orders.map((order) => (
+          {order?.products.map((product) => (
             <div
-              key={order.id}
+              key={product.productId}
               className="flex items-center justify-between gap-3 px-3 py-2 text-sm"
             >
               <div className="min-w-0">
-                <p className="font-medium truncate">{order.productName}</p>
+                <p className="font-medium truncate">{product.productName}</p>
                 <p className="text-xs text-muted-foreground">
-                  {order.productCode}
+                  {product.productCode}
                 </p>
               </div>
               <span className="shrink-0 font-medium text-green-600 dark:text-green-500">
-                +{order.saleUnitQuantity} {order.saleUnitType}
+                +{product.saleUnitQuantity} {product.saleUnitType}
               </span>
             </div>
           ))}
@@ -85,4 +84,4 @@ const ReceiveOrdersDialog = ({
   );
 };
 
-export default ReceiveOrdersDialog;
+export default ReceiveOrderDialog;
