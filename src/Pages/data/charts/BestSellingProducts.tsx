@@ -106,7 +106,7 @@ const BestSellingProducts = () => {
               </Label>
             </div> */}
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="SALES_AMOUNT" id="sales-amount" />
+              <RadioGroupItem value="UNITS_SOLD" id="sales-amount" />
               <Label htmlFor="sales-amount" className="cursor-pointer">
                 Cantidad de Ventas
               </Label>
@@ -138,7 +138,7 @@ const BestSellingProducts = () => {
                     <Badge variant={"secondary"}>{product.product.code}</Badge>
                   </TableCell>
                   <TableCell>{product.product.name}</TableCell>
-                  <TableCell>{product.salesAmount}</TableCell>
+                  <TableCell>{product.unitsSold}</TableCell>
                   <TableCell>
                     {product.totalSurface.toFixed(2)}{" "}
                     {product.product.measureType}
