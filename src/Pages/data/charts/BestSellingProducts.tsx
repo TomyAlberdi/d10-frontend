@@ -105,12 +105,6 @@ const BestSellingProducts = () => {
                 Ingresos Netos
               </Label>
             </div> */}
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="SALES_AMOUNT" id="sales-amount" />
-              <Label htmlFor="sales-amount" className="cursor-pointer">
-                Cantidad de Ventas
-              </Label>
-            </div>
           </RadioGroup>
         </div>
       </CardFooter>
@@ -121,7 +115,6 @@ const BestSellingProducts = () => {
               <TableRow>
                 <TableHead>Código</TableHead>
                 <TableHead className="w-1/4">Nombre</TableHead>
-                <TableHead>N° Ventas</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Ingresos Brutos</TableHead>
                 <TableHead>Ingresos Netos</TableHead>
@@ -138,7 +131,6 @@ const BestSellingProducts = () => {
                     <Badge variant={"secondary"}>{product.product.code}</Badge>
                   </TableCell>
                   <TableCell>{product.product.name}</TableCell>
-                  <TableCell>{product.salesAmount}</TableCell>
                   <TableCell>
                     {product.totalSurface.toFixed(2)}{" "}
                     {product.product.measureType}

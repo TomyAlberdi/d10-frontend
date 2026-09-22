@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import BestSellingProducts from "./charts/BestSellingProducts";
 import MonthlySalesChart from "./charts/MonthlySalesChart";
 
 const MainData = () => {
@@ -18,6 +19,7 @@ const MainData = () => {
           2026
         </Button>
       </div>
+      <BestSellingProducts />
     </div>
   );
 };

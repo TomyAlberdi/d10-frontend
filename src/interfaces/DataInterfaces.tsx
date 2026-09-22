@@ -1,7 +1,7 @@
 import type { Product } from "./ProductInterfaces";
 
 export type TimeSpanEnum = "THIS_MONTH" | "THIS_YEAR" | "ALL_TIME";
-export type SortByEnum = "SALES_AMOUNT" | "GROSS_INCOME" | "NET_INCOME";
+export type SortByEnum = "UNITS_SOLD" | "GROSS_INCOME" | "NET_INCOME";
 
 export interface MonthlySummaryRecord {
   month: number;
@@ -18,15 +18,17 @@ export interface MonthlySummaryRecord {
 
 export interface BestSellingProductDTO {
   product: Product;
-  salesAmount: number;
+  unitsSold: number;
+  invoiceCount: number;
   totalSurface: number;
   totalIncome: number;
   netIncome: number | null;
+  costBasisEstimated: boolean;
 }
 
 export interface TopSellingProductDTO {
   product: Product;
-  salesAmount: number;
+  unitsSold: number;
   totalIncome: number;
   timespan: TimeSpanEnum;
 }
