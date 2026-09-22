@@ -2,6 +2,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,9 +16,11 @@ import {
 } from "@/components/ui/chart";
 import { useDataContext } from "@/contexts/data/UseDataContext";
 import type { MonthlySummaryRecord } from "@/interfaces/DataInterfaces";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getMonthName } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { CURRENT_YEAR, formatCompact, formatMoney } from "../components/format";
 
 /**
  * The bar is the money the month took in, split by where it came from. A sale
@@ -36,10 +39,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const MonthlySalesChart = ({ SelectedYear }: { SelectedYear: number }) => {
+const MonthlySalesChart = () => {
   const { getYearlySalesData } = useDataContext();
 
-  const [MonthlyData, setMonthlyData] = useState<MonthlySummaryRecord[]>([]);
+  const [MonthlyData, setMonthlyData] = useState<
+    MonthlySummaryRecord[] | null
+  >(null);
 
   const fillData = useCallback((data: MonthlySummaryRecord[]) => {
     const filledData = data.map((record) => ({
@@ -53,49 +58,68 @@ const MonthlySalesChart = ({ SelectedYear }: { SelectedYear: number }) => {
   }, []);
 
   useEffect(() => {
-    getYearlySalesData(SelectedYear).then(fillData).then(setMonthlyData);
-  }, [getYearlySalesData, fillData, SelectedYear]);
+    getYearlySalesData(CURRENT_YEAR).then(fillData).then(setMonthlyData);
+  }, [getYearlySalesData, fillData]);
+
+  const yearIncome = MonthlyData?.reduce((acc, r) => acc + r.income, 0) ?? 0;
 
   return (
-    <Card className="col-span-3">
+    <Card>
       <CardHeader>
         <CardTitle>Ingresos por Ventas Mensuales</CardTitle>
-        <CardDescription>{SelectedYear}</CardDescription>
+        <CardDescription>
+          Ventas cobradas y pagos de deudas · {CURRENT_YEAR}
+        </CardDescription>
       </CardHeader>
       <CardContent className="px-3">
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={MonthlyData}
-            margin={{ left: 10, right: 10 }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey={"monthName"}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              interval={0}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar
-              dataKey="settledIncome"
-              stackId="income"
-              stroke="var(--color-settledIncome)"
-              fill="var(--color-settledIncome)"
-              strokeWidth={2}
-            />
-            <Bar
-              dataKey="debtPayments"
-              stackId="income"
-              stroke="var(--color-debtPayments)"
-              fill="var(--color-debtPayments)"
-              strokeWidth={2}
-            />
-          </BarChart>
-        </ChartContainer>
+        {MonthlyData === null ? (
+          <Skeleton className="aspect-video w-full" />
+        ) : (
+          <ChartContainer config={chartConfig} className="aspect-video w-full">
+            <BarChart
+              accessibilityLayer
+              data={MonthlyData}
+              margin={{ left: 0, right: 12, top: 8 }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey={"monthName"}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                interval={0}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                width={48}
+                tickFormatter={(v: number) => formatCompact(v)}
+              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar
+                dataKey="settledIncome"
+                stackId="income"
+                fill="var(--color-settledIncome)"
+              />
+              <Bar
+                dataKey="debtPayments"
+                stackId="income"
+                fill="var(--color-debtPayments)"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ChartContainer>
+        )}
       </CardContent>
+      {MonthlyData && (
+        <CardFooter className="text-muted-foreground text-sm">
+          <span>
+            Total del año:{" "}
+            <b className="text-foreground">{formatMoney(yearIncome)}</b>
+          </span>
+        </CardFooter>
+      )}
     </Card>
   );
 };

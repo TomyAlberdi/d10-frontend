@@ -1,14 +1,20 @@
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -27,118 +33,136 @@ import { formatPrice } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const getTimeSpanLabel = (timeSpan: TimeSpanEnum) => {
-  switch (timeSpan) {
-    case "THIS_MONTH":
-      return "Este Mes";
-    case "THIS_YEAR":
-      return "Este Año";
-    case "ALL_TIME":
-      return "General";
-    default:
-      return "Último Mes";
-  }
+const TIME_SPAN_LABELS: Record<TimeSpanEnum, string> = {
+  THIS_MONTH: "Este Mes",
+  THIS_YEAR: "Este Año",
+  ALL_TIME: "General",
+};
+
+const SORT_BY_LABELS: Partial<Record<SortByEnum, string>> = {
+  GROSS_INCOME: "Ingresos Brutos",
+  NET_INCOME: "Ingresos Netos",
+  UNITS_SOLD: "Unidades Vendidas",
 };
 
 const BestSellingProducts = () => {
   const navigate = useNavigate();
   const { getBestSellingProducts } = useDataContext();
-  const [products, setProducts] = useState<BestSellingProductDTO[]>([]);
+  const [products, setProducts] = useState<BestSellingProductDTO[] | null>(
+    null,
+  );
   const [SelectedTimespan, setSelectedTimespan] =
     useState<TimeSpanEnum>("THIS_MONTH");
   const [sortBy, setSortBy] = useState<SortByEnum>("GROSS_INCOME");
 
   useEffect(() => {
-    getBestSellingProducts(SelectedTimespan, sortBy).then(setProducts);
+    let ignore = false;
+    setProducts(null);
+    getBestSellingProducts(SelectedTimespan, sortBy).then((data) => {
+      if (!ignore) setProducts(data);
+    });
+    return () => {
+      ignore = true;
+    };
   }, [getBestSellingProducts, SelectedTimespan, sortBy]);
 
   return (
-    <Card className="col-span-4">
+    <Card>
       <CardHeader>
         <CardTitle>Productos Más Vendidos</CardTitle>
-        <CardDescription>{getTimeSpanLabel(SelectedTimespan)}</CardDescription>
-      </CardHeader>
-      <CardFooter className="flex gap-5">
-        <div className="flex flex-col gap-3 border-2 p-3 rounded-md">
-          <span className="text-md">Periodo de Tiempo</span>
-          <RadioGroup
+        <CardDescription>
+          Top 15 · {TIME_SPAN_LABELS[SelectedTimespan]} · por{" "}
+          {SORT_BY_LABELS[sortBy]?.toLowerCase()}
+        </CardDescription>
+        <CardAction className="flex flex-wrap justify-end gap-2">
+          <Select
             value={SelectedTimespan}
-            onValueChange={(value) =>
-              setSelectedTimespan(value as TimeSpanEnum)
-            }
+            onValueChange={(v) => setSelectedTimespan(v as TimeSpanEnum)}
           >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="THIS_MONTH" id="last-month" />
-              <Label htmlFor="last-month" className="cursor-pointer">
-                Este Mes
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="THIS_YEAR" id="last-year" />
-              <Label htmlFor="last-year" className="cursor-pointer">
-                Este Año
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="ALL_TIME" id="all-time" />
-              <Label htmlFor="all-time" className="cursor-pointer">
-                General
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
-        <div className="flex flex-col gap-3 border-2 p-3 rounded-md">
-          <span className="text-md">Ordenar por</span>
-          <RadioGroup
+            <SelectTrigger size="sm" className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(TIME_SPAN_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
             value={sortBy}
-            onValueChange={(value) => setSortBy(value as SortByEnum)}
+            onValueChange={(v) => setSortBy(v as SortByEnum)}
           >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="GROSS_INCOME" id="gross-income" />
-              <Label htmlFor="gross-income" className="cursor-pointer">
-                Ingresos Brutos
-              </Label>
-            </div>
-{/*             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="NET_INCOME" id="net-income" disabled />
-              <Label htmlFor="net-income" className="cursor-pointer">
-                Ingresos Netos
-              </Label>
-            </div> */}
-          </RadioGroup>
-        </div>
-      </CardFooter>
+            <SelectTrigger size="sm" className="w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(SORT_BY_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardAction>
+      </CardHeader>
       <CardContent className="px-3">
-        {products.length > 0 && (
+        {products === null ? (
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-9 w-full" />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <p className="text-muted-foreground py-8 text-center text-sm">
+            No hay ventas en este período.
+          </p>
+        ) : (
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10">#</TableHead>
                 <TableHead>Código</TableHead>
-                <TableHead className="w-1/4">Nombre</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Ingresos Brutos</TableHead>
-                <TableHead>Ingresos Netos</TableHead>
+                <TableHead className="w-1/3">Nombre</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-right">Ingresos Brutos</TableHead>
+                <TableHead className="text-right">Ingresos Netos</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {products.map((product, index) => (
                 <TableRow
                   key={product.product.id}
                   className="cursor-pointer"
                   onClick={() => navigate(`/product/${product.product.id}`)}
                 >
+                  <TableCell className="text-muted-foreground tabular-nums">
+                    {index + 1}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={"secondary"}>{product.product.code}</Badge>
                   </TableCell>
                   <TableCell>{product.product.name}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-right tabular-nums">
                     {product.totalSurface.toFixed(2)}{" "}
                     {product.product.measureType}
                   </TableCell>
-                  <TableCell>$ {formatPrice(product.totalIncome)}</TableCell>
-                  <TableCell>
-                    ${" "}
-                    {product.netIncome ? formatPrice(product.netIncome) : "N/A"}
+                  <TableCell className="text-right tabular-nums">
+                    $ {formatPrice(product.totalIncome)}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {product.netIncome !== null
+                      ? `$ ${formatPrice(product.netIncome)}`
+                      : "N/A"}
+                    {product.costBasisEstimated && product.netIncome !== null && (
+                      <span
+                        className="text-muted-foreground ml-1"
+                        title="Estimado con el costo actual"
+                      >
+                        *
+                      </span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
