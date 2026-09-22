@@ -5,13 +5,14 @@ import type {
   CashRegisterStatusChangePayload,
   CashRegisterTransaction,
   CashRegisterTransactionPageResponse,
+  CashRegisterTransactionType,
   CashRegisterType,
   CreateCashRegisterTransactionDTO,
 } from "@/interfaces/CashRegisterInterfaces";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import { PAYMENT_METHOD_REGISTER_TYPE } from "@/lib/cashRegister";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CashRegisterContext } from "./CashRegisterContext";
 
@@ -52,6 +53,30 @@ const CashRegisterContextComponent: React.FC<
   const [paginatedTotalElements, setPaginatedTotalElements] =
     useState<number>(0);
   const [isPaginatedLoading, setIsPaginatedLoading] = useState<boolean>(false);
+  const [paginatedRegisterTypeFilter, setPaginatedRegisterTypeFilterState] =
+    useState<CashRegisterType | null>(null);
+  const [paginatedDirectionFilter, setPaginatedDirectionFilterState] =
+    useState<CashRegisterTransactionType | null>(null);
+  // Mirror the filters so `fetchTransactionsPaginated` keeps a stable identity.
+  const paginatedRegisterTypeFilterRef = useRef<CashRegisterType | null>(null);
+  const paginatedDirectionFilterRef =
+    useRef<CashRegisterTransactionType | null>(null);
+
+  const setPaginatedRegisterTypeFilter = useCallback(
+    (type: CashRegisterType | null) => {
+      paginatedRegisterTypeFilterRef.current = type;
+      setPaginatedRegisterTypeFilterState(type);
+    },
+    [],
+  );
+
+  const setPaginatedDirectionFilter = useCallback(
+    (direction: CashRegisterTransactionType | null) => {
+      paginatedDirectionFilterRef.current = direction;
+      setPaginatedDirectionFilterState(direction);
+    },
+    [],
+  );
 
   const fetchCurrentAmounts = useCallback(async () => {
     setIsLoadingAmount(true);
@@ -357,14 +382,27 @@ const CashRegisterContextComponent: React.FC<
   );
 
   const fetchTransactionsPaginated = useCallback(
-    async (page: number = 0, type?: CashRegisterType) => {
+    async (
+      page: number = 0,
+      type?: CashRegisterType | null,
+      direction?: CashRegisterTransactionType | null,
+    ) => {
+      const activeType =
+        type === undefined ? paginatedRegisterTypeFilterRef.current : type;
+      const activeDirection =
+        direction === undefined
+          ? paginatedDirectionFilterRef.current
+          : direction;
       setIsPaginatedLoading(true);
       try {
         const params = new URLSearchParams();
         params.append("page", page.toString());
         params.append("size", "50");
-        if (type) {
-          params.append("type", type);
+        if (activeType) {
+          params.append("type", activeType);
+        }
+        if (activeDirection) {
+          params.append("direction", activeDirection);
         }
         const url = `${API_URL}/transactions/paginated?${params.toString()}`;
         const response = await fetch(url);
@@ -432,6 +470,10 @@ const CashRegisterContextComponent: React.FC<
       isPaginatedLoading,
       fetchTransactionsPaginated,
       resetPaginatedTransactions,
+      paginatedRegisterTypeFilter,
+      setPaginatedRegisterTypeFilter,
+      paginatedDirectionFilter,
+      setPaginatedDirectionFilter,
     }),
     [
       paperAmount,
@@ -459,6 +501,10 @@ const CashRegisterContextComponent: React.FC<
       isPaginatedLoading,
       fetchTransactionsPaginated,
       resetPaginatedTransactions,
+      paginatedRegisterTypeFilter,
+      setPaginatedRegisterTypeFilter,
+      paginatedDirectionFilter,
+      setPaginatedDirectionFilter,
     ],
   );
 
