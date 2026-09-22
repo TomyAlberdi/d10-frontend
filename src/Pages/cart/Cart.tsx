@@ -25,7 +25,14 @@ import type {
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
 import { resolveInvoiceStatus, SETTLED_STATUSES } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
-import { FileText, PackagePlus, Trash2, UserPlus } from "lucide-react";
+import {
+  AlertTriangle,
+  FileText,
+  PackagePlus,
+  PiggyBank,
+  Trash2,
+  UserPlus,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
@@ -67,13 +74,23 @@ const Cart = () => {
   const subtotalSum = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
   const discountPercent =
     subtotalSum > 0 ? (cart.discount / subtotalSum) * 100 : 0;
+
+  // A client with a positive balance (credit in their favor) has that credit
+  // discounted from this invoice's total, up to the invoice's own amount.
+  const clientBalance = cart.client.balance ?? 0;
+  const balanceApplied =
+    hasClient && clientBalance > 0
+      ? Math.min(clientBalance, cart.total)
+      : 0;
+  const finalTotal = Math.max(0, cart.total - balanceApplied);
+
   const canCreateInvoice =
-    hasClient && cart.products.length > 0 && cart.total >= 0;
+    hasClient && cart.products.length > 0 && finalTotal >= 0;
   // Status the backend will store, which is a debt when stock leaves without
   // the total being covered.
   const effectiveStatus = resolveInvoiceStatus({
     status: cart.status,
-    total: cart.total,
+    total: finalTotal,
     partialPayment,
     stockDecreased: cart.stockDecreased,
   });
@@ -88,12 +105,13 @@ const Cart = () => {
     }
   };
 
-  // A settled sale is fully paid, so the paid amount follows the total.
+  // A settled sale is fully paid, so the paid amount follows the total that
+  // remains after any credit balance is discounted.
   const handleStatusChange = (value: string) => {
     const nextStatus = value as InvoiceStatus;
     setCartStatus(nextStatus);
     if (SETTLED_STATUSES.includes(nextStatus)) {
-      setpartialPayment(cart.total);
+      setpartialPayment(finalTotal);
     }
   };
 
@@ -106,11 +124,12 @@ const Cart = () => {
         products: cart.products,
         status: effectiveStatus,
         discount: cart.discount,
-        total: cart.total,
+        total: finalTotal,
         notes: cart.notes,
         partialPayment,
         paymentMethod: cart.paymentMethod,
         stockDecreased: cart.stockDecreased,
+        balanceApplied,
       });
       flushSync(() => {
         clearCart();
@@ -156,6 +175,25 @@ const Cart = () => {
               <UserPlus className="size-4 mr-1" />
               Cambiar cliente
             </Button>
+            {clientBalance < 0 && (
+              <div className="w-full flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                <AlertTriangle className="size-4 shrink-0 mt-0.5" />
+                <span>
+                  Este cliente tiene deudas pendientes: debe ${" "}
+                  {formatPrice(Math.abs(clientBalance))}.
+                </span>
+              </div>
+            )}
+            {clientBalance > 0 && (
+              <div className="w-full flex items-start gap-2 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400">
+                <PiggyBank className="size-4 shrink-0 mt-0.5" />
+                <span>
+                  Este cliente tiene saldo a favor: ${" "}
+                  {formatPrice(clientBalance)}. Se descontará del total de
+                  esta venta.
+                </span>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex items-center gap-3">
@@ -292,9 +330,26 @@ const Cart = () => {
               className="md:hidden w-full border rounded-md px-3 py-2"
             />
           </div>
-          <div className="text-xl font-semibold pt-2">
-            Total: $ {formatPrice(cart.total)}
-          </div>
+          {balanceApplied > 0 ? (
+            <div className="pt-2 space-y-1">
+              <div className="text-base text-muted-foreground flex justify-between max-w-xs">
+                <span>Total</span>
+                <span>$ {formatPrice(cart.total)}</span>
+              </div>
+              <div className="text-base text-emerald-600 dark:text-emerald-400 flex justify-between max-w-xs">
+                <span>Saldo a favor aplicado</span>
+                <span>- $ {formatPrice(balanceApplied)}</span>
+              </div>
+              <div className="text-xl font-semibold flex justify-between max-w-xs">
+                <span>Total final</span>
+                <span>$ {formatPrice(finalTotal)}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-xl font-semibold pt-2">
+              Total: $ {formatPrice(finalTotal)}
+            </div>
+          )}
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
               Pago parcial (IMPORTANTE: Los pagos parciales no se registran en
@@ -303,7 +358,7 @@ const Cart = () => {
             <input
               type="number"
               min={0}
-              max={cart.total}
+              max={finalTotal}
               step="0.01"
               value={partialPayment}
               onChange={(e) => {
@@ -312,13 +367,13 @@ const Cart = () => {
                   setpartialPayment(0);
                   return;
                 }
-                setpartialPayment(Math.max(0, Math.min(cart.total, value)));
+                setpartialPayment(Math.max(0, Math.min(finalTotal, value)));
               }}
               className="w-full max-w-xs border rounded-md px-3 py-2"
             />
             <p className="text-sm text-muted-foreground mt-1">
               Saldo pendiente: ${" "}
-              {formatPrice(Math.max(0, cart.total - partialPayment))}
+              {formatPrice(Math.max(0, finalTotal - partialPayment))}
             </p>
           </div>
           <div>
@@ -340,7 +395,7 @@ const Cart = () => {
             {isForcedToDebt && (
               <p className="text-sm text-orange-600 dark:text-orange-400 mt-2">
                 Se guardará como Deuda: se descuenta stock y quedan ${" "}
-                {formatPrice(Math.max(0, cart.total - partialPayment))} sin
+                {formatPrice(Math.max(0, finalTotal - partialPayment))} sin
                 pagar.
               </p>
             )}

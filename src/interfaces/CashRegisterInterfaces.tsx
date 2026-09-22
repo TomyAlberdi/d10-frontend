@@ -173,13 +173,35 @@ export interface CashRegisterContextType {
   /**
    * Fetch paginated transactions without date filtering.
    * Appends to existing transactions list.
+   * `type` and `direction` default to the active filter state
+   * (`paginatedRegisterTypeFilter` / `paginatedDirectionFilter`) when omitted;
+   * pass `null` explicitly to clear a filter for that call.
    */
   fetchTransactionsPaginated: (
     page?: number,
-    type?: CashRegisterType,
+    type?: CashRegisterType | null,
+    direction?: CashRegisterTransactionType | null,
   ) => Promise<void>;
   /**
    * Reset paginated transactions state.
    */
   resetPaginatedTransactions: () => void;
+  /**
+   * Active register type (CASH/DIGITAL/USD) filter for the paginated list.
+   */
+  paginatedRegisterTypeFilter: CashRegisterType | null;
+  /**
+   * Set the register type filter for the paginated list.
+   */
+  setPaginatedRegisterTypeFilter: (type: CashRegisterType | null) => void;
+  /**
+   * Active direction (IN/OUT) filter for the paginated list.
+   */
+  paginatedDirectionFilter: CashRegisterTransactionType | null;
+  /**
+   * Set the direction filter for the paginated list.
+   */
+  setPaginatedDirectionFilter: (
+    direction: CashRegisterTransactionType | null,
+  ) => void;
 }
