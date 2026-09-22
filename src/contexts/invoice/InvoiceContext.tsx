@@ -10,8 +10,17 @@ export interface InvoiceContextType {
   getInvoiceById: (id: string) => Promise<Invoice | null>;
   updateInvoice: (id: string, dto: CreateInvoiceDTO) => Promise<Invoice>;
   deleteInvoiceById: (id: string) => Promise<void>;
-  searchInvoices: (q: string, status?: InvoiceStatus) => Promise<Invoice[]>;
-  getRecentInvoices: (status?: InvoiceStatus) => Promise<Invoice[]>;
+  searchInvoices: (
+    q: string,
+    status?: InvoiceStatus,
+    from?: string,
+    to?: string,
+  ) => Promise<Invoice[]>;
+  getRecentInvoices: (
+    status?: InvoiceStatus,
+    from?: string,
+    to?: string,
+  ) => Promise<Invoice[]>;
   getInvoicesWithStockNotDecreased: () => Promise<Invoice[]>;
   updateInvoiceStatus: (id: string, status: InvoiceStatus) => Promise<void>;
   getInvoicesByProductId: (productId: string) => Promise<Invoice[]>;
