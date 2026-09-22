@@ -1,4 +1,8 @@
-import type { Client, CreateClientDTO } from "@/interfaces/ClientInterfaces";
+import type {
+  AdjustClientBalanceDTO,
+  Client,
+  CreateClientDTO,
+} from "@/interfaces/ClientInterfaces";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -77,12 +81,47 @@ const ClientContextComponent: React.FC<ClientContextComponentProps> = ({
     return (await response.json()) as Client[];
   };
 
+  const adjustClientBalance = async (
+    id: string,
+    dto: AdjustClientBalanceDTO,
+  ): Promise<Client | null> => {
+    const response = await fetch(`${API_URL}/${id}/balance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dto),
+    });
+    if (!response.ok) {
+      const message = await response.text().catch(() => null);
+      toast.error(message || `Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as Client;
+  };
+
+  const addClientBalance = (
+    id: string,
+    amount: number,
+    description?: string,
+  ): Promise<Client | null> =>
+    adjustClientBalance(id, { amount, type: "ADD", description });
+
+  const removeClientBalance = (
+    id: string,
+    amount: number,
+    description?: string,
+  ): Promise<Client | null> =>
+    adjustClientBalance(id, { amount, type: "REMOVE", description });
+
   const exportData: ClientContextType = {
     getClientById,
     createClient,
     updateClient,
     deleteClientById,
     searchClients,
+    addClientBalance,
+    removeClientBalance,
   };
 
   return (

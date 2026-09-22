@@ -24,6 +24,7 @@ const defaultConsumerClient: Client = {
   phone: "",
   email: "",
   cuitDni: "0",
+  balance: 0,
 };
 
 const initialCart: Invoice = {

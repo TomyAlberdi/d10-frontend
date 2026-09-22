@@ -21,6 +21,8 @@ export interface CreateInvoiceDTO {
   partialPayment?: number;
   paymentMethod?: PaymentMethod;
   stockDecreased?: boolean;
+  /** Amount discounted from `total` because the client had a positive balance. */
+  balanceApplied?: number;
 }
 
 export interface Invoice extends CreateInvoiceDTO {

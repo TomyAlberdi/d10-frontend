@@ -312,6 +312,16 @@ const InvoiceDetail = () => {
                     $ {formatPrice(invoice.discount)}
                   </p>
                 </div>
+                {!!invoice.balanceApplied && invoice.balanceApplied > 0 && (
+                  <div className="border rounded-md p-3">
+                    <p className="text-sm text-muted-foreground">
+                      Saldo a favor aplicado
+                    </p>
+                    <p className="font-medium text-emerald-600 dark:text-emerald-400">
+                      $ {formatPrice(invoice.balanceApplied)}
+                    </p>
+                  </div>
+                )}
                 <div className="border rounded-md p-3">
                   <p className="text-sm text-muted-foreground">Total venta</p>
                   <p className="text-lg font-bold">
