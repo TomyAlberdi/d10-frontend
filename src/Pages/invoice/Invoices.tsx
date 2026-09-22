@@ -65,6 +65,8 @@ const Invoices = () => {
     Invoice["status"] | null
   >(null);
   const [showStockNotDecreased, setShowStockNotDecreased] = useState(false);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const tableRef = useRef<HTMLDivElement>(null);
 
   const hasQuery = searchQuery.trim().length > 0;
@@ -95,7 +97,11 @@ const Invoices = () => {
           if (!cancelled) setIsLoadingRecent(false);
         });
     } else {
-      getRecentInvoices(selectedStatus || undefined)
+      getRecentInvoices(
+        selectedStatus || undefined,
+        dateFrom || undefined,
+        dateTo || undefined,
+      )
         .then((result) => {
           if (!cancelled) {
             setRecentInvoices(result);
@@ -114,13 +120,20 @@ const Invoices = () => {
     getInvoicesWithStockNotDecreased,
     selectedStatus,
     showStockNotDecreased,
+    dateFrom,
+    dateTo,
   ]);
 
   useEffect(() => {
     if (!hasQuery) return;
     let cancelled = false;
     const timeoutId = setTimeout(() => setIsSearching(true), 0);
-    searchInvoices(searchQuery.trim(), selectedStatus || undefined)
+    searchInvoices(
+      searchQuery.trim(),
+      selectedStatus || undefined,
+      dateFrom || undefined,
+      dateTo || undefined,
+    )
       .then((result) => {
         if (!cancelled) {
           setInvoices(result);
@@ -134,7 +147,14 @@ const Invoices = () => {
       cancelled = true;
       clearTimeout(timeoutId);
     };
-  }, [hasQuery, searchQuery, searchInvoices, selectedStatus]);
+  }, [
+    hasQuery,
+    searchQuery,
+    searchInvoices,
+    selectedStatus,
+    dateFrom,
+    dateTo,
+  ]);
 
   useEffect(() => {
     const t = setTimeout(() => setSearchQuery(searchInput), SEARCH_DEBOUNCE_MS);
@@ -234,6 +254,60 @@ const Invoices = () => {
                 {label}
               </button>
             ))}
+          </div>
+
+          <Separator />
+
+          <div className="flex flex-col gap-2">
+            <h4 className="flex items-center justify-between px-2 mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Fecha
+              {(dateFrom || dateTo) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDateFrom("");
+                    setDateTo("");
+                  }}
+                  className="normal-case font-normal text-muted-foreground hover:text-foreground"
+                >
+                  Limpiar
+                </button>
+              )}
+            </h4>
+            <div className="flex flex-col gap-2 px-2">
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="invoice-date-from"
+                  className="text-xs text-muted-foreground"
+                >
+                  Desde
+                </label>
+                <Input
+                  id="invoice-date-from"
+                  type="date"
+                  value={dateFrom}
+                  max={dateTo || undefined}
+                  disabled={showStockNotDecreased}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="invoice-date-to"
+                  className="text-xs text-muted-foreground"
+                >
+                  Hasta
+                </label>
+                <Input
+                  id="invoice-date-to"
+                  type="date"
+                  value={dateTo}
+                  min={dateFrom || undefined}
+                  disabled={showStockNotDecreased}
+                  onChange={(e) => setDateTo(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
         </Card>
       </aside>
