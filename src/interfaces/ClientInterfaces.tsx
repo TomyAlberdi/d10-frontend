@@ -6,6 +6,8 @@ export interface Client {
   phone: string | null;
   email: string | null;
   cuitDni: string;
+  /** Positive: credit in the client's favor. Negative: pending debt. */
+  balance: number;
 }
 
 export interface CreateClientDTO {
@@ -18,3 +20,11 @@ export interface CreateClientDTO {
 }
 
 export type ClientType = "CONSUMIDOR_FINAL" | "RESPONSABLE_INSCRIPTO";
+
+export type BalanceAdjustmentType = "ADD" | "REMOVE";
+
+export interface AdjustClientBalanceDTO {
+  amount: number;
+  type: BalanceAdjustmentType;
+  description?: string;
+}

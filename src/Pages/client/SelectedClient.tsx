@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import type { Client } from "@/interfaces/ClientInterfaces";
-import { PencilLine, ShoppingCart, Users } from "lucide-react";
+import { formatPrice } from "@/lib/utils";
+import { PencilLine, PiggyBank, ShoppingCart, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -59,6 +60,23 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
       {/* Info */}
       <div className="grid shrink-0 grid-cols-1 gap-2">
         <div className="flex flex-col rounded-md border px-3 py-2">
+          <span className="text-sm text-muted-foreground flex items-center gap-1">
+            <PiggyBank className="size-3.5" />
+            Saldo
+          </span>
+          <span
+            className={`font-medium text-base break-words ${
+              client.balance > 0
+                ? "text-emerald-600 dark:text-emerald-400"
+                : client.balance < 0
+                  ? "text-destructive"
+                  : ""
+            }`}
+          >
+            $ {formatPrice(client.balance)}
+          </span>
+        </div>
+        <div className="flex flex-col rounded-md border px-3 py-2">
           <span className="text-sm text-muted-foreground">
             {client.type === "CONSUMIDOR_FINAL" ? "DNI" : "CUIT"}
           </span>
@@ -95,6 +113,14 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
         >
           <ShoppingCart />
           {isCartClient ? "Cliente del carrito" : "Usar en carrito"}
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => navigate(`/client/${client.id}/balance`)}
+        >
+          <PiggyBank />
+          Ajustar saldo
         </Button>
         <Button
           variant="outline"
