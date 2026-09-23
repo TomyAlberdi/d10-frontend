@@ -16,20 +16,20 @@ function computeTotal(products: CartProduct[], discount: number): number {
   return Math.max(0, subtotalSum - discount);
 }
 
-const defaultConsumerClient: Client = {
-  id: "6ab3c940483cc8e48f5e8a0c",
-  type: "CONSUMIDOR_FINAL",
-  name: "Consumidor Final",
-  address: "",
-  phone: "",
-  email: "",
-  cuitDni: "0",
-  balance: 0,
-};
+// Legacy placeholder client that older carts stored before a sale could be
+// made without a client; it is read back as "no client".
+const LEGACY_CONSUMER_CLIENT_ID = "6988aaa7a52552790b2cc5ab";
+
+function loadStoredClient(client: Client | null | undefined): Client | null {
+  if (!client || !client.id || client.id === LEGACY_CONSUMER_CLIENT_ID) {
+    return null;
+  }
+  return client;
+}
 
 const initialCart: Invoice = {
   id: "",
-  client: defaultConsumerClient,
+  client: null,
   products: [],
   status: "PENDIENTE",
   discount: 0,
@@ -58,7 +58,7 @@ function loadCartFromStorage(): Invoice {
     const total = Number(parsed.total);
     return {
       id: parsed.id ?? "",
-      client: parsed.client ?? defaultConsumerClient,
+      client: loadStoredClient(parsed.client),
       products: Array.isArray(parsed.products) ? parsed.products : [],
       status: VALID_STATUSES.includes(parsed.status as InvoiceStatus)
         ? (parsed.status as InvoiceStatus)
@@ -86,7 +86,7 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
 }) => {
   const [cart, setCart] = useState<Invoice>(loadCartFromStorage);
 
-  const setCartClient = useCallback((client: Client) => {
+  const setCartClient = useCallback((client: Client | null) => {
     setCart((prev) => ({
       ...prev,
       client,

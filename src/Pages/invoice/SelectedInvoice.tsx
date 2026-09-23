@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import { invoiceClientName } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { Eye, PencilLine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -74,7 +75,9 @@ const SelectedInvoice = ({ invoice }: SelectedInvoiceProps) => {
       </div>
       <div className="py-1 flex items-center gap-3 border-2 px-2">
         <span className="text-muted-foreground">Cliente</span>
-        <span className="text-foreground">{invoice.client.name}</span>
+        <span className="text-foreground">
+          {invoiceClientName(invoice.client)}
+        </span>
       </div>
       <div className="py-1 flex items-center gap-3 border-2 px-2">
         <span className="text-muted-foreground">Estado</span>

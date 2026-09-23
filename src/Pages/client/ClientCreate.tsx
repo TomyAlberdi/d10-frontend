@@ -9,10 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useClientContext } from "@/contexts/client/UseClientContext";
 import type { CreateClientDTO } from "@/interfaces/ClientInterfaces";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const CLIENT_TYPE_OPTIONS: CreateClientDTO["type"][] = [
@@ -22,7 +23,13 @@ const CLIENT_TYPE_OPTIONS: CreateClientDTO["type"][] = [
 
 const ClientCreate = () => {
   const { createClient } = useClientContext();
+  const { setCartClient } = useCartContext();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Opened from the cart: the new client is assigned to it and the user is
+  // taken back there.
+  const fromCart = location.state?.fromCart === true;
+  const returnPath = fromCart ? "/cart" : "/client";
 
   const [type, setType] = useState<CreateClientDTO["type"]>("CONSUMIDOR_FINAL");
   const [name, setName] = useState("");
@@ -44,9 +51,14 @@ const ClientCreate = () => {
         email: email.trim(),
         phone: phone.trim(),
       };
-      await createClient(dto);
-      toast.success("Cliente creado correctamente");
-      navigate("/client");
+      const created = await createClient(dto);
+      if (fromCart) {
+        setCartClient(created);
+        toast.success("Cliente creado y asignado al carrito");
+      } else {
+        toast.success("Cliente creado correctamente");
+      }
+      navigate(returnPath);
     } catch {
       // Error already handled in context
     } finally {
@@ -139,7 +151,7 @@ const ClientCreate = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate("/client")}
+              onClick={() => navigate(returnPath)}
             >
               Cancelar
             </Button>

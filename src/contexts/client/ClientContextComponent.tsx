@@ -29,7 +29,7 @@ const ClientContextComponent: React.FC<ClientContextComponentProps> = ({
     return (await response.json()) as Client;
   };
 
-  const createClient = async (dto: CreateClientDTO): Promise<void> => {
+  const createClient = async (dto: CreateClientDTO): Promise<Client> => {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
@@ -41,6 +41,7 @@ const ClientContextComponent: React.FC<ClientContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
+    return (await response.json()) as Client;
   };
 
   const updateClient = async (

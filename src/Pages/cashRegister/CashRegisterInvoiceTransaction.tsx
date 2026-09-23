@@ -10,6 +10,7 @@ import {
   REGISTER_TYPE_LABELS,
   REGISTER_TYPES,
 } from "@/lib/cashRegister";
+import { invoiceClientName } from "@/lib/invoice";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -92,7 +93,7 @@ const CashRegisterInvoiceTransaction = () => {
               venta
             </label>
             <p className="text-sm text-muted-foreground">
-              #{invoice.invoiceNumber || invoice.id} - {invoice.client.name}
+              #{invoice.invoiceNumber || invoice.id} - {invoiceClientName(invoice.client)}
             </p>
           </div>
 

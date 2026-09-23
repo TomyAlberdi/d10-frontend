@@ -1,4 +1,13 @@
+import type { Client } from "@/interfaces/ClientInterfaces";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
+
+/** Name shown for a sale made without a client. */
+export const NO_CLIENT_LABEL = "Consumidor Final";
+
+/** Name to show for an invoice's client, which is null for anonymous sales. */
+export function invoiceClientName(client: Client | null | undefined): string {
+  return client?.name || NO_CLIENT_LABEL;
+}
 
 /** Tolerance used when comparing amounts: a balance under a cent is paid. */
 const PAYMENT_TOLERANCE = 0.01;
