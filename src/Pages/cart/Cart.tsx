@@ -23,7 +23,11 @@ import type {
   PaymentMethod,
 } from "@/interfaces/InvoiceInterfaces";
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
-import { resolveInvoiceStatus, SETTLED_STATUSES } from "@/lib/invoice";
+import {
+  NO_CLIENT_LABEL,
+  resolveInvoiceStatus,
+  SETTLED_STATUSES,
+} from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -32,11 +36,13 @@ import {
   PiggyBank,
   Trash2,
   UserPlus,
+  UserX,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import CartClientSearch from "./CartClientSearch";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Presupuesto" },
@@ -50,6 +56,7 @@ const Cart = () => {
   const navigate = useNavigate();
   const {
     cart,
+    setCartClient,
     setDiscount,
     setCartStatus,
     setCartNotes,
@@ -70,22 +77,19 @@ const Cart = () => {
     }
   }, [cart.status, setStockDecreased]);
 
-  const hasClient = cart.client.id.length > 0;
+  const cartClient = cart.client;
   const subtotalSum = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
   const discountPercent =
     subtotalSum > 0 ? (cart.discount / subtotalSum) * 100 : 0;
 
   // A client with a positive balance (credit in their favor) has that credit
   // discounted from this invoice's total, up to the invoice's own amount.
-  const clientBalance = cart.client.balance ?? 0;
+  const clientBalance = cartClient?.balance ?? 0;
   const balanceApplied =
-    hasClient && clientBalance > 0
-      ? Math.min(clientBalance, cart.total)
-      : 0;
+    clientBalance > 0 ? Math.min(clientBalance, cart.total) : 0;
   const finalTotal = Math.max(0, cart.total - balanceApplied);
 
-  const canCreateInvoice =
-    hasClient && cart.products.length > 0 && finalTotal >= 0;
+  const canCreateInvoice = cart.products.length > 0 && finalTotal >= 0;
   // Status the backend will store, which is a debt when stock leaves without
   // the total being covered.
   const effectiveStatus = resolveInvoiceStatus({
@@ -95,6 +99,7 @@ const Cart = () => {
     stockDecreased: cart.stockDecreased,
   });
   const isForcedToDebt = effectiveStatus !== cart.status;
+  const isDebtWithoutClient = effectiveStatus === "DEUDA" && !cartClient;
 
   const handleDiscountPercentChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -120,7 +125,7 @@ const Cart = () => {
     setIsCreating(true);
     try {
       const createdInvoice = await createInvoice({
-        client: cart.client,
+        client: cartClient,
         products: cart.products,
         status: effectiveStatus,
         discount: cart.discount,
@@ -158,22 +163,22 @@ const Cart = () => {
       {/* Card 1: Client */}
       <Card className="p-3 md:p-4">
         <h2 className="text-lg font-semibold mb-0 md:mb-3">Cliente</h2>
-        {hasClient ? (
+        {cartClient ? (
           <div className="flex flex-wrap items-center gap-3">
             <div className="text-sm">
-              <p className="font-medium">{cart.client.name}</p>
+              <p className="font-medium">{cartClient.name}</p>
               <p className="text-muted-foreground">
-                {cart.client.cuitDni}
-                {cart.client.email ? ` · ${cart.client.email}` : ""}
+                {cartClient.cuitDni}
+                {cartClient.email ? ` · ${cartClient.email}` : ""}
               </p>
             </div>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate("/client")}
+              onClick={() => setCartClient(null)}
             >
-              <UserPlus className="size-4 mr-1" />
-              Cambiar cliente
+              <UserX className="size-4 mr-1" />
+              Quitar cliente
             </Button>
             {clientBalance < 0 && (
               <div className="w-full flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -196,14 +201,22 @@ const Cart = () => {
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="space-y-2">
             <p className="text-muted-foreground text-sm">
-              No hay cliente seleccionado
+              Sin cliente: la venta se registrará como {NO_CLIENT_LABEL}.
             </p>
-            <Button onClick={() => navigate("/client")}>
-              <UserPlus className="size-4 mr-1" />
-              Seleccionar cliente
-            </Button>
+            <div className="flex flex-wrap items-start gap-2">
+              <CartClientSearch onSelect={setCartClient} />
+              <Button
+                variant="outline"
+                onClick={() =>
+                  navigate("/client/create", { state: { fromCart: true } })
+                }
+              >
+                <UserPlus className="size-4 mr-1" />
+                Crear cliente
+              </Button>
+            </div>
           </div>
         )}
       </Card>
@@ -399,6 +412,16 @@ const Cart = () => {
                 pagar.
               </p>
             )}
+            {isDebtWithoutClient && (
+              <div className="mt-2 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                <AlertTriangle className="size-4 shrink-0 mt-0.5" />
+                <span>
+                  La venta se guardará como Deuda sin cliente: la deuda no
+                  quedará registrada a nombre de nadie. Selecciona o crea un
+                  cliente.
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Switch
@@ -453,11 +476,6 @@ const Cart = () => {
             <FileText className="size-4 mr-1" />
             {isCreating ? "Creando venta…" : "Crear venta"}
           </Button>
-          {!hasClient && cart.products.length > 0 && (
-            <p className="text-sm text-muted-foreground">
-              Selecciona un cliente para poder crear la venta.
-            </p>
-          )}
         </div>
       </Card>
     </div>

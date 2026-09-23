@@ -5,7 +5,7 @@ import { createContext } from "react";
 
 export interface CartContextType {
   cart: Invoice;
-  setCartClient: (client: Client) => void;
+  setCartClient: (client: Client | null) => void;
   setCartStatus: (status: InvoiceStatus) => void;
   setPaymentMethod: (paymentMethod: PaymentMethod | undefined) => void;
   setCartNotes: (notes: string | undefined) => void;

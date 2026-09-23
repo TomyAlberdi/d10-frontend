@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import { invoiceClientName } from "@/lib/invoice";
 import { cn, formatPrice } from "@/lib/utils";
 import { Check, Filter, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -387,7 +388,7 @@ const Invoices = () => {
                     >
                       <TableCell># {invoice.invoiceNumber ?? "-"}</TableCell>
                       <TableCell>{invoice.date}</TableCell>
-                      <TableCell>{invoice.client.name}</TableCell>
+                      <TableCell>{invoiceClientName(invoice.client)}</TableCell>
                       <TableCell
                         className={`${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}
                       >

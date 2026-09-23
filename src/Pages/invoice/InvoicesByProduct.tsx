@@ -13,6 +13,7 @@ import {
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import { invoiceClientName } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { Check, ChevronLeft, Package, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -244,7 +245,7 @@ const InvoicesByProduct = () => {
                     >
                       <TableCell># {invoice.invoiceNumber ?? "-"}</TableCell>
                       <TableCell>{invoice.date}</TableCell>
-                      <TableCell>{invoice.client.name}</TableCell>
+                      <TableCell>{invoiceClientName(invoice.client)}</TableCell>
                       <TableCell
                         className={`${STATUS_ROW_CLASSES[invoice.status] ?? ""}`}
                       >

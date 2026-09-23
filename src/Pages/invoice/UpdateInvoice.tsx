@@ -25,7 +25,11 @@ import type {
   PaymentMethod,
 } from "@/interfaces/InvoiceInterfaces";
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
-import { resolveInvoiceStatus, SETTLED_STATUSES } from "@/lib/invoice";
+import {
+  invoiceClientName,
+  resolveInvoiceStatus,
+  SETTLED_STATUSES,
+} from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { ChevronLeft, FileText, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -220,11 +224,13 @@ const UpdateInvoice = () => {
       <Card className="p-4">
         <h2 className="text-lg font-semibold mb-3">Cliente</h2>
         <div className="text-sm">
-          <p className="font-medium">{invoice.client.name}</p>
-          <p className="text-muted-foreground">
-            {invoice.client.cuitDni}
-            {invoice.client.email ? ` · ${invoice.client.email}` : ""}
-          </p>
+          <p className="font-medium">{invoiceClientName(invoice.client)}</p>
+          {invoice.client && (
+            <p className="text-muted-foreground">
+              {invoice.client.cuitDni}
+              {invoice.client.email ? ` · ${invoice.client.email}` : ""}
+            </p>
+          )}
         </div>
       </Card>
 

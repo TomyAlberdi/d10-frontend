@@ -12,7 +12,8 @@ export type InvoiceStatus =
 export type PaymentMethod = "CASH" | "DIGITAL" | "USD";
 
 export interface CreateInvoiceDTO {
-  client: Client;
+  /** Null for a sale made without a client ("Consumidor Final"). */
+  client: Client | null;
   products: CartProduct[];
   status: InvoiceStatus;
   discount: number;

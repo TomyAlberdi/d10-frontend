@@ -11,6 +11,7 @@ import {
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import { NO_CLIENT_LABEL } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { ArrowRightLeft, ReceiptText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -220,6 +221,9 @@ const InvoiceDetail = () => {
 
               <Card className="p-4 gap-3">
                 <h2 className="font-semibold">Cliente</h2>
+                {!invoice.client ? (
+                  <p className="text-sm">{NO_CLIENT_LABEL}</p>
+                ) : (
                 <div className="flex flex-col md:grid grid-cols-3 gap-3 text-sm">
                   <p>
                     <span className="text-muted-foreground">ID:</span>{" "}
@@ -250,6 +254,7 @@ const InvoiceDetail = () => {
                     {invoice.client.address ?? "—"}
                   </p>
                 </div>
+                )}
               </Card>
 
               <Card className="p-4 gap-3">
