@@ -17,9 +17,9 @@ function computeTotal(products: CartProduct[], discount: number): number {
 }
 
 const defaultConsumerClient: Client = {
-  id: "6988aaa7a52552790b2cc5ab",
+  id: "6ab3c940483cc8e48f5e8a0c",
   type: "CONSUMIDOR_FINAL",
-  name: "consumidor final",
+  name: "Consumidor Final",
   address: "",
   phone: "",
   email: "",
