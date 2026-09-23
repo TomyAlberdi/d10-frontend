@@ -18,7 +18,7 @@ export const generatePDF = (invoice: Invoice | null) => {
   // Title
   doc.setFontSize(25);
   doc.setFont("helvetica", "bold");
-  doc.text("Diseño 10 Olavarría", 10, 20);
+  doc.text("Diseño 10 Tandil", 10, 20);
   // Date and Company Info
   doc.setFontSize(16);
   doc.setFont("helvetica", "normal");

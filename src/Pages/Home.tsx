@@ -30,8 +30,8 @@ const Home = () => {
           <p>Servidor desconectado. Por favor inténtalo más tarde.</p>
         </div>
       )}
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground text-center alternate-font">
-        Diseño 10 Olavarría <br /> Administración
+      <h1 className="text-4xl font-bold text-foreground mb-12 text-center alternate-font">
+        Diseño 10 Tandil <br /> Administración
       </h1>
       {/* Side by side from lg up, stacked on smaller screens; the grid keeps
           both cards the same size. */}
