@@ -11,7 +11,7 @@ import {
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
-import { NO_CLIENT_LABEL } from "@/lib/invoice";
+import { invoiceDocumentLabel, NO_CLIENT_LABEL } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { ArrowRightLeft, ReceiptText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -147,7 +147,7 @@ const InvoiceDetail = () => {
                 onClick={() => {
                   if (InvoiceDetail) {
                     InvoiceDetail.save(
-                      `Presupuesto_${invoice?.invoiceNumber ?? invoice?.id}.pdf`,
+                      `${invoiceDocumentLabel(invoice.status)}_${invoice.invoiceNumber ?? invoice.id}.pdf`,
                     );
                   }
                 }}
