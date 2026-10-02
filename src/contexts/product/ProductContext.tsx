@@ -1,6 +1,7 @@
 import type {
     CreateProduct,
     PaginatedResult,
+    PriceLog,
     Product,
     UpdateProductStockDTO,
 } from "@/interfaces/ProductInterfaces";
@@ -8,6 +9,8 @@ import { createContext } from "react";
 
 export interface ProductContextType {
   getProductById: (id: string) => Promise<Product | null>;
+  /** Price changes of a product, most recent first. */
+  getPriceHistory: (id: string) => Promise<PriceLog[]>;
   listProducts: (
     query: string | null,
     page: number | null,

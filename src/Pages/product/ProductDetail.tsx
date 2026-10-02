@@ -9,6 +9,7 @@ import {
   ArrowDownUp,
   ChevronLeft,
   FileText,
+  History,
   Package,
   PackagePlus,
   PencilLine,
@@ -219,6 +220,15 @@ const ProductDetail = () => {
               >
                 <ArrowDownUp className="w-4 h-4 mr-2" />
                 Movimientos de Stock
+              </Button>
+              <Button
+                onClick={() => navigate(`/product/${product.id}/price-history`)}
+                className="w-full"
+                size="lg"
+                variant="outline"
+              >
+                <History className="w-4 h-4 mr-2" />
+                Historial de Precios
               </Button>
             </CardContent>
           </Card>

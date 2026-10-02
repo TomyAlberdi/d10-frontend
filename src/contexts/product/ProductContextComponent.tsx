@@ -5,6 +5,7 @@ import {
 import type {
     CreateProduct,
     PaginatedResult,
+    PriceLog,
     Product,
     UpdateProductStockDTO,
 } from "@/interfaces/ProductInterfaces";
@@ -31,6 +32,17 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
       throw new Error(`HTTP Error: ${response.status}`);
     }
     return (await response.json()) as Product;
+  };
+
+  const getPriceHistory = async (id: string) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_API_URL}/price-log/product/${id}`,
+    );
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as PriceLog[];
   };
 
   const listProducts = async (
@@ -211,6 +223,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
 
   const exportData: ProductContextType = {
     getProductById,
+    getPriceHistory,
     listProducts,
     listDiscontinuedProducts,
     getProductsWithStock,
