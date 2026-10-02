@@ -251,45 +251,49 @@ const CashRegisterContextComponent: React.FC<
     [fetchCurrentAmounts, selectedType],
   );
 
+  // Rethrows on failure so the caller can keep its form open. The edited row
+  // is patched into both lists in place, since they may be showing any date
+  // or page.
   const updateTransaction = useCallback(
     async (id: string, dto: CreateCashRegisterTransactionDTO) => {
-      try {
-        const response = await fetch(`${API_URL}/transactions/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dto),
-        });
-        if (!response.ok) {
-          let message: string | null = null;
-          try {
-            const contentType = response.headers.get("content-type");
-            const text = await response.text();
-            if (contentType?.includes("application/json")) {
-              const body = JSON.parse(text) as {
-                message?: string;
-                error?: string;
-                detail?: string;
-              };
-              message = body.message ?? body.error ?? body.detail ?? null;
-            } else {
-              message = text || null;
-            }
-          } catch {
-            // ignore parse errors
+      const response = await fetch(`${API_URL}/transactions/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto),
+      });
+      if (!response.ok) {
+        let message: string | null = null;
+        try {
+          const contentType = response.headers.get("content-type");
+          const text = await response.text();
+          if (contentType?.includes("application/json")) {
+            const body = JSON.parse(text) as {
+              message?: string;
+              error?: string;
+              detail?: string;
+            };
+            message = body.message ?? body.error ?? body.detail ?? null;
+          } else {
+            message = text || null;
           }
-          toast.error(message ?? `Error: ${response.status}`);
-          throw new Error(`HTTP Error: ${response.status}`);
+        } catch {
+          // ignore parse errors
         }
-        toast.success("Transacción actualizada");
-        await fetchCurrentAmounts();
-        await fetchTransactions();
-      } catch (error) {
-        // Error already handled
+        toast.error(message ?? `Error: ${response.status}`);
+        throw new Error(`HTTP Error: ${response.status}`);
       }
+      const updated = (await response.json()) as CashRegisterTransaction;
+      const patch = (list: CashRegisterTransaction[]) =>
+        list.map((t) => (t.id === updated.id ? updated : t));
+      setTransactions(patch);
+      setPaginatedTransactions(patch);
+      toast.success("Transacción actualizada");
+      await fetchCurrentAmounts();
+      return updated;
     },
-    [fetchCurrentAmounts, fetchTransactions],
+    [fetchCurrentAmounts],
   );
 
   const deleteTransaction = useCallback(

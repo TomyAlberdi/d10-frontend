@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useProductContext } from "@/contexts/product/UseProductContext";
 import type { UpdateProductStockDTO } from "@/interfaces/ProductInterfaces";
 import { ChevronLeft } from "lucide-react";
+import { useNegativeStockConfirm } from "@/hooks/use-negative-stock-confirm";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -22,6 +23,8 @@ const OPERATION_OPTIONS: UpdateProductStockDTO["type"][] = ["IN", "OUT"];
 const UpdateProductStock = () => {
   const { id } = useParams<{ id: string }>();
   const { getProductById, updateProductStock } = useProductContext();
+  const { run: runWithStockConfirm, dialog: stockConfirmDialog } =
+    useNegativeStockConfirm();
   const navigate = useNavigate();
 
   const [product, setProduct] =
@@ -57,20 +60,21 @@ const UpdateProductStock = () => {
       toast.error("La cantidad debe ser un número mayor que 0");
       return;
     }
-    if (operation === "OUT" && product.stock.quantity < qty) {
-      toast.error(
-        "Stock insuficiente. No puede sacar más unidades de las que hay en stock.",
-      );
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      await updateProductStock(id, {
-        type: operation,
-        quantity: qty,
-        detail: detail.trim() || undefined,
-      });
+      const result = await runWithStockConfirm((allowNegativeStock) =>
+        updateProductStock(
+          id,
+          {
+            type: operation,
+            quantity: qty,
+            detail: detail.trim() || undefined,
+          },
+          allowNegativeStock,
+        ),
+      );
+      // null means the user backed out of going negative
+      if (result === null) return;
       toast.success(
         operation === "IN"
           ? "Stock actualizado correctamente (entrada)."
@@ -114,6 +118,7 @@ const UpdateProductStock = () => {
 
   return (
     <div className="h-full w-full flex justify-center items-center px-3 md:px-0 pt-4 md:pt-0">
+      {stockConfirmDialog}
       <Card className="p-6 w-full md:w-1/4">
         <h1 className="text-2xl font-bold mb-2">Actualizar stock</h1>
         <p className="text-muted-foreground mb-4">

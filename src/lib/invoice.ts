@@ -9,6 +9,22 @@ export function invoiceClientName(client: Client | null | undefined): string {
   return client?.name || NO_CLIENT_LABEL;
 }
 
+/** Statuses whose detail PDF is a sale rather than a quote. */
+const SALE_DOCUMENT_STATUSES: readonly InvoiceStatus[] = ["PAGO", "ENTREGADO"];
+
+/**
+ * Name of the invoice detail document: "Venta" once the sale is paid or
+ * delivered, "Presupuesto" otherwise. Used for both the PDF title and its
+ * file name.
+ */
+export function invoiceDocumentLabel(
+  status: InvoiceStatus | undefined,
+): "Venta" | "Presupuesto" {
+  return status && SALE_DOCUMENT_STATUSES.includes(status)
+    ? "Venta"
+    : "Presupuesto";
+}
+
 /** Tolerance used when comparing amounts: a balance under a cent is paid. */
 const PAYMENT_TOLERANCE = 0.01;
 

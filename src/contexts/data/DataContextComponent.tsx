@@ -1,6 +1,8 @@
+import type { CashRegisterType } from "@/interfaces/CashRegisterInterfaces";
 import type {
   BestSellingProductDTO,
   DataContextType,
+  MonthlyCashFlow,
   MonthlySalesMetrics,
   MonthlySummaryRecord,
   ProductFilter,
@@ -62,6 +64,12 @@ const DataContextComponent: React.FC<DataContextComponentProps> = ({
     [],
   );
 
+  const getMonthlyCashFlow = useCallback(
+    (year: number, registerType?: CashRegisterType) =>
+      getData<MonthlyCashFlow[]>("/cash-flow/monthly", { year, registerType }),
+    [],
+  );
+
   const getBestSellingProducts = useCallback(
     (timeSpan: TimeSpanEnum, sortBy: SortByEnum) =>
       getData<BestSellingProductDTO[]>(
@@ -95,6 +103,7 @@ const DataContextComponent: React.FC<DataContextComponentProps> = ({
       getYearlySalesData,
       getMonthlySalesMetrics,
       getSalesMetricsSummary,
+      getMonthlyCashFlow,
       getBestSellingProducts,
       getTop5ByCategory,
       getTop5BySubcategory,
@@ -103,6 +112,7 @@ const DataContextComponent: React.FC<DataContextComponentProps> = ({
       getYearlySalesData,
       getMonthlySalesMetrics,
       getSalesMetricsSummary,
+      getMonthlyCashFlow,
       getBestSellingProducts,
       getTop5ByCategory,
       getTop5BySubcategory,

@@ -61,6 +61,7 @@ import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
 import ProductStockList from "./Pages/product/ProductStockList";
 import ProductStockRecords from "./Pages/product/ProductStockRecords";
+import ProductPriceHistory from "./Pages/product/ProductPriceHistory";
 import ProductUpdate from "./Pages/product/ProductUpdate";
 import UpdatePrice from "./Pages/product/UpdatePrice";
 import UpdateProductStock from "./Pages/product/UpdateProductStock";
@@ -102,6 +103,10 @@ export function App() {
                           <Route
                             path=":id/stock-records"
                             element={<ProductStockRecords />}
+                          />
+                          <Route
+                            path=":id/price-history"
+                            element={<ProductPriceHistory />}
                           />
                           <Route path="stock" element={<ProductStockList />} />
                           <Route
