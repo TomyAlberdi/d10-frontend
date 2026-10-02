@@ -10,7 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
-import type { CashRegisterType } from "@/interfaces/CashRegisterInterfaces";
+import type {
+  CashRegisterTransaction,
+  CashRegisterType,
+} from "@/interfaces/CashRegisterInterfaces";
 import { REGISTER_TYPE_LABELS, REGISTER_TYPES } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
@@ -21,10 +24,12 @@ import {
   CreditCard,
   DollarSign,
   List,
+  Pencil,
   RefreshCcw,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import EditTransactionDialog from "./EditTransactionDialog";
 
 const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   IN: "Ingreso",
@@ -57,6 +62,8 @@ const CashRegisterOverview = () => {
     fetchDailyTotals,
   } = useCashRegisterContext();
   const navigate = useNavigate();
+  const [editingTransaction, setEditingTransaction] =
+    useState<CashRegisterTransaction | null>(null);
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split("T")[0];
@@ -181,13 +188,14 @@ const CashRegisterOverview = () => {
                   <TableHead className="w-2/12 bg-card">Caja</TableHead>
                   <TableHead className="w-2/12 bg-card">Monto</TableHead>
                   <TableHead className="w-4/12 bg-card">Descripción</TableHead>
+                  <TableHead className="w-10 bg-card" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {transactions.length === 0 && !isLoadingTransactions && (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="text-center text-muted-foreground py-8"
                     >
                       {selectedDate
@@ -199,7 +207,7 @@ const CashRegisterOverview = () => {
                 {isLoadingTransactions && (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="text-center text-muted-foreground py-8"
                     >
                       Cargando transacciones...
@@ -226,6 +234,16 @@ const CashRegisterOverview = () => {
                       $ {formatPrice(transaction.amount)}
                     </TableCell>
                     <TableCell>{transaction.description ?? "—"}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => setEditingTransaction(transaction)}
+                        aria-label="Editar transacción"
+                      >
+                        <Pencil className="size-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -233,6 +251,11 @@ const CashRegisterOverview = () => {
           </div>
         </Card>
       </div>
+      <EditTransactionDialog
+        transaction={editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+        onSaved={() => fetchDailyTotals(selectedDate)}
+      />
     </div>
   );
 };
