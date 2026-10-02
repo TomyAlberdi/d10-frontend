@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CartProduct } from "@/interfaces/CartInterfaces";
+import type { Client } from "@/interfaces/ClientInterfaces";
 import type {
   CreateInvoiceDTO,
   Invoice,
@@ -31,11 +32,12 @@ import {
   SETTLED_STATUSES,
 } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
-import { ChevronLeft, FileText, Trash2 } from "lucide-react";
+import { ChevronLeft, FileText, Trash2, UserX } from "lucide-react";
 import { useNegativeStockConfirm } from "@/hooks/use-negative-stock-confirm";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import CartClientSearch from "../cart/CartClientSearch";
 
 const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
   { value: "PENDIENTE", label: "Presupuesto" },
@@ -148,6 +150,14 @@ const UpdateInvoice = () => {
     }
   };
 
+  // A debt was already charged to its client's balance when it was created,
+  // and an edit does not move that charge, so its client stays fixed.
+  const isClientLocked = initialInvoice?.status === "DEUDA";
+
+  const handleClientChange = (client: Client | null) => {
+    setInvoice((prev) => (prev ? { ...prev, client } : prev));
+  };
+
   const handleRemoveProduct = (productId: string) => {
     if (!invoice) return;
     setInvoice({
@@ -190,8 +200,12 @@ const UpdateInvoice = () => {
       toast.success("venta actualizada correctamente");
 
       // Check if we need to register cash transaction. A debt is left out:
-      // partial payments are not registered in the cash register.
-      if (SETTLED_STATUSES.includes(effectiveStatus)) {
+      // partial payments are not registered in the cash register, and so is
+      // a sale that was already settled, whose payment was registered then.
+      const wasSettled =
+        initialInvoice !== null &&
+        SETTLED_STATUSES.includes(initialInvoice.status);
+      if (SETTLED_STATUSES.includes(effectiveStatus) && !wasSettled) {
         navigate("/cash-register/invoice-transaction", {
           state: { invoice: updatedInvoice },
         });
@@ -234,15 +248,42 @@ const UpdateInvoice = () => {
       {/* Card 1: Client */}
       <Card className="p-4">
         <h2 className="text-lg font-semibold mb-3">Cliente</h2>
-        <div className="text-sm">
-          <p className="font-medium">{invoiceClientName(invoice.client)}</p>
-          {invoice.client && (
-            <p className="text-muted-foreground">
-              {invoice.client.cuitDni}
-              {invoice.client.email ? ` · ${invoice.client.email}` : ""}
+        {invoice.client ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="text-sm">
+              <p className="font-medium">{invoiceClientName(invoice.client)}</p>
+              <p className="text-muted-foreground">
+                {invoice.client.cuitDni}
+                {invoice.client.email ? ` · ${invoice.client.email}` : ""}
+              </p>
+            </div>
+            {!isClientLocked && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleClientChange(null)}
+              >
+                <UserX className="size-4 mr-1" />
+                Quitar cliente
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-muted-foreground text-sm">
+              Sin cliente: la venta se registra como {invoiceClientName(null)}.
             </p>
-          )}
-        </div>
+            {!isClientLocked && (
+              <CartClientSearch onSelect={handleClientChange} />
+            )}
+          </div>
+        )}
+        {isClientLocked && (
+          <p className="text-muted-foreground text-sm mt-2">
+            El cliente de una deuda no se puede cambiar desde aquí, porque la
+            deuda ya está cargada en el saldo del cliente.
+          </p>
+        )}
       </Card>
 
       {/* Card 2: Products table */}
