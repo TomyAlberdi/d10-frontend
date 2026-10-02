@@ -36,7 +36,6 @@ const SEGMENT_LABELS: Record<string, string> = {
   add: "Agregar al carrito",
   transactions: "Transacciones",
   adjust: "Ajustar saldo",
-  "invoice-transaction": "Registrar pago",
 };
 
 const labelFor = (segment: string): string =>

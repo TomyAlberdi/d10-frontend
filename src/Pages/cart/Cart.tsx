@@ -18,15 +18,20 @@ import {
 } from "@/components/ui/table";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
-import type {
-  InvoiceStatus,
-  PaymentMethod,
-} from "@/interfaces/InvoiceInterfaces";
-import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS } from "@/lib/cashRegister";
+import DiscountPicker from "@/components/invoice/DiscountPicker";
+import PaymentCard from "@/components/invoice/PaymentCard";
+import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import {
+  PAYMENT_METHOD_REGISTER_TYPE,
+  REGISTER_TYPE_PAYMENT_METHOD,
+} from "@/lib/cashRegister";
+import {
+  COLLECTED_STATUSES,
   NO_CLIENT_LABEL,
   resolveInvoiceStatus,
-  SETTLED_STATUSES,
+  resolvePayment,
+  SELECTABLE_STATUSES,
+  type PaymentDraft,
 } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import {
@@ -45,13 +50,12 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import CartClientSearch from "./CartClientSearch";
 
-const INVOICE_STATUS_OPTIONS: { value: InvoiceStatus; label: string }[] = [
-  { value: "PENDIENTE", label: "Presupuesto" },
-  { value: "PAGO", label: "Pago" },
-  { value: "DEUDA", label: "Deuda" },
-  { value: "ENTREGADO", label: "Entregado" },
-  { value: "CANCELADO", label: "Cancelado" },
-];
+const STATUS_LABELS: Partial<Record<InvoiceStatus, string>> = {
+  PENDIENTE: "Presupuesto",
+  PAGO: "Pago",
+  ENTREGADO: "Entregado",
+  CANCELADO: "Cancelado",
+};
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -71,7 +75,13 @@ const Cart = () => {
   const { run: runWithStockConfirm, dialog: stockConfirmDialog } =
     useNegativeStockConfirm();
   const [isCreating, setIsCreating] = useState(false);
-  const [partialPayment, setpartialPayment] = useState(0);
+  const [paymentDraft, setPaymentDraft] = useState<PaymentDraft>(() => ({
+    enabled: true,
+    amount: null,
+    registerType: PAYMENT_METHOD_REGISTER_TYPE[cart.paymentMethod ?? "CASH"],
+    partial: false,
+    pesoAmount: "",
+  }));
 
   // Auto-check stockDecreased when status is "ENTREGADO"
   useEffect(() => {
@@ -82,8 +92,10 @@ const Cart = () => {
 
   const cartClient = cart.client;
   const subtotalSum = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
-  const discountPercent =
-    subtotalSum > 0 ? (cart.discount / subtotalSum) * 100 : 0;
+  // Deuda is no longer picked by hand; a cart saved with it reads as Pago.
+  const status: InvoiceStatus = SELECTABLE_STATUSES.includes(cart.status)
+    ? cart.status
+    : "PAGO";
 
   // A client with a positive balance (credit in their favor) has that credit
   // discounted from this invoice's total, up to the invoice's own amount.
@@ -92,35 +104,30 @@ const Cart = () => {
     clientBalance > 0 ? Math.min(clientBalance, cart.total) : 0;
   const finalTotal = Math.max(0, cart.total - balanceApplied);
 
-  const canCreateInvoice = cart.products.length > 0 && finalTotal >= 0;
-  // Status the backend will store, which is a debt when stock leaves without
-  // the total being covered.
-  const effectiveStatus = resolveInvoiceStatus({
-    status: cart.status,
-    total: finalTotal,
-    partialPayment,
-    stockDecreased: cart.stockDecreased,
-  });
-  const isForcedToDebt = effectiveStatus !== cart.status;
+  // A paid or delivered sale registers its payment together with the sale.
+  const showPayment = COLLECTED_STATUSES.includes(status) && finalTotal > 0;
+  const resolvedPayment = resolvePayment(paymentDraft, finalTotal);
+  const canCreateInvoice =
+    cart.products.length > 0 &&
+    finalTotal >= 0 &&
+    (!showPayment || resolvedPayment.payment !== null);
+  // Status the backend will store: a debt when the payment is partial, or
+  // when stock leaves without anything being paid.
+  const effectiveStatus: InvoiceStatus =
+    showPayment && resolvedPayment.isPartial
+      ? "DEUDA"
+      : resolveInvoiceStatus({
+          status,
+          total: finalTotal,
+          partialPayment: showPayment ? finalTotal : 0,
+          stockDecreased: cart.stockDecreased,
+        });
+  const isForcedToDebt = !showPayment && effectiveStatus !== status;
   const isDebtWithoutClient = effectiveStatus === "DEUDA" && !cartClient;
 
-  const handleDiscountPercentChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const percent = Number(e.target.value);
-    if (Number.isFinite(percent) && percent >= 0 && percent <= 100) {
-      setDiscount(subtotalSum * (percent / 100));
-    }
-  };
-
-  // A settled sale is fully paid, so the paid amount follows the total that
-  // remains after any credit balance is discounted.
-  const handleStatusChange = (value: string) => {
-    const nextStatus = value as InvoiceStatus;
-    setCartStatus(nextStatus);
-    if (SETTLED_STATUSES.includes(nextStatus)) {
-      setpartialPayment(finalTotal);
-    }
+  const handlePaymentChange = (draft: PaymentDraft) => {
+    setPaymentDraft(draft);
+    setPaymentMethod(REGISTER_TYPE_PAYMENT_METHOD[draft.registerType]);
   };
 
   const handleCreateInvoice = async () => {
@@ -132,14 +139,17 @@ const Cart = () => {
           {
             client: cartClient,
             products: cart.products,
-            status: effectiveStatus,
+            // The backend turns a partial payment into a debt.
+            status: showPayment ? status : effectiveStatus,
             discount: cart.discount,
             total: finalTotal,
             notes: cart.notes,
-            partialPayment,
-            paymentMethod: cart.paymentMethod,
+            paymentMethod: REGISTER_TYPE_PAYMENT_METHOD[paymentDraft.registerType],
             stockDecreased: cart.stockDecreased,
             balanceApplied,
+            payment: showPayment
+              ? (resolvedPayment.payment ?? undefined)
+              : undefined,
           },
           allowNegativeStock,
         ),
@@ -149,16 +159,7 @@ const Cart = () => {
         clearCart();
       });
       toast.success("venta creada correctamente");
-
-      // Check if we need to register cash transaction. A debt is left out:
-      // partial payments are not registered in the cash register.
-      if (SETTLED_STATUSES.includes(effectiveStatus)) {
-        navigate("/cash-register/invoice-transaction", {
-          state: { invoice: createdInvoice },
-        });
-      } else {
-        navigate("/invoice");
-      }
+      navigate("/invoice");
     } catch {
       // Error handled in context
     } finally {
@@ -323,36 +324,11 @@ const Cart = () => {
       <Card className="p-4">
         <h2 className="text-lg font-semibold mb-0 md:mb-3">Total y venta</h2>
         <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Descuento sobre total: {Math.round(discountPercent)}%
-            </label>
-            {/* Slider for larger screens */}
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={discountPercent}
-              onChange={handleDiscountPercentChange}
-              className="hidden md:block w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-primary"
-            />
-            {/* Number input for mobile */}
-            <input
-              type="number"
-              min={0}
-              max={100}
-              step={1}
-              value={Math.round(discountPercent)}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                if (Number.isFinite(value) && value >= 0 && value <= 100) {
-                  setDiscount(subtotalSum * (value / 100));
-                }
-              }}
-              className="md:hidden w-full border rounded-md px-3 py-2"
-            />
-          </div>
+          <DiscountPicker
+            subtotal={subtotalSum}
+            discount={cart.discount}
+            onChange={setDiscount}
+          />
           {balanceApplied > 0 ? (
             <div className="pt-2 space-y-1">
               <div className="text-base text-muted-foreground flex justify-between max-w-xs">
@@ -375,42 +351,19 @@ const Cart = () => {
           )}
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Pago parcial (IMPORTANTE: Los pagos parciales no se registran en
-              caja)
-            </label>
-            <input
-              type="number"
-              min={0}
-              max={finalTotal}
-              step="0.01"
-              value={partialPayment}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                if (!Number.isFinite(value)) {
-                  setpartialPayment(0);
-                  return;
-                }
-                setpartialPayment(Math.max(0, Math.min(finalTotal, value)));
-              }}
-              className="w-full max-w-xs border rounded-md px-3 py-2"
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Saldo pendiente: ${" "}
-              {formatPrice(Math.max(0, finalTotal - partialPayment))}
-            </p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground block mb-2">
               Estado de la venta
             </label>
-            <Select value={cart.status} onValueChange={handleStatusChange}>
+            <Select
+              value={status}
+              onValueChange={(value) => setCartStatus(value as InvoiceStatus)}
+            >
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
-                {INVOICE_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                {SELECTABLE_STATUSES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {STATUS_LABELS[value]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -418,8 +371,7 @@ const Cart = () => {
             {isForcedToDebt && (
               <p className="text-sm text-orange-600 dark:text-orange-400 mt-2">
                 Se guardará como Deuda: se descuenta stock y quedan ${" "}
-                {formatPrice(Math.max(0, finalTotal - partialPayment))} sin
-                pagar.
+                {formatPrice(finalTotal)} sin pagar.
               </p>
             )}
             {isDebtWithoutClient && (
@@ -448,26 +400,6 @@ const Cart = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground block mb-2">
-              Método de pago
-            </label>
-            <Select
-              value={cart.paymentMethod || "CASH"}
-              onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
-            >
-              <SelectTrigger className="w-full max-w-xs">
-                <SelectValue placeholder="Método de pago" />
-              </SelectTrigger>
-              <SelectContent>
-                {PAYMENT_METHODS.map((method) => (
-                  <SelectItem key={method} value={method}>
-                    {PAYMENT_METHOD_LABELS[method]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground block mb-2">
               Notas (opcional)
             </label>
             <textarea
@@ -478,16 +410,30 @@ const Cart = () => {
               placeholder="Agregar comentarios o instrucciones"
             />
           </div>
-          <Button
-            onClick={handleCreateInvoice}
-            disabled={!canCreateInvoice || isCreating}
-            className="w-full md:w-auto"
-          >
-            <FileText className="size-4 mr-1" />
-            {isCreating ? "Creando venta…" : "Crear venta"}
-          </Button>
         </div>
       </Card>
+
+      {showPayment && (
+        <PaymentCard
+          owed={finalTotal}
+          draft={paymentDraft}
+          onChange={handlePaymentChange}
+          disabled={isCreating}
+        />
+      )}
+
+      <Button
+        onClick={handleCreateInvoice}
+        disabled={!canCreateInvoice || isCreating}
+        className="w-full md:w-auto"
+      >
+        <FileText className="size-4 mr-1" />
+        {isCreating
+          ? "Creando venta…"
+          : showPayment
+            ? "Crear venta y registrar cobro"
+            : "Crear venta"}
+      </Button>
     </div>
   );
 };

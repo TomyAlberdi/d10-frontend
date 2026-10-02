@@ -16,7 +16,6 @@ import ProductContextComponent from "./contexts/product/ProductContextComponent"
 import Cart from "./Pages/cart/Cart";
 import CashRegister from "./Pages/cashRegister/CashRegister";
 import CashRegisterAdjust from "./Pages/cashRegister/CashRegisterAdjust";
-import CashRegisterInvoiceTransaction from "./Pages/cashRegister/CashRegisterInvoiceTransaction";
 import CashRegisterOverview from "./Pages/cashRegister/CashRegisterOverview";
 import CashRegisterTransactionsPaginated from "./Pages/cashRegister/CashRegisterTransactionsPaginated";
 import ClientBalanceAdjust from "./Pages/client/ClientBalanceAdjust";
@@ -159,10 +158,6 @@ export function App() {
                           <Route
                             path="transactions"
                             element={<CashRegisterTransactionsPaginated />}
-                          />
-                          <Route
-                            path="invoice-transaction"
-                            element={<CashRegisterInvoiceTransaction />}
                           />
                         </Route>
                         <Route path="/data" element={<Data />}>

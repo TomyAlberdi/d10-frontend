@@ -7,14 +7,10 @@ import type {
 } from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { computeTotal, updateLineQuantity } from "@/lib/invoice";
 import { CartContext, type CartContextType } from "./CartContext";
 
 const CART_STORAGE_KEY = "d10-cart";
-
-function computeTotal(products: CartProduct[], discount: number): number {
-  const subtotalSum = products.reduce((sum, p) => sum + p.subtotal, 0);
-  return Math.max(0, subtotalSum - discount);
-}
 
 // Legacy placeholder client that older carts stored before a sale could be
 // made without a client; it is read back as "no client".
@@ -151,26 +147,9 @@ const CartContextComponent: React.FC<CartContextComponentProps> = ({
   const updateProduct = useCallback(
     (productId: string, saleUnitQuantity: number) => {
       setCart((prev) => {
-        const products = prev.products.map((p) => {
-          if (p.id !== productId) return p;
-          let measurePerSaleUnit = 0.0;
-          if (p.measurePerSaleUnit) {
-            measurePerSaleUnit = p.measurePerSaleUnit;
-          } else {
-            measurePerSaleUnit = p.measureUnitQuantity / p.saleUnitQuantity;
-          }
-          const newMeasureUnitQuantity = parseFloat(
-            (saleUnitQuantity * measurePerSaleUnit).toFixed(2),
-          );
-          const newSubtotal =
-            saleUnitQuantity * p.priceBySaleUnit - p.individualDiscount;
-          return {
-            ...p,
-            saleUnitQuantity,
-            measureUnitQuantity: newMeasureUnitQuantity,
-            subtotal: Math.max(0, newSubtotal),
-          };
-        });
+        const products = prev.products.map((p) =>
+          p.id === productId ? updateLineQuantity(p, saleUnitQuantity) : p,
+        );
         const total = computeTotal(products, prev.discount);
         return {
           ...prev,

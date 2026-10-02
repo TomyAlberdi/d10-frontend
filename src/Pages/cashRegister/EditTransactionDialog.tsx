@@ -19,6 +19,7 @@ import type {
 import { REGISTER_TYPE_LABELS } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
 import { useState } from "react";
+import TransactionDescription from "@/components/invoice/TransactionDescription";
 
 const TYPE_OPTIONS: { value: CashRegisterTransactionType; label: string }[] = [
   { value: "IN", label: "Ingreso" },
@@ -164,6 +165,18 @@ const EditTransactionForm = ({
             ? new Date(transaction.dateTime).toLocaleString()
             : `Caja ${REGISTER_TYPE_LABELS[originalRegister]} · ${new Date(transaction.dateTime).toLocaleString()}`}
         </AlertDialogDescription>
+        {transaction.invoiceId && (
+          <p className="text-sm text-muted-foreground">
+            Vinculada a la venta{" "}
+            <TransactionDescription
+              transaction={{
+                ...transaction,
+                description: `#${transaction.invoiceNumber}`,
+              }}
+            />
+            . Editarla cambia solo la caja, no el estado ni el pago de la venta.
+          </p>
+        )}
       </AlertDialogHeader>
 
       <div className="space-y-4">

@@ -30,6 +30,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditTransactionDialog from "./EditTransactionDialog";
+import TransactionDescription from "@/components/invoice/TransactionDescription";
 
 const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   IN: "Ingreso",
@@ -233,7 +234,9 @@ const CashRegisterOverview = () => {
                     <TableCell className="font-medium">
                       $ {formatPrice(transaction.amount)}
                     </TableCell>
-                    <TableCell>{transaction.description ?? "—"}</TableCell>
+                    <TableCell>
+                      <TransactionDescription transaction={transaction} />
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
