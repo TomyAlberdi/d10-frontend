@@ -32,6 +32,7 @@ import {
 } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
 import { ChevronLeft, FileText, Trash2 } from "lucide-react";
+import { useNegativeStockConfirm } from "@/hooks/use-negative-stock-confirm";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -68,6 +69,8 @@ const UpdateInvoice = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getInvoiceById, updateInvoice } = useInvoiceContext();
+  const { run: runWithStockConfirm, dialog: stockConfirmDialog } =
+    useNegativeStockConfirm();
   const [invoice, setInvoice] = useState<CreateInvoiceDTO | null>(null);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<InvoiceStatus>("PENDIENTE");
@@ -166,17 +169,24 @@ const UpdateInvoice = () => {
     if (!id || !invoice) return;
     setIsUpdating(true);
     try {
-      const updatedInvoice = await updateInvoice(id, {
-        client: invoice.client,
-        products: invoice.products,
-        status: effectiveStatus,
-        discount,
-        total,
-        notes: invoice.notes,
-        partialPayment,
-        paymentMethod,
-        stockDecreased,
-      });
+      const updatedInvoice = await runWithStockConfirm((allowNegativeStock) =>
+        updateInvoice(
+          id,
+          {
+            client: invoice.client,
+            products: invoice.products,
+            status: effectiveStatus,
+            discount,
+            total,
+            notes: invoice.notes,
+            partialPayment,
+            paymentMethod,
+            stockDecreased,
+          },
+          allowNegativeStock,
+        ),
+      );
+      if (!updatedInvoice) return;
       toast.success("venta actualizada correctamente");
 
       // Check if we need to register cash transaction. A debt is left out:
@@ -218,6 +228,7 @@ const UpdateInvoice = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
+      {stockConfirmDialog}
       <h1 className="text-2xl font-bold">Editar venta #{id}</h1>
 
       {/* Card 1: Client */}

@@ -28,6 +28,7 @@ export interface ProductContextType {
   updateProductStock: (
     id: string,
     stockUpdate: UpdateProductStockDTO,
+    allowNegativeStock?: boolean,
   ) => Promise<void>;
   getProviders: () => Promise<string[]>;
   updateCostsByProvider: (providerName: string, percentageChange: number) => Promise<Product[]>;

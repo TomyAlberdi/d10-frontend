@@ -1,3 +1,7 @@
+import {
+  throwIfNegativeStock,
+  withAllowNegativeStock,
+} from "@/lib/negativeStock";
 import type {
     CreateProduct,
     PaginatedResult,
@@ -129,15 +133,20 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
   const updateProductStock = async (
     id: string,
     stockUpdate: UpdateProductStockDTO,
+    allowNegativeStock?: boolean,
   ) => {
-    const response = await fetch(`${API_URL}/${id}/stock`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      withAllowNegativeStock(`${API_URL}/${id}/stock`, allowNegativeStock),
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stockUpdate),
       },
-      body: JSON.stringify(stockUpdate),
-    });
+    );
     if (!response.ok) {
+      await throwIfNegativeStock(response);
       let message: string | null = null;
       try {
         const contentType = response.headers.get("content-type");

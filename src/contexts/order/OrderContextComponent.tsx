@@ -4,6 +4,10 @@ import type {
   OrderContextType,
 } from "@/interfaces/OrderInterfaces";
 import type { ReactNode } from "react";
+import {
+  throwIfNegativeStock,
+  withAllowNegativeStock,
+} from "@/lib/negativeStock";
 import { toast } from "sonner";
 import { OrderContext } from "./OrderContext";
 
@@ -72,12 +76,19 @@ const OrderContextComponent: React.FC<OrderContextComponentProps> = ({
   const updateOrderReceived = async (
     id: string,
     received: boolean,
+    allowNegativeStock?: boolean,
   ): Promise<Order> => {
     const response = await fetch(
-      `${API_URL}/${id}/received?received=${received}`,
+      withAllowNegativeStock(
+        `${API_URL}/${id}/received?received=${received}`,
+        allowNegativeStock,
+      ),
       { method: "PATCH" },
     );
-    if (!response.ok) return failWith(response);
+    if (!response.ok) {
+      await throwIfNegativeStock(response);
+      return failWith(response);
+    }
     return (await response.json()) as Order;
   };
 
