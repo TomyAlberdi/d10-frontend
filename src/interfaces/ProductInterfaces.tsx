@@ -85,3 +85,29 @@ export interface PaginatedResult<T> {
   totalElements: number;
   totalPages: number;
 }
+
+/** The price fields of a product at one point in time. */
+export interface PriceSnapshot {
+  costByMeasureUnit: number | null;
+  /** Profit percentage over the cost. */
+  profit: number | null;
+  priceByMeasureUnit: number | null;
+  priceBySaleUnit: number | null;
+}
+
+export type PriceLogSource = "CREATED" | "EDITED" | "PROVIDER_UPDATE";
+
+/** One change in the pricing of a product (GET /price-log/product/{id}). */
+export interface PriceLog {
+  id: string;
+  productId: string;
+  productName: string;
+  measureType: Product["measureType"] | null;
+  saleUnitType: Product["saleUnitType"] | null;
+  datetime: string;
+  source: PriceLogSource;
+  detail: string | null;
+  /** Null for the entry written when the product was created. */
+  previous: PriceSnapshot | null;
+  current: PriceSnapshot;
+}

@@ -10,6 +10,7 @@ import {
 import { useOrderContext } from "@/contexts/order/UseOrderContext";
 import type { Order } from "@/interfaces/OrderInterfaces";
 import { CirclePlus } from "lucide-react";
+import { useNegativeStockConfirm } from "@/hooks/use-negative-stock-confirm";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -28,6 +29,8 @@ const STATUS_LABELS: Record<StatusFilter, string> = {
 const OrdersList = () => {
   const navigate = useNavigate();
   const { getOrders, updateOrderReceived, deleteOrder } = useOrderContext();
+  const { run: runWithStockConfirm, dialog: stockConfirmDialog } =
+    useNegativeStockConfirm();
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [status, setStatus] = useState<StatusFilter>("PENDING");
@@ -84,7 +87,10 @@ const OrdersList = () => {
     if (!confirmed) return;
     setBusyOrderId(order.id);
     try {
-      await updateOrderReceived(order.id, false);
+      const reverted = await runWithStockConfirm((allowNegativeStock) =>
+        updateOrderReceived(order.id, false, allowNegativeStock),
+      );
+      if (!reverted) return;
       toast.success("Pedido marcado como pendiente. Stock descontado.");
       await loadOrders();
     } catch {
@@ -111,6 +117,7 @@ const OrdersList = () => {
 
   return (
     <div className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 md:gap-4 p-3 md:p-5">
+      {stockConfirmDialog}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Pedidos</h1>

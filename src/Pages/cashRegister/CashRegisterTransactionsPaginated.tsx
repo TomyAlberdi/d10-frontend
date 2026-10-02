@@ -16,11 +16,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
-import type { CashRegisterType } from "@/interfaces/CashRegisterInterfaces";
+import type {
+  CashRegisterTransaction,
+  CashRegisterType,
+} from "@/interfaces/CashRegisterInterfaces";
 import { REGISTER_TYPE_LABELS, REGISTER_TYPES } from "@/lib/cashRegister";
 import { formatPrice } from "@/lib/utils";
-import { useEffect } from "react";
+import { Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
 import CashRegisterTransactionTypeFilter from "./CashRegisterTransactionTypeFilter";
+import EditTransactionDialog from "./EditTransactionDialog";
 
 const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   IN: "Ingreso",
@@ -48,6 +53,8 @@ const CashRegisterTransactionsPaginated = () => {
     paginatedDirectionFilter,
     setPaginatedDirectionFilter,
   } = useCashRegisterContext();
+  const [editingTransaction, setEditingTransaction] =
+    useState<CashRegisterTransaction | null>(null);
 
   // Reloads the first page on mount and whenever a filter changes.
   useEffect(() => {
@@ -130,6 +137,7 @@ const CashRegisterTransactionsPaginated = () => {
                 <TableHead className="w-2/12 bg-card">Caja</TableHead>
                 <TableHead className="w-2/12 bg-card">Monto</TableHead>
                 <TableHead className="w-4/12 bg-card">Descripción</TableHead>
+                <TableHead className="w-10 bg-card" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -138,7 +146,7 @@ const CashRegisterTransactionsPaginated = () => {
                 paginatedTotalElements >= 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="text-center text-muted-foreground py-8"
                     >
                       No hay transacciones disponibles
@@ -165,11 +173,21 @@ const CashRegisterTransactionsPaginated = () => {
                     $ {formatPrice(transaction.amount)}
                   </TableCell>
                   <TableCell>{transaction.description ?? "—"}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => setEditingTransaction(transaction)}
+                      aria-label="Editar transacción"
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
               {paginatedTransactions.length > 0 && (
                 <TableRow className="bg-background hover:bg-background">
-                  <TableCell colSpan={5} className="text-center py-4">
+                  <TableCell colSpan={6} className="text-center py-4">
                     <Button
                       onClick={handleLoadMore}
                       disabled={!canLoadMore}
@@ -185,6 +203,10 @@ const CashRegisterTransactionsPaginated = () => {
           </Table>
         </div>
       </Card>
+      <EditTransactionDialog
+        transaction={editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+      />
     </div>
   );
 };

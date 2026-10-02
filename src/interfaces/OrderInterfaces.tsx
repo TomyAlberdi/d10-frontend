@@ -46,6 +46,10 @@ export interface OrderContextType {
    * Receive the whole order, adding the sale units of every line to the stock
    * of its product, or set it back to pending, which takes them out again.
    */
-  updateOrderReceived: (id: string, received: boolean) => Promise<Order>;
+  updateOrderReceived: (
+    id: string,
+    received: boolean,
+    allowNegativeStock?: boolean,
+  ) => Promise<Order>;
   deleteOrder: (id: string) => Promise<void>;
 }

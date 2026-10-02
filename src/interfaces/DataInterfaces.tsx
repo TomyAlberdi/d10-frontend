@@ -1,3 +1,4 @@
+import type { CashRegisterType } from "./CashRegisterInterfaces";
 import type { Product } from "./ProductInterfaces";
 
 export type TimeSpanEnum = "THIS_MONTH" | "THIS_YEAR" | "ALL_TIME";
@@ -65,6 +66,18 @@ export interface MonthlySalesMetrics {
   monthName?: string;
 }
 
+/** One month of the cash register ledger (GET /data/cash-flow/monthly). */
+export interface MonthlyCashFlow {
+  month: number;
+  year: number;
+  /** Sum of IN transactions. */
+  inTotal: number;
+  /** Sum of OUT transactions. */
+  outTotal: number;
+  /** inTotal - outTotal */
+  net: number;
+}
+
 /** The same metrics over a whole year, year to date for the current one. */
 export type SalesMetricsSummary = Omit<MonthlySalesMetrics, "month" | "monthName">;
 
@@ -75,6 +88,10 @@ export interface DataContextType {
     filter: ProductFilter,
   ) => Promise<MonthlySalesMetrics[]>;
   getSalesMetricsSummary: (year: number) => Promise<SalesMetricsSummary>;
+  getMonthlyCashFlow: (
+    year: number,
+    registerType?: CashRegisterType,
+  ) => Promise<MonthlyCashFlow[]>;
   getBestSellingProducts: (
     timeSpan: TimeSpanEnum,
     sortBy: SortByEnum,

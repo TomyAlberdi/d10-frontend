@@ -1,5 +1,6 @@
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
+import { invoiceDocumentLabel } from "@/lib/invoice";
 import jsPDF from "jspdf";
 
 const formatDate = (isoDate: string) => {
@@ -25,7 +26,11 @@ export const generatePDF = (invoice: Invoice | null) => {
   doc.text(formatDate(invoice?.date ?? ""), 200, 20, { align: "right" });
   // Invoice Number
   doc.setFont("helvetica", "bold");
-  doc.text(`Presupuesto: #${invoice?.invoiceNumber ?? invoice?.id}`, 10, 40);
+  doc.text(
+    `${invoiceDocumentLabel(invoice?.status)}: #${invoice?.invoiceNumber ?? invoice?.id}`,
+    10,
+    40,
+  );
   // Table Headers
   const headers = [
     "Unidades",

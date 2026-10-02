@@ -1,3 +1,4 @@
+import { HomeChangelog } from "@/components/home-changelog";
 import { HomeQuickAccess } from "@/components/home-quick-access";
 import { HomeUpcomingNotes } from "@/components/home-upcoming-notes";
 import { isBackendReachable } from "@/lib/utils";
@@ -38,6 +39,9 @@ const Home = () => {
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <HomeQuickAccess />
         <HomeUpcomingNotes />
+        <div className="lg:col-span-2">
+          <HomeChangelog />
+        </div>
       </div>
     </div>
   );

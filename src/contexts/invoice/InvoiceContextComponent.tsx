@@ -4,6 +4,10 @@ import type {
   InvoiceStatus,
 } from "@/interfaces/InvoiceInterfaces";
 import type { ReactNode } from "react";
+import {
+  throwIfNegativeStock,
+  withAllowNegativeStock,
+} from "@/lib/negativeStock";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { InvoiceContext, type InvoiceContextType } from "./InvoiceContext";
@@ -19,15 +23,22 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const createInvoice = async (dto: CreateInvoiceDTO): Promise<Invoice> => {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  const createInvoice = async (
+    dto: CreateInvoiceDTO,
+    allowNegativeStock?: boolean,
+  ): Promise<Invoice> => {
+    const response = await fetch(
+      withAllowNegativeStock(API_URL, allowNegativeStock),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto),
       },
-      body: JSON.stringify(dto),
-    });
+    );
     if (!response.ok) {
+      await throwIfNegativeStock(response);
       let message: string | null = null;
       try {
         const contentType = response.headers.get("content-type");
@@ -68,15 +79,20 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
   const updateInvoice = async (
     id: string,
     dto: CreateInvoiceDTO,
+    allowNegativeStock?: boolean,
   ): Promise<Invoice> => {
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      withAllowNegativeStock(`${API_URL}/${id}`, allowNegativeStock),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto),
       },
-      body: JSON.stringify(dto),
-    });
+    );
     if (!response.ok) {
+      await throwIfNegativeStock(response);
       let message: string | null = null;
       try {
         const contentType = response.headers.get("content-type");
@@ -88,7 +104,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
             detail?: string;
           };
           message = body.message ?? body.error ?? body.detail ?? null;
-        } else if (text && /stock\s*insuficiente|insuficiente/i.test(text)) {
+        } else if (text) {
           message = text;
         }
       } catch {

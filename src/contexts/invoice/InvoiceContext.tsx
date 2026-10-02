@@ -6,9 +6,16 @@ import type {
 import { createContext } from "react";
 
 export interface InvoiceContextType {
-  createInvoice: (dto: CreateInvoiceDTO) => Promise<Invoice>;
+  createInvoice: (
+    dto: CreateInvoiceDTO,
+    allowNegativeStock?: boolean,
+  ) => Promise<Invoice>;
   getInvoiceById: (id: string) => Promise<Invoice | null>;
-  updateInvoice: (id: string, dto: CreateInvoiceDTO) => Promise<Invoice>;
+  updateInvoice: (
+    id: string,
+    dto: CreateInvoiceDTO,
+    allowNegativeStock?: boolean,
+  ) => Promise<Invoice>;
   deleteInvoiceById: (id: string) => Promise<void>;
   searchInvoices: (
     q: string,

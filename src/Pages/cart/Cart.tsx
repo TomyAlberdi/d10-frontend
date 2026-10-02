@@ -38,6 +38,7 @@ import {
   UserPlus,
   UserX,
 } from "lucide-react";
+import { useNegativeStockConfirm } from "@/hooks/use-negative-stock-confirm";
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
@@ -67,6 +68,8 @@ const Cart = () => {
     clearCart,
   } = useCartContext();
   const { createInvoice } = useInvoiceContext();
+  const { run: runWithStockConfirm, dialog: stockConfirmDialog } =
+    useNegativeStockConfirm();
   const [isCreating, setIsCreating] = useState(false);
   const [partialPayment, setpartialPayment] = useState(0);
 
@@ -124,18 +127,24 @@ const Cart = () => {
     if (!canCreateInvoice) return;
     setIsCreating(true);
     try {
-      const createdInvoice = await createInvoice({
-        client: cartClient,
-        products: cart.products,
-        status: effectiveStatus,
-        discount: cart.discount,
-        total: finalTotal,
-        notes: cart.notes,
-        partialPayment,
-        paymentMethod: cart.paymentMethod,
-        stockDecreased: cart.stockDecreased,
-        balanceApplied,
-      });
+      const createdInvoice = await runWithStockConfirm((allowNegativeStock) =>
+        createInvoice(
+          {
+            client: cartClient,
+            products: cart.products,
+            status: effectiveStatus,
+            discount: cart.discount,
+            total: finalTotal,
+            notes: cart.notes,
+            partialPayment,
+            paymentMethod: cart.paymentMethod,
+            stockDecreased: cart.stockDecreased,
+            balanceApplied,
+          },
+          allowNegativeStock,
+        ),
+      );
+      if (!createdInvoice) return;
       flushSync(() => {
         clearCart();
       });
@@ -159,6 +168,7 @@ const Cart = () => {
 
   return (
     <div className="p-3 md:p-6 max-w-5xl mx-auto space-y-3 md:space-y-6">
+      {stockConfirmDialog}
       <h1 className="text-2xl font-bold">Carrito</h1>
       {/* Card 1: Client */}
       <Card className="p-3 md:p-4">

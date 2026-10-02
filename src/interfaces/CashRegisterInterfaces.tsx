@@ -135,7 +135,7 @@ export interface CashRegisterContextType {
   updateTransaction: (
     id: string,
     dto: CreateCashRegisterTransactionDTO,
-  ) => Promise<void>;
+  ) => Promise<CashRegisterTransaction>;
   /**
    * Delete a transaction.
    */
