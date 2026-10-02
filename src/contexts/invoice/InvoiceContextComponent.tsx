@@ -104,7 +104,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
             detail?: string;
           };
           message = body.message ?? body.error ?? body.detail ?? null;
-        } else if (text && /stock\s*insuficiente|insuficiente/i.test(text)) {
+        } else if (text) {
           message = text;
         }
       } catch {

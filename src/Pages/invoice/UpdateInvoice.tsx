@@ -280,7 +280,7 @@ const UpdateInvoice = () => {
         )}
         {isClientLocked && (
           <p className="text-muted-foreground text-sm mt-2">
-            El cliente de una deuda no se puede cambiar desde aquí, porque la
+            El cliente de una venta con deuda no se puede cambiar, porque la
             deuda ya está cargada en el saldo del cliente.
           </p>
         )}
