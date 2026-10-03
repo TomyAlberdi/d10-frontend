@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useSwapAnimation } from "@/hooks/use-motion";
 import type { Client } from "@/interfaces/ClientInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { PencilLine, PiggyBank, Users } from "lucide-react";
@@ -12,10 +13,14 @@ interface SelectedClientProps {
 
 const SelectedClient = ({ client }: SelectedClientProps) => {
   const navigate = useNavigate();
+  const cardRef = useSwapAnimation<HTMLDivElement>(client?.id);
 
   if (!client) {
     return (
-      <Card className="h-auto md:h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center">
+      <Card
+        ref={cardRef}
+        className="h-auto md:h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center"
+      >
         <Users className="size-10 text-muted-foreground/40" />
         <p className="text-muted-foreground">
           Busca y selecciona un cliente para ver sus detalles
@@ -30,7 +35,10 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
       : "Responsable Inscripto";
 
   return (
-    <Card className="h-auto md:h-[calc(100dvh-6.5rem)] overflow-hidden flex flex-col gap-4 p-4">
+    <Card
+      ref={cardRef}
+      className="h-auto md:h-[calc(100dvh-6.5rem)] overflow-hidden flex flex-col gap-4 p-4"
+    >
       {/* Name + type */}
       <div className="flex shrink-0 flex-col gap-2">
         <h2 className="text-2xl font-bold leading-tight">{client.name}</h2>

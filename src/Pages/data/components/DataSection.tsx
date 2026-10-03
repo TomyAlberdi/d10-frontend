@@ -21,7 +21,7 @@ const DataSection = ({
     <section className="flex flex-col gap-4">
       <header className="flex flex-col gap-3 border-b pb-3 md:flex-row md:items-end md:justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-lg">
+          <div className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-lg animate-in fade-in zoom-in-75 duration-500 ease-out motion-reduce:animate-none">
             <Icon className="size-5" />
           </div>
           <div>

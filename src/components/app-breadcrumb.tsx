@@ -70,7 +70,9 @@ export function AppBreadcrumb() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                  <BreadcrumbPage className="animate-in fade-in slide-in-from-left-1 duration-300 motion-reduce:animate-none">
+                    {crumb.label}
+                  </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
                     <Link to={crumb.href}>{crumb.label}</Link>
