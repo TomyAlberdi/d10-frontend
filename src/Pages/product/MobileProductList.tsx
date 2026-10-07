@@ -77,7 +77,7 @@ const MobileProductList = () => {
         <Card
           key={product.id}
           onClick={() => navigate(`/product/${product.id}`)}
-          className="p-2 gap-2 cursor-pointer transition-colors hover:border-primary active:bg-accent/50"
+          className="lift p-2 gap-2 cursor-pointer hover:border-primary hover:shadow-md active:bg-accent/50"
         >
           <section className="flex flex-col justify-start gap-2">
             <CardTitle className="text-xl font-bold">{product.name}</CardTitle>

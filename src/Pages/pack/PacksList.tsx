@@ -80,7 +80,7 @@ const PacksList = () => {
       {packs.map((pack) => (
         <Card
           key={pack.id}
-          className="p-4 cursor-pointer hover:shadow-md transition-shadow"
+          className="lift p-4 cursor-pointer hover:shadow-md"
           onClick={() => navigate(`/product/packs/${pack.id}`)}
         >
           <div className="flex justify-between items-start gap-4">

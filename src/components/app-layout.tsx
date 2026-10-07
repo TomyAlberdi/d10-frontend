@@ -1,10 +1,11 @@
 import { ChevronLeft } from "lucide-react"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useRouteReveal } from "@/hooks/use-motion"
 import {
   SidebarInset,
   SidebarProvider,
@@ -13,6 +14,8 @@ import {
 
 export default function AppLayout() {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const contentRef = useRouteReveal<HTMLDivElement>(pathname)
 
   return (
     <SidebarProvider>
@@ -35,12 +38,12 @@ export default function AppLayout() {
                 onClick={() => navigate(-1)}
                 aria-label="Volver"
               >
-                <ChevronLeft />
+                <ChevronLeft className="transition-transform duration-200 group-hover/button:-translate-x-0.5" />
               </Button>
             </div>
           </div>
         </header>
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        <div ref={contentRef} className="flex-1 min-h-0 overflow-y-auto">
           <Outlet />
         </div>
       </SidebarInset>

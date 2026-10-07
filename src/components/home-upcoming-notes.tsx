@@ -101,7 +101,7 @@ export function HomeUpcomingNotes() {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3 max-h-72 md:max-h-80 overflow-y-auto">
+        <div className="stagger-in flex flex-col gap-3 max-h-72 md:max-h-80 overflow-y-auto">
           {dueNotes.map(({ note, dueDate, days }) => (
             <Link
               key={note.id}

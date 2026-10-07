@@ -57,7 +57,7 @@ export function HomeChangelog() {
           Cambios de la última actualización ({formatDate(LATEST_RELEASE.date)}).
         </p>
       </div>
-      <ul className="flex flex-col gap-3 max-h-80 overflow-y-auto">
+      <ul className="stagger-in flex flex-col gap-3 max-h-80 overflow-y-auto">
         {LATEST_RELEASE.changes.map((change, i) => (
           <li
             key={i}

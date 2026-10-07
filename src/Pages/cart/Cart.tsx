@@ -365,12 +365,17 @@ const Cart = () => {
               </div>
               <div className="text-xl font-semibold flex justify-between max-w-xs">
                 <span>Total final</span>
-                <span>$ {formatPrice(finalTotal)}</span>
+                <span key={finalTotal} className="value-in">
+                  $ {formatPrice(finalTotal)}
+                </span>
               </div>
             </div>
           ) : (
             <div className="text-xl font-semibold pt-2">
-              Total: $ {formatPrice(finalTotal)}
+              Total:{" "}
+              <span key={finalTotal} className="value-in inline-block">
+                $ {formatPrice(finalTotal)}
+              </span>
             </div>
           )}
           <div>
