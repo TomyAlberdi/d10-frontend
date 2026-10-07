@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useSwapAnimation } from "@/hooks/use-motion";
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { cn, formatPrice } from "@/lib/utils";
 import {
@@ -24,10 +25,14 @@ const SelectedProduct = ({
   updateProductDiscontinuedLocal,
 }: SelectedProductProps) => {
   const navigate = useNavigate();
+  const cardRef = useSwapAnimation<HTMLDivElement>(product?.id);
 
   if (!product) {
     return (
-      <Card className="h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center">
+      <Card
+        ref={cardRef}
+        className="h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center"
+      >
         <ImageOff className="size-10 text-muted-foreground/40" />
         <p className="text-muted-foreground">
           Selecciona un producto de la lista para ver sus detalles
@@ -48,6 +53,7 @@ const SelectedProduct = ({
 
   return (
     <Card
+      ref={cardRef}
       className={cn(
         "h-[calc(100dvh-6.5rem)] overflow-hidden flex flex-col gap-4 p-4",
         isDiscontinued &&

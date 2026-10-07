@@ -229,7 +229,7 @@ const ContactsList = () => {
               <Card
                 key={contact.id}
                 onClick={() => navigate(`/contact/${contact.id}/update`)}
-                className="p-3 gap-2 cursor-pointer transition-colors hover:border-primary active:bg-accent/50"
+                className="lift p-3 gap-2 cursor-pointer hover:border-primary hover:shadow-md active:bg-accent/50"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
