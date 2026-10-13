@@ -26,7 +26,7 @@ const DesktopDiscontinuedProductList = () => {
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
-    listDiscontinuedProducts(page, PAGE_SIZE)
+    listDiscontinuedProducts(null, page, PAGE_SIZE)
       .then((result) => {
         if (!cancelled) {
           setProducts(result.content);
