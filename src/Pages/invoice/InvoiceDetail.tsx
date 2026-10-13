@@ -13,7 +13,7 @@ import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { invoiceDocumentLabel, NO_CLIENT_LABEL } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
-import { ArrowRightLeft, ReceiptText } from "lucide-react";
+import { ArrowRightLeft, ReceiptText, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -220,7 +220,21 @@ const InvoiceDetail = () => {
               )}
 
               <Card className="p-4 gap-3">
-                <h2 className="font-semibold">Cliente</h2>
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="font-semibold">Cliente</h2>
+                  {invoice.client?.id && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        navigate(`/client/${invoice.client?.id}`)
+                      }
+                    >
+                      <UserRound />
+                      Ver cliente
+                    </Button>
+                  )}
+                </div>
                 {!invoice.client ? (
                   <p className="text-sm">{NO_CLIENT_LABEL}</p>
                 ) : (
