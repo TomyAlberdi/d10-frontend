@@ -1,3 +1,4 @@
+import type { Client } from "@/interfaces/ClientInterfaces";
 import type {
     CreateInvoiceDTO,
     Invoice,
@@ -31,6 +32,7 @@ export interface InvoiceContextType {
   getInvoicesWithStockNotDecreased: () => Promise<Invoice[]>;
   updateInvoiceStatus: (id: string, status: InvoiceStatus) => Promise<void>;
   getInvoicesByProductId: (productId: string) => Promise<Invoice[]>;
+  getInvoicesByClient: (client: Client) => Promise<Invoice[]>;
 }
 
 export const InvoiceContext = createContext<InvoiceContextType | null>(null);

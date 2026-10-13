@@ -1,3 +1,4 @@
+import type { Client } from "@/interfaces/ClientInterfaces";
 import type {
   CreateInvoiceDTO,
   Invoice,
@@ -199,6 +200,41 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     return (await response.json()) as Invoice[];
   };
 
+  /**
+   * The backend has no lookup by client, so this searches by the client's
+   * current CUIT/DNI and name and keeps the invoices whose client snapshot has
+   * the same id. Search terms are escaped because the backend matches them as
+   * regular expressions.
+   */
+  const getInvoicesByClient = async (client: Client): Promise<Invoice[]> => {
+    const terms = [client.cuitDni, client.name]
+      .map((term) => term?.trim())
+      .filter((term): term is string => !!term)
+      .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const results = await Promise.all(
+      terms.map(async (q) => {
+        const params = new URLSearchParams({ q });
+        const response = await fetch(`${API_URL}/search?${params.toString()}`);
+        if (!response.ok) {
+          toast.error(`Error: ${response.status}`);
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        return (await response.json()) as Invoice[];
+      }),
+    );
+    const byId = new Map<string, Invoice>();
+    for (const invoice of results.flat()) {
+      if (invoice.client?.id === client.id) byId.set(invoice.id, invoice);
+    }
+    return [...byId.values()].sort(
+      (a, b) =>
+        (b.date ?? "").localeCompare(a.date ?? "") ||
+        (b.invoiceNumber ?? "").localeCompare(a.invoiceNumber ?? "", undefined, {
+          numeric: true,
+        }),
+    );
+  };
+
   const exportData: InvoiceContextType = {
     createInvoice,
     getInvoiceById,
@@ -209,6 +245,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     getInvoicesWithStockNotDecreased,
     updateInvoiceStatus,
     getInvoicesByProductId,
+    getInvoicesByClient,
   };
 
   return (
