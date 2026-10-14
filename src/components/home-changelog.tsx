@@ -18,8 +18,13 @@ type Release = {
  * ones of the new update, keeping each description user-facing.
  */
 const LATEST_RELEASE: Release = {
-  date: "2026-10-13",
+  date: "2026-10-14",
   changes: [
+    {
+      area: "Pedidos",
+      description:
+        "Nuevo botón \"Sin stock\" en Pedidos: muestra todos los productos con stock en cero o negativo, cuánto ya está pedido de cada uno, y permite elegirlos con su cantidad para crear un pedido nuevo o agregarlos a uno pendiente.",
+    },
     {
       area: "Clientes",
       description:
