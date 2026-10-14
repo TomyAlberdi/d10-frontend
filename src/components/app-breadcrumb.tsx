@@ -32,6 +32,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   stock: "Stock",
   packs: "Packs",
   discontinued: "Eliminados",
+  restock: "Sin stock",
   "update-price": "Precios",
   add: "Agregar al carrito",
   transactions: "Transacciones",

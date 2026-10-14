@@ -43,6 +43,7 @@ import NoteUpdate from "./Pages/note/NoteUpdate";
 import OrderCreate from "./Pages/order/OrderCreate";
 import Orders from "./Pages/order/Orders";
 import OrdersList from "./Pages/order/OrdersList";
+import OrderRestock from "./Pages/order/OrderRestock";
 import OrderUpdate from "./Pages/order/OrderUpdate";
 import PackAddToCart from "./Pages/pack/PackAddToCart";
 import PackCreate from "./Pages/pack/PackCreate";
@@ -186,6 +187,7 @@ export function App() {
                         <Route path="/order" element={<Orders />}>
                           <Route index element={<OrdersList />} />
                           <Route path="create" element={<OrderCreate />} />
+                          <Route path="restock" element={<OrderRestock />} />
                           <Route path=":id" element={<OrderUpdate />} />
                         </Route>
 

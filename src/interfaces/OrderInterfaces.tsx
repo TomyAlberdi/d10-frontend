@@ -35,6 +35,22 @@ export interface CreateOrderDTO {
   products: CreateOrderProductDTO[];
 }
 
+/**
+ * An active product with zero, negative or no stock, offered to be ordered
+ * again.
+ */
+export interface RestockProduct {
+  productId: string;
+  productCode: string;
+  productName: string;
+  providerName?: string;
+  saleUnitType: Product["saleUnitType"];
+  /** Current stock in sale units; 0 when the product has no stock data. */
+  stockQuantity: number;
+  /** Sale units already asked for in pending orders. */
+  pendingQuantity: number;
+}
+
 export interface OrderContextType {
   /** Every order, most recent first. */
   getOrders: () => Promise<Order[]>;
@@ -42,6 +58,13 @@ export interface OrderContextType {
   getOrderById: (id: string) => Promise<Order | null>;
   createOrder: (dto: CreateOrderDTO) => Promise<Order>;
   updateOrder: (id: string, dto: CreateOrderDTO) => Promise<Order>;
+  /** Active products that ran out of stock, by provider and name. */
+  getRestockProducts: () => Promise<RestockProduct[]>;
+  /** Appends lines to a pending order, leaving the ones it has untouched. */
+  addOrderProducts: (
+    id: string,
+    products: CreateOrderProductDTO[],
+  ) => Promise<Order>;
   /**
    * Receive the whole order, adding the sale units of every line to the stock
    * of its product, or set it back to pending, which takes them out again.
