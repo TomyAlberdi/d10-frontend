@@ -45,7 +45,7 @@ const MobileDiscontinuedProductList = () => {
 
   useEffect(() => {
     let cancelled = false;
-    listDiscontinuedProducts(page, PAGE_SIZE)
+    listDiscontinuedProducts(null, page, PAGE_SIZE)
       .then((result) => {
         if (!cancelled) {
           setProducts(result.content);

@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import { useSessionState } from "@/hooks/use-session-state";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { invoiceClientName } from "@/lib/invoice";
 import { cn, formatPrice } from "@/lib/utils";
@@ -19,6 +20,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SEARCH_DEBOUNCE_MS = 300;
+
+/** sessionStorage key prefix for the search/filters, kept across page changes. */
+const STORAGE_PREFIX = "invoices-search";
 
 const STATUS_LABELS: Record<string, string> = {
   PENDIENTE: "Presupuesto",
@@ -57,17 +61,28 @@ const Invoices = () => {
   } = useInvoiceContext();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useSessionState(
+    `${STORAGE_PREFIX}:query`,
+    "",
+  );
+  // Start from the restored input so a persisted search runs immediately
+  // instead of waiting for the debounce.
+  const [searchQuery, setSearchQuery] = useState(searchInput);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isLoadingRecent, setIsLoadingRecent] = useState(true);
-  const [selectedStatus, setSelectedStatus] = useState<
+  const [selectedStatus, setSelectedStatus] = useSessionState<
     Invoice["status"] | null
-  >(null);
-  const [showStockNotDecreased, setShowStockNotDecreased] = useState(false);
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  >(`${STORAGE_PREFIX}:status`, null);
+  const [showStockNotDecreased, setShowStockNotDecreased] = useSessionState(
+    `${STORAGE_PREFIX}:stockNotDecreased`,
+    false,
+  );
+  const [dateFrom, setDateFrom] = useSessionState(
+    `${STORAGE_PREFIX}:dateFrom`,
+    "",
+  );
+  const [dateTo, setDateTo] = useSessionState(`${STORAGE_PREFIX}:dateTo`, "");
   const tableRef = useRef<HTMLDivElement>(null);
 
   const hasQuery = searchQuery.trim().length > 0;

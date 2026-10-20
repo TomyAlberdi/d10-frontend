@@ -178,7 +178,7 @@ const ClientBalanceAdjust = () => {
           type="button"
           variant="outline"
           className="w-full"
-          onClick={() => navigate("/client")}
+          onClick={() => navigate(`/client/${client.id}`)}
         >
           Volver
         </Button>
