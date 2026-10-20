@@ -2,23 +2,18 @@ import type {
   CashRegisterContextType,
   CashRegisterDailyTotals,
   CashRegisterDTO,
-  CashRegisterStatusChangePayload,
   CashRegisterTransaction,
   CashRegisterTransactionPageResponse,
   CashRegisterTransactionType,
   CashRegisterType,
   CreateCashRegisterTransactionDTO,
 } from "@/interfaces/CashRegisterInterfaces";
-import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
-import { PAYMENT_METHOD_REGISTER_TYPE } from "@/lib/cashRegister";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CashRegisterContext } from "./CashRegisterContext";
 
 const API_URL = `${import.meta.env.VITE_BASE_API_URL}/cash-register`;
-
-const PAID_STATUSES: InvoiceStatus[] = ["PAGO", "ENVIADO", "ENTREGADO"];
 
 interface CashRegisterContextComponentProps {
   children: ReactNode;
@@ -316,74 +311,18 @@ const CashRegisterContextComponent: React.FC<
     [fetchCurrentAmounts, fetchTransactions],
   );
 
-  const applyInvoiceStatusChange = useCallback(
-    async ({
-      previousStatus,
-      nextStatus,
-      total,
-      stockDecreasedInitially,
-      clientName,
-      paymentMethod,
-    }: CashRegisterStatusChangePayload) => {
-      // Respect business rule:
-      // - Only when status is set to PAGO / ENVIADO / ENTREGADO
-      // - Never if stockDecreased was already true initially.
-      if (stockDecreasedInitially) return;
-
-      const isNextPaid = PAID_STATUSES.includes(nextStatus);
-      const wasAlreadyPaid =
-        previousStatus !== null && PAID_STATUSES.includes(previousStatus);
-
-      if (!isNextPaid || wasAlreadyPaid) return;
-      if (!Number.isFinite(total) || total <= 0) return;
-
-      if (!paymentMethod) return;
-
-      try {
-        const dto: CreateCashRegisterTransactionDTO = {
-          amount: total,
-          type: "IN",
-          description: `Pago ${clientName}`,
-          registerType: PAYMENT_METHOD_REGISTER_TYPE[paymentMethod],
-        };
-        const response = await fetch(`${API_URL}/transactions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dto),
-        });
-        if (!response.ok) {
-          let message: string | null = null;
-          try {
-            const contentType = response.headers.get("content-type");
-            const text = await response.text();
-            if (contentType?.includes("application/json")) {
-              const body = JSON.parse(text) as {
-                message?: string;
-                error?: string;
-                detail?: string;
-              };
-              message = body.message ?? body.error ?? body.detail ?? null;
-            } else {
-              message = text || null;
-            }
-          } catch {
-            // ignore parse errors
-          }
-          toast.error(
-            message ??
-              `Error al registrar pago de venta en caja: ${response.status}`,
-          );
-          throw new Error(`HTTP Error: ${response.status}`);
-        }
-        await fetchCurrentAmounts();
-      } catch (error) {
-        // Error already handled
-      }
-    },
-    [fetchCurrentAmounts],
-  );
+  const getInvoiceTransactions = useCallback(async (invoiceId: string) => {
+    const response = await fetch(
+      `${API_URL}/transactions/invoice/${invoiceId}`,
+    );
+    if (!response.ok) {
+      toast.error(
+        `Error al obtener movimientos de la venta: ${response.status}`,
+      );
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as CashRegisterTransaction[];
+  }, []);
 
   const fetchTransactionsPaginated = useCallback(
     async (
@@ -466,7 +405,7 @@ const CashRegisterContextComponent: React.FC<
       fetchDailyTotals,
       updateTransaction,
       deleteTransaction,
-      applyInvoiceStatusChange,
+      getInvoiceTransactions,
       paginatedTransactions,
       paginatedCurrentPage,
       paginatedTotalPages,
@@ -497,7 +436,7 @@ const CashRegisterContextComponent: React.FC<
       fetchDailyTotals,
       updateTransaction,
       deleteTransaction,
-      applyInvoiceStatusChange,
+      getInvoiceTransactions,
       paginatedTransactions,
       paginatedCurrentPage,
       paginatedTotalPages,

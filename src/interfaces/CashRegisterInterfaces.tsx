@@ -1,8 +1,3 @@
-import type {
-  InvoiceStatus,
-  PaymentMethod,
-} from "@/interfaces/InvoiceInterfaces";
-
 export type CashRegisterType = "PAPER" | "DIGITAL" | "USD";
 
 export type CashRegisterTransactionType = "IN" | "OUT";
@@ -26,20 +21,9 @@ export interface CashRegisterTransaction {
   description?: string;
   dateTime: string; // ISO string from backend
   registerType: CashRegisterType;
-}
-
-export interface CashRegisterStatusChangePayload {
-  clientName?: string;
+  /** The sale this transaction collects or refunds, absent for manual ones. */
   invoiceId?: string;
-  previousStatus: InvoiceStatus | null;
-  nextStatus: InvoiceStatus;
-  total: number;
-  paymentMethod?: PaymentMethod;
-  /**
-   * Whether the invoice had `stockDecreased` set to true
-   * in the first version we received from the backend.
-   */
-  stockDecreasedInitially?: boolean;
+  invoiceNumber?: string;
 }
 
 export interface CashRegisterDailyTotals {
@@ -141,15 +125,11 @@ export interface CashRegisterContextType {
    */
   deleteTransaction: (id: string) => Promise<void>;
   /**
-   * Apply the business rule for an invoice status change:
-   * - If the new status is PAGO, ENVIADO or ENTREGADO
-   * - AND stockDecreased was not initially true
-   * - AND the invoice was not already in one of those statuses
-   * then the invoice final total is added to the register via a transaction.
+   * Transactions linked to a sale, oldest first.
    */
-  applyInvoiceStatusChange: (
-    payload: CashRegisterStatusChangePayload,
-  ) => Promise<void>;
+  getInvoiceTransactions: (
+    invoiceId: string,
+  ) => Promise<CashRegisterTransaction[]>;
   /**
    * Paginated transactions list.
    */
