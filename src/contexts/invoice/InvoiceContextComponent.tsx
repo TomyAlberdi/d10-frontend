@@ -15,6 +15,16 @@ import { InvoiceContext, type InvoiceContextType } from "./InvoiceContext";
 
 const API_URL = `${import.meta.env.VITE_BASE_API_URL}/invoice`;
 
+/** Latest invoices first: by date, then by invoice number. */
+const sortNewestFirst = (invoices: Invoice[]): Invoice[] =>
+  [...invoices].sort(
+    (a, b) =>
+      (b.date ?? "").localeCompare(a.date ?? "") ||
+      (b.invoiceNumber ?? "").localeCompare(a.invoiceNumber ?? "", undefined, {
+        numeric: true,
+      }),
+  );
+
 interface InvoiceContextComponentProps {
   children: ReactNode;
 }
@@ -197,7 +207,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
       toast.error(`Error: ${response.status}`);
       throw new Error(`HTTP Error: ${response.status}`);
     }
-    return (await response.json()) as Invoice[];
+    return sortNewestFirst((await response.json()) as Invoice[]);
   };
 
   /**
@@ -226,13 +236,7 @@ const InvoiceContextComponent: React.FC<InvoiceContextComponentProps> = ({
     for (const invoice of results.flat()) {
       if (invoice.client?.id === client.id) byId.set(invoice.id, invoice);
     }
-    return [...byId.values()].sort(
-      (a, b) =>
-        (b.date ?? "").localeCompare(a.date ?? "") ||
-        (b.invoiceNumber ?? "").localeCompare(a.invoiceNumber ?? "", undefined, {
-          numeric: true,
-        }),
-    );
+    return sortNewestFirst([...byId.values()]);
   };
 
   const exportData: InvoiceContextType = {
