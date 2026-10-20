@@ -78,7 +78,7 @@ const ClientUpdate = () => {
       };
       await updateClient(id, dto);
       toast.success("Cliente actualizado correctamente");
-      navigate("/client");
+      navigate(`/client/${id}`);
     } catch {
       // Error already handled in context
     } finally {
@@ -179,7 +179,7 @@ const ClientUpdate = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate("/client")}
+              onClick={() => navigate(`/client/${id}`)}
             >
               Cancelar
             </Button>

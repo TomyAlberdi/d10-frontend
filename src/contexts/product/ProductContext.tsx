@@ -17,6 +17,7 @@ export interface ProductContextType {
     size: number | null,
   ) => Promise<PaginatedResult<Product>>;
   listDiscontinuedProducts: (
+    query: string | null,
     page: number | null,
     size: number | null,
   ) => Promise<PaginatedResult<Product>>;
