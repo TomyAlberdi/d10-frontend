@@ -26,6 +26,7 @@ import { Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import CashRegisterTransactionTypeFilter from "./CashRegisterTransactionTypeFilter";
 import EditTransactionDialog from "./EditTransactionDialog";
+import TransactionDescription from "@/components/invoice/TransactionDescription";
 
 const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   IN: "Ingreso",
@@ -172,7 +173,9 @@ const CashRegisterTransactionsPaginated = () => {
                   <TableCell className="font-medium">
                     $ {formatPrice(transaction.amount)}
                   </TableCell>
-                  <TableCell>{transaction.description ?? "—"}</TableCell>
+                  <TableCell>
+                    <TransactionDescription transaction={transaction} />
+                  </TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"

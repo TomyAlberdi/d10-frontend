@@ -15,6 +15,16 @@ export const PAYMENT_METHOD_REGISTER_TYPE: Record<
   USD: "USD",
 };
 
+/** Payment method recorded on a sale paid into each register. */
+export const REGISTER_TYPE_PAYMENT_METHOD: Record<
+  CashRegisterType,
+  PaymentMethod
+> = {
+  PAPER: "CASH",
+  DIGITAL: "DIGITAL",
+  USD: "USD",
+};
+
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   CASH: "Efectivo",
   DIGITAL: "Transferencia",
