@@ -38,13 +38,13 @@ export function HomeQuickAccess() {
         <h2 className="text-xl font-bold">Accesos rápidos</h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:gap-4">
+      <div className="stagger-in grid grid-cols-2 gap-3 md:gap-4">
         {quickLinks.map((link) => (
           <Button
             key={link.url}
             asChild
             variant="outline"
-            className="h-auto flex-col gap-2 py-6 md:py-8"
+            className="lift h-auto flex-col gap-2 py-6 md:py-8 hover:shadow-md [&>svg]:transition-transform [&>svg]:duration-300 hover:[&>svg]:scale-110"
           >
             <Link to={link.url}>
               {link.icon}

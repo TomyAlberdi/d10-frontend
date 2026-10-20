@@ -18,27 +18,32 @@ type Release = {
  * ones of the new update, keeping each description user-facing.
  */
 const LATEST_RELEASE: Release = {
-  date: "2026-10-02",
+  date: "2026-10-14",
   changes: [
+    {
+      area: "Pedidos",
+      description:
+        "Nuevo botón \"Sin stock\" en Pedidos: muestra todos los productos con stock en cero o negativo, cuánto ya está pedido de cada uno, y permite elegirlos con su cantidad para crear un pedido nuevo o agregarlos a uno pendiente.",
+    },
+    {
+      area: "Clientes",
+      description:
+        "Nueva página de detalle del cliente, accesible desde \"Ver detalles\" en el cliente seleccionado, con sus datos, su saldo, todas sus ventas y las acciones \"Ajustar saldo\" y \"Editar\".",
+    },
+    {
+      area: "Clientes",
+      description:
+        "La búsqueda de clientes muestra el saldo de cada uno y se puede filtrar por \"Saldo a favor\" o \"Con deuda\". La búsqueda, el filtro y el cliente seleccionado se mantienen al cambiar de página.",
+    },
+    {
+      area: "Ventas",
+      description:
+        "El detalle de una venta tiene un botón \"Ver cliente\" que lleva a la página del cliente. La búsqueda y los filtros de la lista de ventas se mantienen al entrar a una venta y volver.",
+    },
     {
       area: "Productos",
       description:
-        "Nueva página \"Historial de Precios\", accesible desde el detalle del producto, con un gráfico de la evolución del precio y el costo y una tabla con cada cambio, su origen y la variación porcentual.",
-    },
-    {
-      area: "Stock",
-      description:
-        "El stock de los productos ahora puede quedar en negativo. Antes de que eso pase se muestra un aviso con el stock disponible, requerido y resultante, y se puede confirmar para continuar.",
-    },
-    {
-      area: "Caja",
-      description:
-        "Las transacciones de caja ahora se pueden editar: tipo (ingreso o egreso), monto, descripción y, en pesos, si es Efectivo o Transferencia, con una vista previa de cómo queda cada caja.",
-    },
-    {
-      area: "Datos",
-      description:
-        "Nuevo gráfico de transacciones por mes: en \"Ingresos Mensuales\" se puede elegir Transacciones para ver los ingresos de caja de cada mes, separados en Efectivo y Transferencia.",
+        "Nuevo diseño de la página de productos discontinuados: tarjetas con la imagen, el último precio y el stock restante, un botón \"Reactivar\" en cada una y una barra para buscar por código, nombre o fabricante.",
     },
   ],
 };
@@ -57,7 +62,7 @@ export function HomeChangelog() {
           Cambios de la última actualización ({formatDate(LATEST_RELEASE.date)}).
         </p>
       </div>
-      <ul className="flex flex-col gap-3 max-h-80 overflow-y-auto">
+      <ul className="stagger-in flex flex-col gap-3 max-h-80 overflow-y-auto">
         {LATEST_RELEASE.changes.map((change, i) => (
           <li
             key={i}

@@ -20,6 +20,7 @@ import CashRegisterOverview from "./Pages/cashRegister/CashRegisterOverview";
 import CashRegisterTransactionsPaginated from "./Pages/cashRegister/CashRegisterTransactionsPaginated";
 import ClientBalanceAdjust from "./Pages/client/ClientBalanceAdjust";
 import ClientCreate from "./Pages/client/ClientCreate";
+import ClientDetail from "./Pages/client/ClientDetail";
 import Clients from "./Pages/client/Clients";
 import ClientsList from "./Pages/client/ClientsList";
 import ClientUpdate from "./Pages/client/ClientUpdate";
@@ -41,6 +42,7 @@ import NoteUpdate from "./Pages/note/NoteUpdate";
 import OrderCreate from "./Pages/order/OrderCreate";
 import Orders from "./Pages/order/Orders";
 import OrdersList from "./Pages/order/OrdersList";
+import OrderRestock from "./Pages/order/OrderRestock";
 import OrderUpdate from "./Pages/order/OrderUpdate";
 import PackAddToCart from "./Pages/pack/PackAddToCart";
 import PackCreate from "./Pages/pack/PackCreate";
@@ -124,6 +126,7 @@ export function App() {
                         <Route path="/client" element={<Clients />}>
                           <Route index element={<ClientsList />} />
                           <Route path="create" element={<ClientCreate />} />
+                          <Route path=":id" element={<ClientDetail />} />
                           <Route path=":id/update" element={<ClientUpdate />} />
                           <Route
                             path=":id/balance"
@@ -179,6 +182,7 @@ export function App() {
                         <Route path="/order" element={<Orders />}>
                           <Route index element={<OrdersList />} />
                           <Route path="create" element={<OrderCreate />} />
+                          <Route path="restock" element={<OrderRestock />} />
                           <Route path=":id" element={<OrderUpdate />} />
                         </Route>
 

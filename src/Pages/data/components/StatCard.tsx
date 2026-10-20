@@ -24,7 +24,13 @@ const StatCard = ({ label, value, hint, icon: Icon }: StatCardProps) => {
           <Icon className="text-muted-foreground size-4" />
         </CardDescription>
         <CardTitle className="text-2xl font-semibold tabular-nums">
-          {value === null ? <Skeleton className="h-8 w-32" /> : value}
+          {value === null ? (
+            <Skeleton className="h-8 w-32" />
+          ) : (
+            <span key={value} className="value-in inline-block">
+              {value}
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
       {hint && (

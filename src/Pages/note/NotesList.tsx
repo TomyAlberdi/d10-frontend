@@ -134,8 +134,8 @@ const NotesList = () => {
           <Card
             key={note.id}
             className={cn(
-              "shrink-0 cursor-pointer gap-3 border-l-4 p-4 transition-all",
-              "hover:ring-foreground/20 hover:shadow-md active:scale-[0.995]",
+              "lift shrink-0 cursor-pointer gap-3 border-l-4 p-4",
+              "hover:ring-foreground/20 hover:shadow-md",
               overdue
                 ? "border-l-red-400 dark:border-l-red-500"
                 : note.dueDate

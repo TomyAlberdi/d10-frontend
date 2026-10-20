@@ -1,9 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useSwapAnimation } from "@/hooks/use-motion";
 import type { Client } from "@/interfaces/ClientInterfaces";
-import { formatPrice } from "@/lib/utils";
-import { PencilLine, PiggyBank, Users } from "lucide-react";
+import { balanceClassName, clientTypeLabel } from "@/lib/client";
+import { cn, formatPrice } from "@/lib/utils";
+import { Eye, PiggyBank, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SelectedClientProps {
@@ -12,10 +14,14 @@ interface SelectedClientProps {
 
 const SelectedClient = ({ client }: SelectedClientProps) => {
   const navigate = useNavigate();
+  const cardRef = useSwapAnimation<HTMLDivElement>(client?.id);
 
   if (!client) {
     return (
-      <Card className="h-auto md:h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center">
+      <Card
+        ref={cardRef}
+        className="h-auto md:h-[calc(100dvh-6.5rem)] p-6 flex flex-col items-center justify-center gap-3 text-center"
+      >
         <Users className="size-10 text-muted-foreground/40" />
         <p className="text-muted-foreground">
           Busca y selecciona un cliente para ver sus detalles
@@ -24,17 +30,15 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
     );
   }
 
-  const typeLabel =
-    client.type === "CONSUMIDOR_FINAL"
-      ? "Consumidor Final"
-      : "Responsable Inscripto";
-
   return (
-    <Card className="h-auto md:h-[calc(100dvh-6.5rem)] overflow-hidden flex flex-col gap-4 p-4">
+    <Card
+      ref={cardRef}
+      className="h-auto md:h-[calc(100dvh-6.5rem)] overflow-hidden flex flex-col gap-4 p-4"
+    >
       {/* Name + type */}
       <div className="flex shrink-0 flex-col gap-2">
         <h2 className="text-2xl font-bold leading-tight">{client.name}</h2>
-        <Badge className="w-fit">{typeLabel}</Badge>
+        <Badge className="w-fit">{clientTypeLabel(client.type)}</Badge>
       </div>
 
       {/* Info */}
@@ -45,13 +49,10 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
             Saldo
           </span>
           <span
-            className={`font-medium text-base break-words ${
-              client.balance > 0
-                ? "text-emerald-600 dark:text-emerald-400"
-                : client.balance < 0
-                  ? "text-destructive"
-                  : ""
-            }`}
+            className={cn(
+              "font-medium text-base break-words",
+              balanceClassName(client.balance),
+            )}
           >
             $ {formatPrice(client.balance)}
           </span>
@@ -86,20 +87,9 @@ const SelectedClient = ({ client }: SelectedClientProps) => {
 
       {/* Actions */}
       <div className="mt-auto flex shrink-0 flex-col gap-2 pt-2">
-        <Button
-          size="lg"
-          onClick={() => navigate(`/client/${client.id}/balance`)}
-        >
-          <PiggyBank />
-          Ajustar saldo
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={() => navigate(`/client/${client.id}/update`)}
-        >
-          <PencilLine />
-          Editar
+        <Button size="lg" onClick={() => navigate(`/client/${client.id}`)}>
+          <Eye />
+          Ver detalles
         </Button>
       </div>
     </Card>

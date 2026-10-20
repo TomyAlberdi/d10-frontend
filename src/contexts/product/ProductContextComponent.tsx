@@ -65,10 +65,12 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
   };
 
   const listDiscontinuedProducts = async (
+    query: string | null,
     page: number | null,
     size: number | null,
   ) => {
     const params = new URLSearchParams();
+    if (query) params.append("query", query);
     if (page !== null) params.append("page", page.toString());
     if (size !== null) params.append("size", size.toString());
 

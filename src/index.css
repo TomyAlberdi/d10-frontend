@@ -178,3 +178,163 @@
 .alternate-font {
   font-family: "Be Vietnam Pro", sans-serif;
 }
+
+/* ------------------------------------------------------------------ */
+/* Motion                                                              */
+/* Short, low-amplitude entrances: things settle into place rather     */
+/* than fly in. Everything here is disabled for reduced-motion users.  */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-rise: 8px;
+}
+
+@keyframes d10-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-rise));
+  }
+}
+
+@keyframes d10-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes d10-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes d10-value-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(3px);
+  }
+}
+
+@keyframes d10-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/* Cards settle in when they mount: on navigation, and when lists of cards
+   arrive from the backend. Siblings cascade; the route reveal in
+   use-route-reveal.ts overrides --reveal-i so a page's panels cascade in
+   document order even when they live in different containers. */
+[data-slot="card"] {
+  animation: d10-rise 480ms var(--ease-out-soft) backwards;
+  animation-delay: calc(min(var(--reveal-i, 0), 8) * 55ms);
+}
+[data-slot="card"]:nth-child(2) { --reveal-i: 1; }
+[data-slot="card"]:nth-child(3) { --reveal-i: 2; }
+[data-slot="card"]:nth-child(4) { --reveal-i: 3; }
+[data-slot="card"]:nth-child(5) { --reveal-i: 4; }
+[data-slot="card"]:nth-child(6) { --reveal-i: 5; }
+[data-slot="card"]:nth-child(7) { --reveal-i: 6; }
+[data-slot="card"]:nth-child(n + 8) { --reveal-i: 7; }
+
+/* Cards nested in another card ride along with their parent. */
+[data-slot="card"] [data-slot="card"] {
+  animation: none;
+}
+
+/* Table rows fade up as they're inserted (first load, search, paging).
+   Rows that merely re-render keep their DOM node and don't replay. */
+[data-slot="table-body"] > tr {
+  animation: d10-row-in 360ms var(--ease-out-soft) backwards;
+  animation-delay: calc(min(var(--row-i, 0), 12) * 22ms);
+}
+[data-slot="table-body"] > tr:nth-child(2) { --row-i: 1; }
+[data-slot="table-body"] > tr:nth-child(3) { --row-i: 2; }
+[data-slot="table-body"] > tr:nth-child(4) { --row-i: 3; }
+[data-slot="table-body"] > tr:nth-child(5) { --row-i: 4; }
+[data-slot="table-body"] > tr:nth-child(6) { --row-i: 5; }
+[data-slot="table-body"] > tr:nth-child(7) { --row-i: 6; }
+[data-slot="table-body"] > tr:nth-child(8) { --row-i: 7; }
+[data-slot="table-body"] > tr:nth-child(9) { --row-i: 8; }
+[data-slot="table-body"] > tr:nth-child(10) { --row-i: 9; }
+[data-slot="table-body"] > tr:nth-child(11) { --row-i: 10; }
+[data-slot="table-body"] > tr:nth-child(12) { --row-i: 11; }
+[data-slot="table-body"] > tr:nth-child(n + 13) { --row-i: 12; }
+
+/* Direct children cascade in; for plain lists that aren't cards. */
+.stagger-in > * {
+  animation: d10-rise 420ms var(--ease-out-soft) backwards;
+  animation-delay: calc(min(var(--stagger-i, 0), 8) * 45ms + 120ms);
+}
+.stagger-in > :nth-child(2) { --stagger-i: 1; }
+.stagger-in > :nth-child(3) { --stagger-i: 2; }
+.stagger-in > :nth-child(4) { --stagger-i: 3; }
+.stagger-in > :nth-child(5) { --stagger-i: 4; }
+.stagger-in > :nth-child(6) { --stagger-i: 5; }
+.stagger-in > :nth-child(7) { --stagger-i: 6; }
+.stagger-in > :nth-child(n + 8) { --stagger-i: 7; }
+
+/* Headline figures (balances, totals, stats) blur in whenever they change.
+   Key the element on its value so the animation replays; inline elements
+   need inline-block for the lift to apply. */
+.value-in {
+  animation: d10-value-in 420ms var(--ease-out-soft) backwards;
+}
+
+/* Clickable cards and tiles lift slightly under the pointer. The shadow
+   comes from a hover:shadow-* utility so it composes with card rings. */
+.lift {
+  transition:
+    translate 220ms var(--ease-out-soft),
+    box-shadow 220ms var(--ease-out-soft),
+    border-color 150ms ease,
+    background-color 150ms ease,
+    scale 120ms ease;
+}
+@media (hover: hover) {
+  .lift:hover {
+    translate: 0 -2px;
+  }
+}
+.lift:active {
+  translate: 0;
+  scale: 0.99;
+}
+
+/* Skeletons sweep a soft highlight instead of blinking. */
+[data-slot="skeleton"] {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklch, var(--foreground) 6%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: d10-shimmer 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="card"],
+  [data-slot="table-body"] > tr,
+  .stagger-in > *,
+  .value-in {
+    animation: none;
+  }
+  [data-slot="skeleton"] {
+    animation: none;
+    background-image: none;
+  }
+  .lift,
+  .lift:hover,
+  .lift:active {
+    translate: none;
+    scale: none;
+  }
+}

@@ -1,7 +1,9 @@
 import type {
   CreateOrderDTO,
+  CreateOrderProductDTO,
   Order,
   OrderContextType,
+  RestockProduct,
 } from "@/interfaces/OrderInterfaces";
 import type { ReactNode } from "react";
 import {
@@ -73,6 +75,25 @@ const OrderContextComponent: React.FC<OrderContextComponentProps> = ({
     return (await response.json()) as Order;
   };
 
+  const getRestockProducts = async (): Promise<RestockProduct[]> => {
+    const response = await fetch(`${API_URL}/restock`);
+    if (!response.ok) return failWith(response);
+    return (await response.json()) as RestockProduct[];
+  };
+
+  const addOrderProducts = async (
+    id: string,
+    products: CreateOrderProductDTO[],
+  ): Promise<Order> => {
+    const response = await fetch(`${API_URL}/${id}/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(products),
+    });
+    if (!response.ok) return failWith(response);
+    return (await response.json()) as Order;
+  };
+
   const updateOrderReceived = async (
     id: string,
     received: boolean,
@@ -102,6 +123,8 @@ const OrderContextComponent: React.FC<OrderContextComponentProps> = ({
     getOrderById,
     createOrder,
     updateOrder,
+    getRestockProducts,
+    addOrderProducts,
     updateOrderReceived,
     deleteOrder,
   };

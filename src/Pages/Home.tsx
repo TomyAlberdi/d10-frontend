@@ -27,11 +27,11 @@ const Home = () => {
     <div className="min-h-full bg-background flex flex-col items-center justify-center gap-8 p-4 md:p-8">
       {/* show banner when backend is down */}
       {backendAvailable === false && (
-        <div className="w-full bg-red-600 text-white py-2 text-center">
+        <div className="w-full bg-red-600 text-white py-2 text-center animate-in fade-in slide-in-from-top-2 duration-300 motion-reduce:animate-none">
           <p>Servidor desconectado. Por favor inténtalo más tarde.</p>
         </div>
       )}
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground text-center alternate-font">
+      <h1 className="text-3xl md:text-4xl font-bold text-foreground text-center alternate-font animate-in fade-in slide-in-from-bottom-2 duration-700 ease-out motion-reduce:animate-none">
         Diseño 10 Olavarría <br /> Administración
       </h1>
       {/* Side by side from lg up, stacked on smaller screens; the grid keeps

@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -9,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { useOrderContext } from "@/contexts/order/UseOrderContext";
 import type { Order } from "@/interfaces/OrderInterfaces";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, PackageX } from "lucide-react";
 import { useNegativeStockConfirm } from "@/hooks/use-negative-stock-confirm";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +29,8 @@ const STATUS_LABELS: Record<StatusFilter, string> = {
 
 const OrdersList = () => {
   const navigate = useNavigate();
-  const { getOrders, updateOrderReceived, deleteOrder } = useOrderContext();
+  const { getOrders, getRestockProducts, updateOrderReceived, deleteOrder } =
+    useOrderContext();
   const { run: runWithStockConfirm, dialog: stockConfirmDialog } =
     useNegativeStockConfirm();
 
@@ -39,6 +41,8 @@ const OrdersList = () => {
   // Order waiting for the "add to stock" confirmation.
   const [pendingReceive, setPendingReceive] = useState<Order | null>(null);
   const [isReceiving, setIsReceiving] = useState(false);
+  // How many products ran out, shown on the button that opens the full list.
+  const [outOfStockCount, setOutOfStockCount] = useState<number | null>(null);
 
   // Every order is loaded and filtered client side, so the pending count stays
   // accurate no matter which status the user is looking at.
@@ -55,6 +59,11 @@ const OrdersList = () => {
 
   useEffect(() => {
     loadOrders();
+    getRestockProducts()
+      .then((products) => setOutOfStockCount(products.length))
+      .catch(() => {
+        // Error already reported by the context
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -143,6 +152,20 @@ const OrdersList = () => {
               ))}
             </SelectContent>
           </Select>
+
+          <Button
+            variant="outline"
+            onClick={() => navigate("/order/restock")}
+            title="Ver los productos con stock en cero o negativo y agregarlos a un pedido"
+          >
+            <PackageX className="w-4 h-4 mr-2" />
+            Sin stock
+            {outOfStockCount !== null && outOfStockCount > 0 && (
+              <Badge variant="destructive" className="ml-2">
+                {outOfStockCount}
+              </Badge>
+            )}
+          </Button>
 
           <Button variant="outline" onClick={() => navigate("/order/create")}>
             <CirclePlus className="w-4 h-4 mr-2" />

@@ -101,7 +101,7 @@ const CashRegisterOverview = () => {
               return (
                 <div
                   key={type}
-                  className="flex items-center gap-3 rounded-lg border p-3"
+                  className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                 >
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
                     <Icon className="size-5" />
@@ -111,7 +111,13 @@ const CashRegisterOverview = () => {
                       {REGISTER_TYPE_LABELS[type]}
                     </p>
                     <p className="truncate text-xl font-bold tracking-tight">
-                      {isLoadingAmount ? "…" : `$ ${formatPrice(amounts[type])}`}
+                      {isLoadingAmount ? (
+                        "…"
+                      ) : (
+                        <span key={amounts[type]} className="value-in inline-block">
+                          $ {formatPrice(amounts[type])}
+                        </span>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -167,11 +173,14 @@ const CashRegisterOverview = () => {
                 <span className="text-muted-foreground">Cargando…</span>
               ) : (
                 <>
-                  <span className="flex items-center gap-1.5">
+                  <span className="value-in flex items-center gap-1.5">
                     <BanknoteArrowUp className="size-4 text-green-600" /> ${" "}
                     {formatPrice(dailyTotals.inTotal)}
                   </span>
-                  <span className="flex items-center gap-1.5">
+                  <span
+                    className="value-in flex items-center gap-1.5"
+                    style={{ animationDelay: "60ms" }}
+                  >
                     <BanknoteArrowDown className="size-4 text-red-600" /> ${" "}
                     {formatPrice(dailyTotals.outTotal)}
                   </span>
