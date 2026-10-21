@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -19,6 +12,7 @@ import {
 import DiscountPicker from "@/components/invoice/DiscountPicker";
 import LinkedTransactions from "@/components/invoice/LinkedTransactions";
 import PaymentCard from "@/components/invoice/PaymentCard";
+import StatusPicker from "@/components/invoice/StatusPicker";
 import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import type { CashRegisterTransaction } from "@/interfaces/CashRegisterInterfaces";
@@ -37,9 +31,8 @@ import {
   computeTotal,
   invoiceClientName,
   owedAmount,
-  resolveInvoiceStatus,
   resolvePayment,
-  SELECTABLE_STATUSES,
+  savedInvoiceStatus,
   updateLineQuantity,
   type PaymentDraft,
 } from "@/lib/invoice";
@@ -50,15 +43,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import CartClientSearch from "../cart/CartClientSearch";
-
-const STATUS_LABELS: Record<InvoiceStatus, string> = {
-  PENDIENTE: "Presupuesto",
-  PAGO: "Pago",
-  DEUDA: "Deuda",
-  ENVIADO: "Enviado",
-  ENTREGADO: "Entregado",
-  CANCELADO: "Cancelado",
-};
 
 /** Tolerance used when comparing amounts: a balance under a cent is paid. */
 const PAYMENT_TOLERANCE = 0.01;
@@ -84,7 +68,6 @@ const UpdateInvoice = () => {
     enabled: false,
     amount: null,
     registerType: "PAPER",
-    partial: false,
     pesoAmount: "",
   });
   const [refundPayments, setRefundPayments] = useState(true);
@@ -149,36 +132,43 @@ const UpdateInvoice = () => {
     ? owedAmount(initialInvoice.total, paidBefore)
     : 0;
 
-  // The payment card shows whenever a paid, delivered or debt sale still owes
-  // something. It is required when this edit leaves more owed than before
-  // (e.g. a quote turned into a sale, or a higher total); on a debt that only
-  // keeps owing what it did, registering a payment is optional.
+  // The payment card shows whenever a paid, delivered or partially paid sale
+  // still owes something. It is required when the sale becomes a partial
+  // payment, when a debt is marked paid or delivered, and when this edit
+  // leaves more owed than before (e.g. a quote turned into a sale, or a
+  // higher total). On a debt that stays a partial payment, registering
+  // another payment is optional.
+  const isPartialStatus = status === "DEUDA";
+  const wasDebt = initialInvoice?.status === "DEUDA";
   const wasCollected =
     initialInvoice !== null &&
     COLLECTED_STATUSES.includes(initialInvoice.status);
   const paymentRequired =
-    COLLECTED_STATUSES.includes(status) &&
-    status !== "DEUDA" &&
     owed >= PAYMENT_TOLERANCE &&
-    (!wasCollected || owed - owedBefore >= PAYMENT_TOLERANCE);
+    (isPartialStatus
+      ? !wasDebt
+      : COLLECTED_STATUSES.includes(status) &&
+        (!wasCollected || wasDebt || owed - owedBefore >= PAYMENT_TOLERANCE));
   const paymentOptional =
-    !paymentRequired && status === "DEUDA" && owed >= PAYMENT_TOLERANCE;
+    !paymentRequired && isPartialStatus && owed >= PAYMENT_TOLERANCE;
   const showPayment = paymentRequired || paymentOptional;
   const isPaying = paymentRequired || (paymentOptional && paymentDraft.enabled);
-  const resolvedPayment = resolvePayment(paymentDraft, owed);
+  const resolvedPayment = resolvePayment(paymentDraft, owed, isPartialStatus);
 
-  // Status the backend will store: a debt when the payment is partial or
-  // when stock leaves without the total being covered.
-  const effectiveStatus: InvoiceStatus =
-    isPaying && resolvedPayment.isPartial
-      ? "DEUDA"
-      : resolveInvoiceStatus({
-          status,
-          total,
-          partialPayment: isPaying ? total : paidBefore,
-          stockDecreased,
-        });
-  const isForcedToDebt = !isPaying && effectiveStatus !== status;
+  // Status the backend will store: a debt while a partial payment leaves
+  // something owed or when stock leaves without the total being covered,
+  // Pago once the payments of a partial sale cover the total.
+  const effectiveStatus = savedInvoiceStatus({
+    status,
+    total,
+    paidBefore,
+    stockDecreased,
+    payment: isPaying ? resolvedPayment : null,
+  });
+  const isForcedToDebt = effectiveStatus === "DEUDA" && !isPartialStatus;
+  // A partial sale whose total is already paid, with no payment card.
+  const isPartialAlreadyPaid =
+    isPartialStatus && !showPayment && effectiveStatus === "PAGO";
 
   // What the sale's transactions left in the registers, for the refund.
   const collected = linkedTransactions.reduce(
@@ -187,16 +177,18 @@ const UpdateInvoice = () => {
   );
   const canRefund = status === "CANCELADO" && collected >= PAYMENT_TOLERANCE;
 
-  // Deuda (and the old Enviado) are not picked by hand, but a sale that has
-  // one keeps it as an option.
-  const statusOptions: InvoiceStatus[] =
-    initialInvoice && !SELECTABLE_STATUSES.includes(initialInvoice.status)
-      ? [...SELECTABLE_STATUSES, initialInvoice.status]
-      : [...SELECTABLE_STATUSES];
-
   // A debt was already charged to its client's balance when it was created,
   // and an edit does not move that charge, so its client stays fixed.
   const isClientLocked = initialInvoice?.status === "DEUDA";
+
+  const handleStatusChange = (next: InvoiceStatus) => {
+    // A partial payment starts empty and a full one at what is owed, so the
+    // amount follows the new mode instead of keeping the old one.
+    if ((next === "DEUDA") !== isPartialStatus) {
+      setPaymentDraft((prev) => ({ ...prev, amount: null, pesoAmount: "" }));
+    }
+    setStatus(next);
+  };
 
   const handleClientChange = (client: Client | null) => {
     setInvoice((prev) => (prev ? { ...prev, client } : prev));
@@ -236,8 +228,7 @@ const UpdateInvoice = () => {
           {
             client: invoice.client,
             products: invoice.products,
-            // The backend turns a partial payment into a debt.
-            status: isPaying ? status : effectiveStatus,
+            status: effectiveStatus,
             discount,
             total,
             notes: invoice.notes,
@@ -425,25 +416,20 @@ const UpdateInvoice = () => {
             <label className="text-sm font-medium text-muted-foreground block mb-2">
               Estado de la venta
             </label>
-            <Select
+            <StatusPicker
               value={status}
-              onValueChange={(value) => setStatus(value as InvoiceStatus)}
-            >
-              <SelectTrigger className="w-full max-w-xs">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {STATUS_LABELS[value]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={handleStatusChange}
+              extraStatus={initialInvoice?.status}
+            />
             {isForcedToDebt && (
               <p className="text-sm text-orange-600 dark:text-orange-400 mt-2">
                 Se guardará como Deuda: se descuenta stock y quedan ${" "}
                 {formatPrice(owed)} sin pagar.
+              </p>
+            )}
+            {isPartialAlreadyPaid && (
+              <p className="text-sm text-green-700 dark:text-green-400 mt-2">
+                Lo pagado cubre el total: se guardará como Pago.
               </p>
             )}
           </div>
@@ -500,6 +486,7 @@ const UpdateInvoice = () => {
           owed={owed}
           draft={{ ...paymentDraft, enabled: isPaying }}
           onChange={setPaymentDraft}
+          partial={isPartialStatus}
           optional={paymentOptional}
           disabled={isUpdating}
         />
