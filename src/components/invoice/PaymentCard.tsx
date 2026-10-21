@@ -5,13 +5,15 @@ import { Switch } from "@/components/ui/switch";
 import { REGISTER_TYPE_LABELS, REGISTER_TYPES } from "@/lib/cashRegister";
 import { parseAmount, resolvePayment, type PaymentDraft } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
-import { AlertTriangle, Info } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 
 interface PaymentCardProps {
   /** What the sale still owes, in pesos. */
   owed: number;
   draft: PaymentDraft;
   onChange: (draft: PaymentDraft) => void;
+  /** The sale is marked "Pago parcial": the amount may be below what is owed. */
+  partial?: boolean;
   /**
    * The sale can be saved without a payment (an existing debt): the card
    * starts closed behind a "Registrar un pago" switch.
@@ -29,10 +31,11 @@ const PaymentCard = ({
   owed,
   draft,
   onChange,
+  partial = false,
   optional = false,
   disabled = false,
 }: PaymentCardProps) => {
-  const resolved = resolvePayment(draft, owed);
+  const resolved = resolvePayment(draft, owed, partial);
   const amount = parseAmount(resolved.amountText);
   const isUsd = draft.registerType === "USD";
   const update = (patch: Partial<PaymentDraft>) =>
@@ -88,7 +91,8 @@ const PaymentCard = ({
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Monto recibido{isUsd ? " (USD)" : ""}
+              {partial ? "Monto entregado" : "Monto recibido"}
+              {isUsd ? " (USD)" : ""}
             </label>
             <Input
               type="text"
@@ -106,24 +110,7 @@ const PaymentCard = ({
             )}
           </div>
 
-          {resolved.canBePartial && (
-            <div className="flex items-center gap-3">
-              <Switch
-                id="partial-payment"
-                checked={draft.partial}
-                onCheckedChange={(partial) => update({ partial })}
-                disabled={disabled}
-              />
-              <label
-                htmlFor="partial-payment"
-                className="text-sm font-medium cursor-pointer"
-              >
-                Pago parcial
-              </label>
-            </div>
-          )}
-
-          {isUsd && resolved.isPartial && (
+          {isUsd && partial && (
             <div>
               <label className="block text-sm font-medium mb-1">
                 Equivale a (pesos)
@@ -144,13 +131,22 @@ const PaymentCard = ({
             <div className="flex items-start gap-2 rounded-md border border-orange-500/40 bg-orange-500/10 px-3 py-2 text-sm text-orange-700 dark:text-orange-400">
               <AlertTriangle className="size-4 shrink-0 mt-0.5" />
               <span>
-                La venta quedará como Deuda: faltan ${" "}
+                La venta quedará como Pago parcial: faltan ${" "}
                 {formatPrice(resolved.remaining)}.
               </span>
             </div>
           )}
 
-          {!resolved.isPartial &&
+          {partial && !resolved.isPartial && resolved.payment && (
+            <div className="flex items-start gap-2 rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+              <CheckCircle2 className="size-4 shrink-0 mt-0.5" />
+              <span>
+                El monto cubre el total: la venta se guardará como Pago.
+              </span>
+            </div>
+          )}
+
+          {!partial &&
             resolved.payment &&
             !isUsd &&
             Math.abs(amount - owed) >= 0.01 && (

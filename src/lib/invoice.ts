@@ -109,9 +109,13 @@ export function owedAmount(total: number, partialPayment = 0): number {
   return Math.max(0, total - partialPayment);
 }
 
-/** Statuses picked by hand in the forms; Deuda comes from the payment card. */
+/**
+ * Statuses picked by hand in the forms, in button order. Deuda is picked as
+ * "Pago parcial": a payment that does not cover the total.
+ */
 export const SELECTABLE_STATUSES: readonly InvoiceStatus[] = [
   "PENDIENTE",
+  "DEUDA",
   "PAGO",
   "ENTREGADO",
   "CANCELADO",
@@ -134,7 +138,6 @@ export interface PaymentDraft {
   enabled: boolean;
   amount: string | null;
   registerType: CashRegisterType;
-  partial: boolean;
   pesoAmount: string;
 }
 
@@ -146,8 +149,6 @@ export interface ResolvedPayment {
   payment: InvoicePaymentDTO | null;
   /** Amount shown in the input. */
   amountText: string;
-  /** Whether the partial switch applies (shown and taken into account). */
-  canBePartial: boolean;
   /** The sale stays a debt after this payment. */
   isPartial: boolean;
   /** Pesos still owed after this payment, for partial payments. */
@@ -156,29 +157,34 @@ export interface ResolvedPayment {
 }
 
 /**
- * Turns the payment card into what is sent to the backend. In pesos the
- * switch only applies below what is owed; in USD the amount cannot be
- * compared with the total, so the switch is the user's call and a partial
- * payment says how many pesos it covers.
+ * Turns the payment card into what is sent to the backend. `partial` is
+ * whether the sale was marked "Pago parcial": the amount starts empty, and a
+ * USD payment says how many pesos it covers. A partial payment that covers
+ * what is owed is sent as a full one, so the sale is saved as paid.
  */
 export function resolvePayment(
   draft: PaymentDraft,
   owed: number,
+  partial: boolean,
 ): ResolvedPayment {
   const amountText =
-    draft.amount ?? String(Number(owed.toFixed(2))).replace(".", ",");
+    draft.amount ??
+    (partial ? "" : String(Number(owed.toFixed(2))).replace(".", ","));
   const amount = parseAmount(amountText);
   const isUsd = draft.registerType === "USD";
-  const canBePartial = isUsd || amount < owed - PAYMENT_TOLERANCE;
-  const isPartial = canBePartial && draft.partial;
-  const base = { amountText, canBePartial, isPartial, remaining: 0 };
+  const base = { amountText, isPartial: false, remaining: 0 };
+  const missingAmount = {
+    ...base,
+    payment: null,
+    error: "Ingresá el monto recibido.",
+  };
 
-  if (!Number.isFinite(amount) || amount < 0 || (!isPartial && amount <= 0)) {
-    return { ...base, payment: null, error: "Ingresá el monto recibido." };
+  if (!Number.isFinite(amount) || amount < 0 || (!partial && amount <= 0)) {
+    return missingAmount;
   }
   let counted = amount;
   let pesoAmount: number | undefined;
-  if (isUsd && isPartial) {
+  if (isUsd && partial) {
     pesoAmount = parseAmount(draft.pesoAmount);
     if (amount > 0 && (!Number.isFinite(pesoAmount) || pesoAmount < 0)) {
       return {
@@ -189,9 +195,15 @@ export function resolvePayment(
     }
     counted = Number.isFinite(pesoAmount) ? pesoAmount : 0;
   }
+  const remaining = owedAmount(owed, counted);
+  const isPartial = partial && remaining >= PAYMENT_TOLERANCE;
+  if (!isPartial && amount <= 0) {
+    return missingAmount;
+  }
   return {
     ...base,
-    remaining: isPartial ? owedAmount(owed, counted) : 0,
+    isPartial,
+    remaining: isPartial ? remaining : 0,
     payment: {
       amount,
       registerType: draft.registerType,
@@ -200,4 +212,45 @@ export function resolvePayment(
     },
     error: null,
   };
+}
+
+interface SavedStatusState {
+  /** Status picked in the form. */
+  status: InvoiceStatus;
+  total: number;
+  /** What the sale had paid before this save. */
+  paidBefore: number;
+  stockDecreased?: boolean;
+  /** The payment registered with this save, if any. */
+  payment: ResolvedPayment | null;
+}
+
+/**
+ * Status the sale is saved with. "Pago parcial" stays a debt while something
+ * is owed and becomes Pago once the payments cover the total; a full payment
+ * keeps the picked status; without a payment, stock that left unpaid turns
+ * the sale into a debt.
+ */
+export function savedInvoiceStatus({
+  status,
+  total,
+  paidBefore,
+  stockDecreased,
+  payment,
+}: SavedStatusState): InvoiceStatus {
+  if (status === "DEUDA") {
+    const stillOwes = payment
+      ? payment.isPartial
+      : total - paidBefore >= PAYMENT_TOLERANCE;
+    return stillOwes ? "DEUDA" : "PAGO";
+  }
+  if (payment) {
+    return status;
+  }
+  return resolveInvoiceStatus({
+    status,
+    total,
+    partialPayment: paidBefore,
+    stockDecreased,
+  });
 }
