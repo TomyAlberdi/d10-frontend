@@ -8,8 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import LinkedTransactions from "@/components/invoice/LinkedTransactions";
 import { useCartContext } from "@/contexts/cart/UseCartContext";
+import { useCashRegisterContext } from "@/contexts/cashRegister/UseCashRegisterContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
+import type { CashRegisterTransaction } from "@/interfaces/CashRegisterInterfaces";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { invoiceDocumentLabel, NO_CLIENT_LABEL } from "@/lib/invoice";
 import { formatPrice } from "@/lib/utils";
@@ -62,8 +65,12 @@ const InvoiceDetail = () => {
     setPaymentMethod,
     setStockDecreased,
   } = useCartContext();
+  const { getInvoiceTransactions } = useCashRegisterContext();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [linkedTransactions, setLinkedTransactions] = useState<
+    CashRegisterTransaction[]
+  >([]);
 
   useEffect(() => {
     if (!id) {
@@ -81,10 +88,17 @@ const InvoiceDetail = () => {
           setIsLoading(false);
         }
       });
+    getInvoiceTransactions(id)
+      .then((transactions) => {
+        if (!cancelled) setLinkedTransactions(transactions);
+      })
+      .catch(() => {
+        // Error already reported by the context
+      });
     return () => {
       cancelled = true;
     };
-  }, [getInvoiceById, id]);
+  }, [getInvoiceById, getInvoiceTransactions, id]);
 
   const handleSendToCart = () => {
     if (!invoice) return;
@@ -354,6 +368,8 @@ const InvoiceDetail = () => {
                   </p>
                 </div>
               </div>
+
+              <LinkedTransactions transactions={linkedTransactions} />
             </>
           )}
         </Card>
