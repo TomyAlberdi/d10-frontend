@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -20,6 +13,7 @@ import { useCartContext } from "@/contexts/cart/UseCartContext";
 import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import DiscountPicker from "@/components/invoice/DiscountPicker";
 import PaymentCard from "@/components/invoice/PaymentCard";
+import StatusPicker from "@/components/invoice/StatusPicker";
 import type { InvoiceStatus } from "@/interfaces/InvoiceInterfaces";
 import {
   PAYMENT_METHOD_REGISTER_TYPE,
@@ -28,8 +22,8 @@ import {
 import {
   COLLECTED_STATUSES,
   NO_CLIENT_LABEL,
-  resolveInvoiceStatus,
   resolvePayment,
+  savedInvoiceStatus,
   SELECTABLE_STATUSES,
   type PaymentDraft,
 } from "@/lib/invoice";
@@ -49,13 +43,6 @@ import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import CartClientSearch from "./CartClientSearch";
-
-const STATUS_LABELS: Partial<Record<InvoiceStatus, string>> = {
-  PENDIENTE: "Presupuesto",
-  PAGO: "Pago",
-  ENTREGADO: "Entregado",
-  CANCELADO: "Cancelado",
-};
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -79,7 +66,6 @@ const Cart = () => {
     enabled: true,
     amount: null,
     registerType: PAYMENT_METHOD_REGISTER_TYPE[cart.paymentMethod ?? "CASH"],
-    partial: false,
     pesoAmount: "",
   }));
 
@@ -92,10 +78,11 @@ const Cart = () => {
 
   const cartClient = cart.client;
   const subtotalSum = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
-  // Deuda is no longer picked by hand; a cart saved with it reads as Pago.
+  // Enviado is no longer picked by hand; a cart saved with it reads as Pago.
   const status: InvoiceStatus = SELECTABLE_STATUSES.includes(cart.status)
     ? cart.status
     : "PAGO";
+  const isPartialStatus = status === "DEUDA";
 
   // A client with a positive balance (credit in their favor) has that credit
   // discounted from this invoice's total, up to the invoice's own amount.
@@ -106,24 +93,36 @@ const Cart = () => {
 
   // A paid or delivered sale registers its payment together with the sale.
   const showPayment = COLLECTED_STATUSES.includes(status) && finalTotal > 0;
-  const resolvedPayment = resolvePayment(paymentDraft, finalTotal);
+  const resolvedPayment = resolvePayment(
+    paymentDraft,
+    finalTotal,
+    isPartialStatus,
+  );
   const canCreateInvoice =
     cart.products.length > 0 &&
     finalTotal >= 0 &&
     (!showPayment || resolvedPayment.payment !== null);
-  // Status the backend will store: a debt when the payment is partial, or
-  // when stock leaves without anything being paid.
-  const effectiveStatus: InvoiceStatus =
-    showPayment && resolvedPayment.isPartial
-      ? "DEUDA"
-      : resolveInvoiceStatus({
-          status,
-          total: finalTotal,
-          partialPayment: showPayment ? finalTotal : 0,
-          stockDecreased: cart.stockDecreased,
-        });
-  const isForcedToDebt = !showPayment && effectiveStatus !== status;
+  // Status the backend will store: a debt while a partial payment leaves
+  // something owed or when stock leaves without anything being paid, Pago
+  // once a partial payment covers the total.
+  const effectiveStatus = savedInvoiceStatus({
+    status,
+    total: finalTotal,
+    paidBefore: 0,
+    stockDecreased: cart.stockDecreased,
+    payment: showPayment ? resolvedPayment : null,
+  });
+  const isForcedToDebt = effectiveStatus === "DEUDA" && !isPartialStatus;
   const isDebtWithoutClient = effectiveStatus === "DEUDA" && !cartClient;
+
+  const handleStatusChange = (next: InvoiceStatus) => {
+    // A partial payment starts empty and a full one at the total, so the
+    // amount follows the new mode instead of keeping the old one.
+    if ((next === "DEUDA") !== isPartialStatus) {
+      setPaymentDraft((prev) => ({ ...prev, amount: null, pesoAmount: "" }));
+    }
+    setCartStatus(next);
+  };
 
   const handlePaymentChange = (draft: PaymentDraft) => {
     setPaymentDraft(draft);
@@ -139,8 +138,7 @@ const Cart = () => {
           {
             client: cartClient,
             products: cart.products,
-            // The backend turns a partial payment into a debt.
-            status: showPayment ? status : effectiveStatus,
+            status: effectiveStatus,
             discount: cart.discount,
             total: finalTotal,
             notes: cart.notes,
@@ -358,21 +356,7 @@ const Cart = () => {
             <label className="text-sm font-medium text-muted-foreground block mb-2">
               Estado de la venta
             </label>
-            <Select
-              value={status}
-              onValueChange={(value) => setCartStatus(value as InvoiceStatus)}
-            >
-              <SelectTrigger className="w-full max-w-xs">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                {SELECTABLE_STATUSES.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {STATUS_LABELS[value]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <StatusPicker value={status} onChange={handleStatusChange} />
             {isForcedToDebt && (
               <p className="text-sm text-orange-600 dark:text-orange-400 mt-2">
                 Se guardará como Deuda: se descuenta stock y quedan ${" "}
@@ -423,6 +407,7 @@ const Cart = () => {
           owed={finalTotal}
           draft={paymentDraft}
           onChange={handlePaymentChange}
+          partial={isPartialStatus}
           disabled={isCreating}
         />
       )}
