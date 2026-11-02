@@ -8,6 +8,8 @@ import { formatPrice } from "@/lib/utils";
 import {
   ArrowDownUp,
   ChevronLeft,
+  Eye,
+  EyeOff,
   FileText,
   History,
   Package,
@@ -28,6 +30,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCost, setShowCost] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -283,25 +286,52 @@ const ProductDetail = () => {
                     </p>
                   </div>
                   {product.costByMeasureUnit ? (
-                    <>
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">
-                          Costo por Unidad de Medida
-                        </label>
-                        <p className="text-lg">
-                          $ {formatPrice(product.costByMeasureUnit)} /{" "}
-                          {product.measureType}
-                        </p>
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-muted-foreground">
+                            Costo por Unidad de Medida
+                          </label>
+                          <p className="text-lg">
+                            {showCost ? (
+                              <>
+                                $ {formatPrice(product.costByMeasureUnit)} /{" "}
+                                {product.measureType}
+                              </>
+                            ) : (
+                              "••••••"
+                            )}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-muted-foreground">
+                            Ganancia
+                          </label>
+                          <p className="text-lg font-semibold text-green-600">
+                            {showCost
+                              ? `${product.profit ? product.profit.toFixed(2) : 0.0} %`
+                              : "••••"}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">
-                          Ganancia
-                        </label>
-                        <p className="text-lg font-semibold text-green-600">
-                          {product.profit ? product.profit.toFixed(2) : 0.0} %
-                        </p>
-                      </div>
-                    </>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowCost((prev) => !prev)}
+                        aria-label={
+                          showCost
+                            ? "Ocultar costo y ganancia"
+                            : "Mostrar costo y ganancia"
+                        }
+                        title={
+                          showCost
+                            ? "Ocultar costo y ganancia"
+                            : "Mostrar costo y ganancia"
+                        }
+                      >
+                        {showCost ? <EyeOff /> : <Eye />}
+                      </Button>
+                    </div>
                   ) : null}
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
