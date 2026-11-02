@@ -1,7 +1,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useProductContext } from "@/contexts/product/UseProductContext";
-import type { Product } from "@/interfaces/ProductInterfaces";
+import type {
+  Product,
+  ProductFilters,
+} from "@/interfaces/ProductInterfaces";
 import { useEffect, useState } from "react";
+import ProductFiltersDrawer from "./ProductFiltersDrawer";
 import ProductTablePagination from "./ProductTablePagination";
 import SelectedProduct from "./SelectedProduct";
 
@@ -17,6 +21,7 @@ const DesktopProductList = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [filters, setFilters] = useState<ProductFilters>({});
 
   const updateProductDiscontinuedLocal = (discontinued: boolean) => {
     if (!selectedProduct) return;
@@ -32,13 +37,13 @@ const DesktopProductList = () => {
 
   useEffect(() => {
     setPage(0);
-  }, [searchQuery]);
+  }, [searchQuery, filters]);
 
   useEffect(() => {
     let cancelled = false;
     setIsSearching(true);
     const query = searchQuery.trim() || null;
-    listProducts(query, page, PAGE_SIZE)
+    listProducts(query, page, PAGE_SIZE, filters)
       .then((result) => {
         if (!cancelled) {
           setProducts(result.content);
@@ -52,7 +57,7 @@ const DesktopProductList = () => {
     return () => {
       cancelled = true;
     };
-  }, [listProducts, page, searchQuery]);
+  }, [listProducts, page, searchQuery, filters]);
 
   return (
     <div className="px-2 md:px-5 h-full hidden md:flex flex-row gap-4">
@@ -73,6 +78,13 @@ const DesktopProductList = () => {
           searchInput={searchInput}
           onSearchChange={setSearchInput}
           isSearching={isSearching}
+          searchActions={
+            <ProductFiltersDrawer
+              filters={filters}
+              onApply={setFilters}
+              side="right"
+            />
+          }
         />
       </div>
     </div>

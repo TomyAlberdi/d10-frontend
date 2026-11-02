@@ -57,6 +57,19 @@ export interface CreateProduct {
   measurePerSaleUnit: number;
 }
 
+/**
+ * Advanced search filters of the product list. Unset fields do not filter;
+ * the price range applies to the price by sale unit.
+ */
+export interface ProductFilters {
+  dimensions?: string;
+  providerName?: string;
+  category?: string;
+  subcategory?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
 export interface Sort {
   empty: boolean;
   sorted: boolean;

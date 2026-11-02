@@ -18,7 +18,7 @@ import {
 import type { Product } from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { Search } from "lucide-react";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, type ReactNode } from "react";
 
 interface ProductTablePaginationProps {
   products: Product[];
@@ -30,6 +30,8 @@ interface ProductTablePaginationProps {
   searchInput: string;
   onSearchChange?: (value: string) => void;
   isSearching?: boolean;
+  /** Rendered to the right of the search bar. */
+  searchActions?: ReactNode;
 }
 
 const ProductTablePagination = ({
@@ -42,6 +44,7 @@ const ProductTablePagination = ({
   searchInput,
   onSearchChange,
   isSearching = false,
+  searchActions,
 }: ProductTablePaginationProps) => {
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +98,7 @@ const ProductTablePagination = ({
           {isSearching && (
             <span className="text-sm text-muted-foreground">Buscando…</span>
           )}
+          {searchActions}
         </div>
       )}
 
