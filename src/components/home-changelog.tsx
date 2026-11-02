@@ -18,32 +18,47 @@ type Release = {
  * ones of the new update, keeping each description user-facing.
  */
 const LATEST_RELEASE: Release = {
-  date: "2026-10-14",
+  date: "2026-11-02",
   changes: [
     {
-      area: "Pedidos",
+      area: "Ventas",
       description:
-        "Nuevo botón \"Sin stock\" en Pedidos: muestra todos los productos con stock en cero o negativo, cuánto ya está pedido de cada uno, y permite elegirlos con su cantidad para crear un pedido nuevo o agregarlos a uno pendiente.",
-    },
-    {
-      area: "Clientes",
-      description:
-        "Nueva página de detalle del cliente, accesible desde \"Ver detalles\" en el cliente seleccionado, con sus datos, su saldo, todas sus ventas y las acciones \"Ajustar saldo\" y \"Editar\".",
-    },
-    {
-      area: "Clientes",
-      description:
-        "La búsqueda de clientes muestra el saldo de cada uno y se puede filtrar por \"Saldo a favor\" o \"Con deuda\". La búsqueda, el filtro y el cliente seleccionado se mantienen al cambiar de página.",
+        "El cobro se registra desde el carrito y desde la edición de una venta, sin pantalla aparte: se elige la caja y el monto recibido (precargado con lo que se debe, editable para redondear), y la venta y su cobro se guardan juntos.",
     },
     {
       area: "Ventas",
       description:
-        "El detalle de una venta tiene un botón \"Ver cliente\" que lleva a la página del cliente. La búsqueda y los filtros de la lista de ventas se mantienen al entrar a una venta y volver.",
+        "El estado de la venta se elige con un botón por estado, con los mismos colores que la lista de ventas. \"Pago parcial\" registra un cobro menor al total y deja la venta como deuda; si el cobro cubre el total, se guarda como Pago.",
+    },
+    {
+      area: "Ventas",
+      description:
+        "Al editar una venta se pueden cambiar las cantidades de los productos, el descuento se elige con los botones 5%, 10%, 15% o \"Personalizado\", y al cancelarla se ofrece devolver en caja lo ya cobrado.",
+    },
+    {
+      area: "Ventas",
+      description:
+        "El detalle y la edición de una venta muestran sus \"Movimientos en caja\", y en Caja cada movimiento de una venta muestra su número como enlace a ella.",
+    },
+    {
+      area: "Ventas",
+      description:
+        "En el celular, los filtros de la lista de ventas se abren desde un botón \"Filtros\" en un panel desde abajo. Las ventas de un producto se muestran de la más reciente a la más antigua.",
     },
     {
       area: "Productos",
       description:
-        "Nuevo diseño de la página de productos discontinuados: tarjetas con la imagen, el último precio y el stock restante, un botón \"Reactivar\" en cada una y una barra para buscar por código, nombre o fabricante.",
+        "Nuevo botón de \"Filtros avanzados\" junto a la búsqueda de productos: filtra por medida, fabricante, categoría y subcategoría, y rango de precio, combinado con el texto de búsqueda.",
+    },
+    {
+      area: "Productos",
+      description:
+        "En el detalle de un producto, el costo y la ganancia quedan ocultos y se muestran con el botón del ojo.",
+    },
+    {
+      area: "General",
+      description:
+        "La aplicación pide una contraseña al abrirla. Se vuelve a pedir al cerrar la pestaña.",
     },
   ],
 };
