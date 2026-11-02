@@ -1,7 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -14,10 +12,15 @@ import { useInvoiceContext } from "@/contexts/invoice/UseInvoiceContext";
 import { useSessionState } from "@/hooks/use-session-state";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { invoiceClientName } from "@/lib/invoice";
-import { cn, formatPrice } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { Check, Filter, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  InvoiceFiltersDrawer,
+  InvoiceFiltersPanel,
+  type InvoiceFilterValues,
+} from "./InvoiceFilters";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -42,14 +45,6 @@ const STATUS_ROW_CLASSES: Record<string, string> = {
   ENVIADO: "bg-blue-50 dark:bg-blue-950/30",
   ENTREGADO: "bg-emerald-50 dark:bg-emerald-950/30",
   CANCELADO: "bg-red-50 dark:bg-red-950/30",
-};
-
-const STATUS_DOT: Record<string, string> = {
-  PENDIENTE: "bg-amber-500",
-  PAGO: "bg-green-500",
-  DEUDA: "bg-orange-500",
-  ENTREGADO: "bg-emerald-500",
-  CANCELADO: "bg-red-500",
 };
 
 const Invoices = () => {
@@ -84,6 +79,21 @@ const Invoices = () => {
   );
   const [dateTo, setDateTo] = useSessionState(`${STORAGE_PREFIX}:dateTo`, "");
   const tableRef = useRef<HTMLDivElement>(null);
+
+  const filters: InvoiceFilterValues = {
+    status: selectedStatus,
+    stockNotDecreased: showStockNotDecreased,
+    dateFrom,
+    dateTo,
+  };
+  const applyFilters = (patch: Partial<InvoiceFilterValues>) => {
+    if (patch.status !== undefined) setSelectedStatus(patch.status);
+    if (patch.stockNotDecreased !== undefined) {
+      setShowStockNotDecreased(patch.stockNotDecreased);
+    }
+    if (patch.dateFrom !== undefined) setDateFrom(patch.dateFrom);
+    if (patch.dateTo !== undefined) setDateTo(patch.dateTo);
+  };
 
   const hasQuery = searchQuery.trim().length > 0;
   const displayInvoices = useMemo(
@@ -215,119 +225,20 @@ const Invoices = () => {
 
   return (
     <div className="flex flex-col gap-3 p-3 md:h-full md:flex-row md:gap-5 md:p-5">
-      <aside className="w-full md:w-64 shrink-0 order-2 md:order-none">
+      <aside className="hidden md:block w-64 shrink-0">
         <Card className="p-4 gap-4 overflow-y-auto">
-          <div className="flex flex-col gap-3">
-            <h3 className="flex items-center gap-2 text-sm font-semibold">
-              <Filter className="size-4" />
-              Filtros
-            </h3>
-            <label className="flex items-center gap-2 rounded-md px-2 py-2 text-sm cursor-pointer transition-colors hover:bg-accent/50">
-              <Checkbox
-                checked={showStockNotDecreased}
-                onCheckedChange={(v) => setShowStockNotDecreased(v === true)}
-              />
-              <span>Sin retirar</span>
-            </label>
-          </div>
-
-          <Separator />
-
-          <div className="flex flex-col gap-1">
-            <h4 className="px-2 mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Estado
-            </h4>
-            <button
-              type="button"
-              onClick={() => setSelectedStatus(null)}
-              className={cn(
-                "flex items-center gap-2 rounded-md px-2 py-2 text-sm text-left transition-colors",
-                selectedStatus === null
-                  ? "bg-accent font-medium"
-                  : "hover:bg-accent/50",
-              )}
-            >
-              <span className="size-2.5 rounded-full bg-muted-foreground/40" />
-              Todos
-            </button>
-            {Object.entries(STATUS_LABELS).map(([status, label]) => (
-              <button
-                key={status}
-                type="button"
-                disabled={showStockNotDecreased}
-                onClick={() => setSelectedStatus(status as Invoice["status"])}
-                className={cn(
-                  "flex items-center gap-2 rounded-md px-2 py-2 text-sm text-left transition-colors",
-                  selectedStatus === status
-                    ? "bg-accent font-medium"
-                    : "hover:bg-accent/50",
-                  showStockNotDecreased && "opacity-40 pointer-events-none",
-                )}
-              >
-                <span
-                  className={cn("size-2.5 rounded-full", STATUS_DOT[status])}
-                />
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <Separator />
-
-          <div className="flex flex-col gap-2">
-            <h4 className="flex items-center justify-between px-2 mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Fecha
-              {(dateFrom || dateTo) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDateFrom("");
-                    setDateTo("");
-                  }}
-                  className="normal-case font-normal text-muted-foreground hover:text-foreground"
-                >
-                  Limpiar
-                </button>
-              )}
-            </h4>
-            <div className="flex flex-col gap-2 px-2">
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="invoice-date-from"
-                  className="text-xs text-muted-foreground"
-                >
-                  Desde
-                </label>
-                <Input
-                  id="invoice-date-from"
-                  type="date"
-                  value={dateFrom}
-                  max={dateTo || undefined}
-                  disabled={showStockNotDecreased}
-                  onChange={(e) => setDateFrom(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="invoice-date-to"
-                  className="text-xs text-muted-foreground"
-                >
-                  Hasta
-                </label>
-                <Input
-                  id="invoice-date-to"
-                  type="date"
-                  value={dateTo}
-                  min={dateFrom || undefined}
-                  disabled={showStockNotDecreased}
-                  onChange={(e) => setDateTo(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
+          <h3 className="flex items-center gap-2 text-sm font-semibold">
+            <Filter className="size-4" />
+            Filtros
+          </h3>
+          <InvoiceFiltersPanel
+            value={filters}
+            onChange={applyFilters}
+            idPrefix="invoice-filters"
+          />
         </Card>
       </aside>
-      <div className="flex-1 min-w-0 min-h-0 order-1 md:order-none">
+      <div className="flex-1 min-w-0 min-h-0">
         <Card
           ref={tableRef}
           className="flex flex-col overflow-hidden py-0 gap-0 md:h-full"
@@ -347,6 +258,11 @@ const Invoices = () => {
               {isSearching && (
                 <span className="text-sm text-muted-foreground">Buscando…</span>
               )}
+              <InvoiceFiltersDrawer
+                filters={filters}
+                onApply={applyFilters}
+                className="md:hidden"
+              />
             </div>
             <div className="md:flex-1 md:overflow-y-auto">
               <Table>
