@@ -3,6 +3,7 @@ import type {
     PaginatedResult,
     PriceLog,
     Product,
+    ProductFilters,
     UpdateProductStockDTO,
 } from "@/interfaces/ProductInterfaces";
 import { createContext } from "react";
@@ -15,6 +16,7 @@ export interface ProductContextType {
     query: string | null,
     page: number | null,
     size: number | null,
+    filters?: ProductFilters,
   ) => Promise<PaginatedResult<Product>>;
   listDiscontinuedProducts: (
     query: string | null,
@@ -35,6 +37,8 @@ export interface ProductContextType {
     allowNegativeStock?: boolean,
   ) => Promise<void>;
   getProviders: () => Promise<string[]>;
+  /** Distinct dimensions of the active products. */
+  getDimensions: () => Promise<string[]>;
   updateCostsByProvider: (providerName: string, percentageChange: number) => Promise<Product[]>;
 }
 

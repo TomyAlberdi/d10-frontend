@@ -7,6 +7,7 @@ import type {
     PaginatedResult,
     PriceLog,
     Product,
+    ProductFilters,
     UpdateProductStockDTO,
 } from "@/interfaces/ProductInterfaces";
 import type { ReactNode } from "react";
@@ -49,11 +50,19 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     query: string | null,
     page: number | null,
     size: number | null,
+    filters?: ProductFilters,
   ) => {
     const params = new URLSearchParams();
     if (query) params.append("query", query);
     if (page !== null) params.append("page", page.toString());
     if (size !== null) params.append("size", size.toString());
+    if (filters) {
+      for (const [key, value] of Object.entries(filters)) {
+        if (value !== undefined && value !== "") {
+          params.append(key, String(value));
+        }
+      }
+    }
 
     const url = params.toString() ? `${API_URL}?${params.toString()}` : API_URL;
     const response = await fetch(url);
@@ -206,6 +215,15 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     return (await response.json()) as string[];
   };
 
+  const getDimensions = async () => {
+    const response = await fetch(`${API_URL}/dimensions`);
+    if (!response.ok) {
+      toast.error(`Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return (await response.json()) as string[];
+  };
+
   const updateCostsByProvider = async (
     providerName: string,
     percentageChange: number,
@@ -235,6 +253,7 @@ const ProductContextComponent: React.FC<ProductContextComponentProps> = ({
     updateProductDiscontinued,
     updateProductStock,
     getProviders,
+    getDimensions,
     updateCostsByProvider,
   };
 
