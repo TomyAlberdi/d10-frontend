@@ -10,10 +10,14 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useProductContext } from "@/contexts/product/UseProductContext";
-import type { Product } from "@/interfaces/ProductInterfaces";
+import type {
+  Product,
+  ProductFilters,
+} from "@/interfaces/ProductInterfaces";
 import { formatPrice } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import ProductFiltersDrawer from "./ProductFiltersDrawer";
 import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 15;
@@ -28,6 +32,7 @@ const MobileProductList = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [filters, setFilters] = useState<ProductFilters>({});
 
   useEffect(() => {
     const t = setTimeout(() => setSearchQuery(searchInput), SEARCH_DEBOUNCE_MS);
@@ -36,13 +41,13 @@ const MobileProductList = () => {
 
   useEffect(() => {
     setPage(0);
-  }, [searchQuery]);
+  }, [searchQuery, filters]);
 
   useEffect(() => {
     let cancelled = false;
     setIsSearching(true);
     const query = searchQuery.trim() || null;
-    listProducts(query, page, PAGE_SIZE)
+    listProducts(query, page, PAGE_SIZE, filters)
       .then((result) => {
         if (!cancelled) {
           setProducts(result.content);
@@ -55,7 +60,7 @@ const MobileProductList = () => {
     return () => {
       cancelled = true;
     };
-  }, [listProducts, page, searchQuery]);
+  }, [listProducts, page, searchQuery, filters]);
 
   return (
     <div className="flex md:hidden flex-col h-auto p-2 gap-2">
@@ -72,6 +77,11 @@ const MobileProductList = () => {
           <span className="text-sm text-muted-foreground">Buscando…</span>
         )}
         <Search className="size-4 text-muted-foreground shrink-0" />
+        <ProductFiltersDrawer
+          filters={filters}
+          onApply={setFilters}
+          side="bottom"
+        />
       </Card>
       {products.map((product) => (
         <Card
