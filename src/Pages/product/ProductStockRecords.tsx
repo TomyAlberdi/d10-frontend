@@ -23,11 +23,8 @@ const ProductStockRecords = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) {
-      setError("ID de producto no proporcionado");
-      setIsLoading(false);
-      return;
-    }
+    // Without an id there is nothing to load; the error is shown on render.
+    if (!id) return;
 
     let cancelled = false;
 
@@ -67,7 +64,7 @@ const ProductStockRecords = () => {
     return { inQuantity, outQuantity };
   }, [stockLogs]);
 
-  if (isLoading) {
+  if (id && isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="text-lg">Cargando movimientos de stock...</div>
@@ -75,11 +72,13 @@ const ProductStockRecords = () => {
     );
   }
 
-  if (error) {
+  const shownError = id ? error : "ID de producto no proporcionado";
+
+  if (shownError) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-4">
-          <div className="text-lg text-destructive">{error}</div>
+          <div className="text-lg text-destructive">{shownError}</div>
           <Button onClick={() => navigate(-1)}>
             <ChevronLeft className="bigger-icon" />
           </Button>
