@@ -1,3 +1,4 @@
+import DiscountPercentPicker from "@/components/invoice/DiscountPercentPicker";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
@@ -292,20 +293,12 @@ const ProductAddToCart = () => {
                   </p>
                 ))}
             </Field>
-            <Field>
-              <FieldLabel>Descuento sobre subtotal: {percent}%</FieldLabel>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={percent}
-                onChange={(e) =>
-                  setIndividualDiscountPercent(Number(e.target.value))
-                }
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-primary"
-              />
-            </Field>
+            <DiscountPercentPicker
+              key={product.id}
+              label="Descuento sobre subtotal"
+              percent={percent}
+              onChange={setIndividualDiscountPercent}
+            />
             {measureTotalPreview !== null && (
               <div className="text-lg font-medium">
                 Total medida: {formatMeasure(measureTotalPreview)}{" "}
