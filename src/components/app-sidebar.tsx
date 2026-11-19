@@ -1,5 +1,4 @@
 import {
-  BookUser,
   Boxes,
   CirclePlus,
   ClipboardList,
@@ -67,11 +66,13 @@ const data = {
       url: "/client",
       icon: <Users />,
     },
-    {
-      title: "Agenda",
-      url: "/contact",
-      icon: <BookUser />,
-    },
+    // Agenda: hidden because the feature is being discontinued. The route
+    // still exists; uncomment (and import BookUser) to bring it back.
+    // {
+    //   title: "Agenda",
+    //   url: "/contact",
+    //   icon: <BookUser />,
+    // },
     {
       title: "Ventas",
       url: "/invoice",
