@@ -31,9 +31,6 @@ import { useNavigate } from "react-router-dom";
 type SortKey = "code" | "name" | "providerName" | "quantity" | "value";
 type SortDirection = "asc" | "desc";
 
-const PAGE_SHELL =
-  "h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 md:gap-4 p-3 md:p-5";
-
 const stockValue = (product: Product): number =>
   product.priceBySaleUnit * product.stock.quantity;
 
@@ -257,12 +254,9 @@ const ProductStockList = () => {
 
   if (loading) {
     return (
-      <div className={PAGE_SHELL}>
-        <div className="flex items-end justify-between gap-3">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-56" />
-            <Skeleton className="h-4 w-40" />
-          </div>
+      <>
+        <div className="flex items-center justify-between gap-3">
+          <Skeleton className="h-4 w-40" />
           <Skeleton className="h-9 w-40" />
         </div>
         <div className="grid grid-cols-2 gap-2 md:gap-3 sm:grid-cols-3">
@@ -271,24 +265,21 @@ const ProductStockList = () => {
           <Skeleton className="h-20 w-full col-span-2 sm:col-span-1" />
         </div>
         <Skeleton className="flex-1 w-full" />
-      </div>
+      </>
     );
   }
 
   const isSearching = search.trim().length > 0;
 
   return (
-    <div className={PAGE_SHELL}>
-      {/* Header */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Productos en stock</h1>
-          <p className="text-sm text-muted-foreground">
-            {isSearching
-              ? `${visibleProducts.length} de ${products.length} productos`
-              : `${products.length} productos con stock disponible`}
-          </p>
-        </div>
+    <>
+      {/* Toolbar */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <p className="text-sm text-muted-foreground">
+          {isSearching
+            ? `${visibleProducts.length} de ${products.length} productos`
+            : `${products.length} productos con stock disponible`}
+        </p>
         <Button
           onClick={generateStockPDF}
           disabled={visibleProducts.length === 0}
@@ -445,7 +436,7 @@ const ProductStockList = () => {
           </Table>
         </div>
       </Card>
-    </div>
+    </>
   );
 };
 

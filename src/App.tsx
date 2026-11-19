@@ -1,4 +1,9 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 import AppLayout from "./components/app-layout";
 import { PasswordProtection } from "./components/PasswordProtection";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -53,15 +58,13 @@ import ShipmentCreate from "./Pages/shipment/ShipmentCreate";
 import Shipments from "./Pages/shipment/Shipments";
 import ShipmentsList from "./Pages/shipment/ShipmentsList";
 import ShipmentUpdate from "./Pages/shipment/ShipmentUpdate";
-import StockLogs from "./Pages/stockLog/StockLogs";
-import StockLogsList from "./Pages/stockLog/StockLogsList";
 import DiscontinuedProductList from "./Pages/product/DiscontinuedProductList";
 import ProductAddToCart from "./Pages/product/ProductAddToCart";
 import ProductCreate from "./Pages/product/ProductCreate";
 import ProductDetail from "./Pages/product/ProductDetail";
 import ProductList from "./Pages/product/ProductList";
 import Products from "./Pages/product/Products";
-import ProductStockList from "./Pages/product/ProductStockList";
+import ProductStock from "./Pages/product/ProductStock";
 import ProductStockRecords from "./Pages/product/ProductStockRecords";
 import ProductPriceHistory from "./Pages/product/ProductPriceHistory";
 import ProductUpdate from "./Pages/product/ProductUpdate";
@@ -111,7 +114,7 @@ export function App() {
                             path=":id/price-history"
                             element={<ProductPriceHistory />}
                           />
-                          <Route path="stock" element={<ProductStockList />} />
+                          <Route path="stock" element={<ProductStock />} />
                           <Route
                             path="discontinued"
                             element={<DiscontinuedProductList />}
@@ -178,9 +181,12 @@ export function App() {
                           <Route path="create" element={<ShipmentCreate />} />
                           <Route path=":id" element={<ShipmentUpdate />} />
                         </Route>
-                        <Route path="/stock-log" element={<StockLogs />}>
-                          <Route index element={<StockLogsList />} />
-                        </Route>
+                        <Route
+                          path="/stock-log"
+                          element={
+                            <Navigate to="/product/stock?view=movements" replace />
+                          }
+                        />
                         <Route path="/order" element={<Orders />}>
                           <Route index element={<OrdersList />} />
                           <Route path="create" element={<OrderCreate />} />

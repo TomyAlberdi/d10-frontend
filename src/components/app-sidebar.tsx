@@ -1,5 +1,4 @@
 import {
-  ArrowDownUp,
   BookUser,
   Boxes,
   CirclePlus,
@@ -14,6 +13,7 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  Warehouse,
   XCircle
 } from "lucide-react";
 import * as React from "react";
@@ -46,8 +46,7 @@ const data = {
       icon: <Package />,
       items: [
         { title: "Lista", url: "/product", icon: <ListOrdered /> },
-        { title: "Lista Stock", url: "/product/stock", icon: <Package /> },
-        { title: "Movimientos Stock", url: "/stock-log", icon: <ArrowDownUp /> },
+        { title: "Stock", url: "/product/stock", icon: <Warehouse /> },
         { title: "Pedidos", url: "/order", icon: <ClipboardList /> },
         { title: "Packs", url: "/product/packs", icon: <Boxes /> },
         {
