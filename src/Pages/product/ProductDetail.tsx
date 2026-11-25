@@ -377,10 +377,13 @@ const ProductDetail = () => {
                       Stock Valorizado
                     </label>
                     <p className="text-lg">
-                      ${" "}
-                      {formatPrice(
-                        product.stock.quantity * product.priceBySaleUnit,
-                      )}
+                      {product.costByMeasureUnit > 0
+                        ? `$ ${formatPrice(
+                            product.costByMeasureUnit *
+                              (product.measurePerSaleUnit ?? 0) *
+                              product.stock.quantity,
+                          )}`
+                        : "-"}
                     </p>
                   </div>
                 </div>

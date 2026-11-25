@@ -31,11 +31,18 @@ import { useNavigate } from "react-router-dom";
 type SortKey = "code" | "name" | "providerName" | "quantity" | "value";
 type SortDirection = "asc" | "desc";
 
-const PAGE_SHELL =
-  "h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 md:gap-4 p-3 md:p-5";
+/** Stock value at cost, or null when the product has no cost loaded. */
+const stockValue = (product: Product): number | null =>
+  product.costByMeasureUnit > 0
+    ? product.costByMeasureUnit *
+      (product.measurePerSaleUnit ?? 0) *
+      product.stock.quantity
+    : null;
 
-const stockValue = (product: Product): number =>
-  product.priceBySaleUnit * product.stock.quantity;
+const formatStockValue = (product: Product): string => {
+  const value = stockValue(product);
+  return value === null ? "-" : `$ ${formatPrice(value)}`;
+};
 
 const calculateM2Total = (products: Product[]): number => {
   const total = products
@@ -47,11 +54,17 @@ const calculateM2Total = (products: Product[]): number => {
 };
 
 const calculateTotalValue = (products: Product[]): number => {
-  const total = products.reduce((sum, product) => sum + stockValue(product), 0);
+  const total = products.reduce(
+    (sum, product) => sum + (stockValue(product) ?? 0),
+    0,
+  );
   return Math.round(total * 100) / 100;
 };
 
-const sortableValue = (product: Product, key: SortKey): string | number => {
+const sortableValue = (
+  product: Product,
+  key: SortKey,
+): string | number | null => {
   switch (key) {
     case "quantity":
       return product.stock.quantity;
@@ -148,6 +161,10 @@ const ProductStockList = () => {
     return [...filtered].sort((a, b) => {
       const left = sortableValue(a, sortKey);
       const right = sortableValue(b, sortKey);
+      // Products without a value (no cost) always go last, in either direction.
+      if (left === null || right === null) {
+        return left === right ? 0 : left === null ? 1 : -1;
+      }
       const comparison =
         typeof left === "number" && typeof right === "number"
           ? left - right
@@ -257,12 +274,9 @@ const ProductStockList = () => {
 
   if (loading) {
     return (
-      <div className={PAGE_SHELL}>
-        <div className="flex items-end justify-between gap-3">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-56" />
-            <Skeleton className="h-4 w-40" />
-          </div>
+      <>
+        <div className="flex items-center justify-between gap-3">
+          <Skeleton className="h-4 w-40" />
           <Skeleton className="h-9 w-40" />
         </div>
         <div className="grid grid-cols-2 gap-2 md:gap-3 sm:grid-cols-3">
@@ -271,24 +285,21 @@ const ProductStockList = () => {
           <Skeleton className="h-20 w-full col-span-2 sm:col-span-1" />
         </div>
         <Skeleton className="flex-1 w-full" />
-      </div>
+      </>
     );
   }
 
   const isSearching = search.trim().length > 0;
 
   return (
-    <div className={PAGE_SHELL}>
-      {/* Header */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Productos en stock</h1>
-          <p className="text-sm text-muted-foreground">
-            {isSearching
-              ? `${visibleProducts.length} de ${products.length} productos`
-              : `${products.length} productos con stock disponible`}
-          </p>
-        </div>
+    <>
+      {/* Toolbar */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <p className="text-sm text-muted-foreground">
+          {isSearching
+            ? `${visibleProducts.length} de ${products.length} productos`
+            : `${products.length} productos con stock disponible`}
+        </p>
         <Button
           onClick={generateStockPDF}
           disabled={visibleProducts.length === 0}
@@ -434,7 +445,7 @@ const ProductStockList = () => {
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-medium tabular-nums">
-                    $ {formatPrice(stockValue(product))}
+                    {formatStockValue(product)}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
                     {product.dimensions || "—"}
@@ -445,7 +456,7 @@ const ProductStockList = () => {
           </Table>
         </div>
       </Card>
-    </div>
+    </>
   );
 };
 

@@ -26,14 +26,11 @@ const StockLogsList = () => {
   }, [fetchStockLogs, typeFilter]);
 
   return (
-    <div className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-6.5rem)] flex flex-col gap-3 md:gap-4 p-3 md:p-5">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">Movimientos de stock</h1>
-          <p className="text-sm text-muted-foreground">
-            Últimos {pageSize} movimientos por página · {totalElements} en total
-          </p>
-        </div>
+    <>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <p className="text-sm text-muted-foreground">
+          Últimos {pageSize} movimientos por página · {totalElements} en total
+        </p>
         <StockLogTypeFilter
           value={typeFilter}
           onChange={setTypeFilter}
@@ -58,7 +55,7 @@ const StockLogsList = () => {
           disabled={isLoading}
         />
       </Card>
-    </div>
+    </>
   );
 };
 
