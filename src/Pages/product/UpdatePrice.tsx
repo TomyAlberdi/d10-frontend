@@ -1,22 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FieldLabel, FieldSet } from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useProductContext } from "@/contexts/product/UseProductContext";
-import { ChevronLeft } from "lucide-react";
+import { Check, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
+const formatPercent = (value: number) =>
+  value.toLocaleString("es-AR", { maximumFractionDigits: 2 });
 
 const UpdatePrice = () => {
   const { getProviders, updateCostsByProvider } = useProductContext();
-  const navigate = useNavigate();
 
   const [providers, setProviders] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProviders, setSelectedProviders] = useState<Set<string>>(
     new Set(),
   );
-  const [percentage, setPercentage] = useState(5);
+  const [percentText, setPercentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -33,142 +39,168 @@ const UpdatePrice = () => {
     };
   }, [getProviders]);
 
+  const percentage = Number(percentText.replace(",", "."));
+  const isPercentageValid =
+    percentText.trim() !== "" &&
+    Number.isFinite(percentage) &&
+    percentage > 0 &&
+    percentage <= 100;
+  const selectedCount = selectedProviders.size;
+  const canSubmit = isPercentageValid && selectedCount > 0 && !isSubmitting;
+
   const toggleProvider = (provider: string) => {
-    const newSelected = new Set(selectedProviders);
-    if (newSelected.has(provider)) {
-      newSelected.delete(provider);
-    } else {
-      newSelected.add(provider);
-    }
-    setSelectedProviders(newSelected);
+    setSelectedProviders((current) => {
+      const next = new Set(current);
+      if (next.has(provider)) {
+        next.delete(provider);
+      } else {
+        next.add(provider);
+      }
+      return next;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (selectedProviders.size === 0) {
-      toast.error("Debe seleccionar al menos un proveedor");
-      return;
-    }
+    if (!canSubmit) return;
 
     setIsSubmitting(true);
+    let totalUpdated = 0;
     try {
-      const results: Awaited<ReturnType<typeof updateCostsByProvider>>[] = [];
-      for (const provider of selectedProviders) {
-        const result = await updateCostsByProvider(provider, percentage);
-        results.push(result);
+      for (const provider of providers.filter((p) =>
+        selectedProviders.has(p),
+      )) {
+        const updated = await updateCostsByProvider(provider, percentage);
+        totalUpdated += updated.length;
+        // Unselect it right away, so retrying after a later provider fails
+        // doesn't raise this one twice.
+        setSelectedProviders((current) => {
+          const next = new Set(current);
+          next.delete(provider);
+          return next;
+        });
       }
-      const totalUpdated = results.reduce((acc, arr) => acc + arr.length, 0);
-      toast.success(
-        `${totalUpdated} producto${totalUpdated !== 1 ? "s" : ""} actualizado${
-          totalUpdated !== 1 ? "s" : ""
-        } correctamente`,
-      );
-      setSelectedProviders(new Set());
-      setPercentage(5);
+      setPercentText("");
     } catch {
       // Error already shown by context
     } finally {
+      if (totalUpdated > 0) {
+        toast.success(
+          `${totalUpdated} producto${totalUpdated !== 1 ? "s" : ""} actualizado${
+            totalUpdated !== 1 ? "s" : ""
+          } correctamente`,
+        );
+      }
       setIsSubmitting(false);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="p-6">
-        <p className="text-muted-foreground">Cargando proveedores…</p>
-      </div>
-    );
-  }
-
-  if (providers.length === 0) {
-    return (
-      <div className="p-6">
-        <p className="text-muted-foreground">No hay proveedores disponibles</p>
-        <Button onClick={() => navigate(-1)}>
-          <ChevronLeft className="bigger-icon" />
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <div className="h-full w-full flex justify-center items-center p-2 md:p-0">
-      <Card className="p-6 max-w-2xl md:max-w-none">
-        <h1 className="text-2xl font-bold mb-2">
-          Actualizar precios por proveedor
-        </h1>
-        <p className="text-muted-foreground mb-6">
-          Selecciona los proveedores e ingresa el porcentaje de cambio en los
-          costos. Los precios se recalcularán automáticamente usando el margen
-          de ganancia existente.
+    // Full height, so the parent layout doesn't center it vertically.
+    <div className="min-h-[calc(100dvh-4rem)] md:min-h-[calc(100dvh-6.5rem)] flex flex-col gap-3 md:gap-4 p-3 md:p-5">
+      <div>
+        <h1 className="text-2xl font-bold">Precios</h1>
+        <p className="text-sm text-muted-foreground">
+          Aumentá los costos de uno o más proveedores. Los precios de venta se
+          recalculan con el margen de ganancia de cada producto.
         </p>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <FieldSet className="">
-            <FieldLabel>Proveedores</FieldLabel>
-            <div className="space-y-3 p-4 border rounded-lg bg-muted/30 max-h-[33vh] overflow-y-auto">
-              {providers.map((provider) => (
-                <label
-                  key={provider}
-                  className="flex items-center gap-3 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedProviders.has(provider)}
-                    onChange={() => toggleProvider(provider)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <span className="text-sm font-medium">{provider}</span>
-                </label>
+      <form onSubmit={handleSubmit}>
+        <Card className="py-0 gap-0">
+          <div className="flex items-center justify-between gap-2 border-b px-3 py-2">
+            <p className="text-sm font-medium">
+              Proveedores{" "}
+              <span className="font-normal text-muted-foreground">
+                · {selectedCount} de {providers.length} seleccionados
+              </span>
+            </p>
+            <div className="flex gap-1">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setSelectedProviders(new Set(providers))}
+                disabled={
+                  isSubmitting ||
+                  providers.length === 0 ||
+                  selectedCount === providers.length
+                }
+              >
+                Todos
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setSelectedProviders(new Set())}
+                disabled={isSubmitting || selectedCount === 0}
+              >
+                Ninguno
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {isLoading &&
+              Array.from({ length: 10 }, (_, index) => (
+                <Skeleton key={index} className="h-9 w-full" />
               ))}
-            </div>
-          </FieldSet>
-
-          <FieldSet className="">
-            <FieldLabel>Cambio de costo (%)</FieldLabel>
-            <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <input
-                  type="range"
-                  min="1"
-                  max="100"
-                  value={percentage}
-                  onChange={(e) => setPercentage(Number(e.target.value))}
-                  className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                  disabled={isSubmitting}
-                />
-                <span className="text-lg font-semibold min-w-fit">
-                  {percentage > 0 ? "+" : ""}
-                  {percentage}%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {percentage > 0 ? "Incremento" : "Decremento"} de costos en{" "}
-                {Math.abs(percentage)}%
+            {!isLoading && providers.length === 0 && (
+              <p className="col-span-full py-6 text-center text-sm text-muted-foreground">
+                No hay proveedores disponibles
               </p>
-            </div>
-          </FieldSet>
+            )}
+            {providers.map((provider) => {
+              const isSelected = selectedProviders.has(provider);
+              return (
+                <Button
+                  key={provider}
+                  type="button"
+                  variant={isSelected ? "default" : "outline"}
+                  aria-pressed={isSelected}
+                  title={provider}
+                  onClick={() => toggleProvider(provider)}
+                  disabled={isSubmitting}
+                  className="justify-start"
+                >
+                  <span className="truncate">{provider}</span>
+                  {isSelected && <Check className="ml-auto size-4" />}
+                </Button>
+              );
+            })}
+          </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting || selectedProviders.size === 0}
-              className="flex-1"
-            >
-              {isSubmitting ? "Actualizando..." : "Actualizar precios"}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate("/product")}
-              disabled={isSubmitting}
-            >
-              Cancelar
+          <div className="flex flex-col gap-3 border-t p-3 sm:flex-row sm:items-center sm:justify-between">
+            <label className="flex items-center justify-between gap-3 sm:justify-start">
+              <span className="text-sm font-medium">Aumento de costo</span>
+              <InputGroup className="w-28">
+                <InputGroupInput
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0"
+                  value={percentText}
+                  onChange={(e) => setPercentText(e.target.value)}
+                  aria-invalid={percentText.trim() !== "" && !isPercentageValid}
+                  disabled={isSubmitting}
+                  className="text-right tabular-nums"
+                />
+                <InputGroupAddon align="inline-end">%</InputGroupAddon>
+              </InputGroup>
+            </label>
+            <Button type="submit" disabled={!canSubmit}>
+              <TrendingUp className="size-4" />
+              {isSubmitting
+                ? "Actualizando…"
+                : canSubmit
+                  ? `Aumentar ${formatPercent(percentage)}% a ${selectedCount} proveedor${
+                      selectedCount !== 1 ? "es" : ""
+                    }`
+                  : "Actualizar precios"}
             </Button>
           </div>
-        </form>
-      </Card>
+        </Card>
+      </form>
     </div>
   );
 };
