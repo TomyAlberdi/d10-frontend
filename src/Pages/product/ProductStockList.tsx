@@ -31,8 +31,18 @@ import { useNavigate } from "react-router-dom";
 type SortKey = "code" | "name" | "providerName" | "quantity" | "value";
 type SortDirection = "asc" | "desc";
 
-const stockValue = (product: Product): number =>
-  product.priceBySaleUnit * product.stock.quantity;
+/** Stock value at cost, or null when the product has no cost loaded. */
+const stockValue = (product: Product): number | null =>
+  product.costByMeasureUnit > 0
+    ? product.costByMeasureUnit *
+      (product.measurePerSaleUnit ?? 0) *
+      product.stock.quantity
+    : null;
+
+const formatStockValue = (product: Product): string => {
+  const value = stockValue(product);
+  return value === null ? "-" : `$ ${formatPrice(value)}`;
+};
 
 const calculateM2Total = (products: Product[]): number => {
   const total = products
@@ -44,11 +54,17 @@ const calculateM2Total = (products: Product[]): number => {
 };
 
 const calculateTotalValue = (products: Product[]): number => {
-  const total = products.reduce((sum, product) => sum + stockValue(product), 0);
+  const total = products.reduce(
+    (sum, product) => sum + (stockValue(product) ?? 0),
+    0,
+  );
   return Math.round(total * 100) / 100;
 };
 
-const sortableValue = (product: Product, key: SortKey): string | number => {
+const sortableValue = (
+  product: Product,
+  key: SortKey,
+): string | number | null => {
   switch (key) {
     case "quantity":
       return product.stock.quantity;
@@ -145,6 +161,10 @@ const ProductStockList = () => {
     return [...filtered].sort((a, b) => {
       const left = sortableValue(a, sortKey);
       const right = sortableValue(b, sortKey);
+      // Products without a value (no cost) always go last, in either direction.
+      if (left === null || right === null) {
+        return left === right ? 0 : left === null ? 1 : -1;
+      }
       const comparison =
         typeof left === "number" && typeof right === "number"
           ? left - right
@@ -425,7 +445,7 @@ const ProductStockList = () => {
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-medium tabular-nums">
-                    $ {formatPrice(stockValue(product))}
+                    {formatStockValue(product)}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
                     {product.dimensions || "—"}
