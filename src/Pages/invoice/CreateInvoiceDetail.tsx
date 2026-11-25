@@ -1,6 +1,7 @@
 import type { CartProduct } from "@/interfaces/CartInterfaces";
 import type { Invoice } from "@/interfaces/InvoiceInterfaces";
 import { invoiceDocumentLabel } from "@/lib/invoice";
+import { roundMeasure } from "@/lib/measure";
 import jsPDF from "jspdf";
 
 const formatDate = (isoDate: string) => {
@@ -12,6 +13,29 @@ const formatDate = (isoDate: string) => {
 const formatCurrency = (value: number | undefined): string => {
   if (value === undefined || value === null) return "0.00";
   return Number(value).toFixed(2);
+};
+
+/**
+ * For a product sold and measured by the unit, the units times its
+ * dimensions: 15 units of "25kg" is "375kg". Null when the dimensions are not
+ * a single amount with an optional unit ("20x30cm").
+ */
+const dimensionsTotal = (product: CartProduct): string | null => {
+  if (product.saleUnitType !== "UNIDAD" || product.measureType !== "UNIDAD") {
+    return null;
+  }
+  const match = product.dimensions
+    ?.trim()
+    .match(/^(\d+(?:[.,]\d+)?)(\s*)([\p{L}²³.]*)$/u);
+  if (!match) return null;
+  const [, amount, space, unit] = match;
+  const total = roundMeasure(
+    Number(amount.replace(",", ".")) * product.saleUnitQuantity,
+  );
+  const formatted = amount.includes(",")
+    ? String(total).replace(".", ",")
+    : String(total);
+  return `${formatted}${space}${unit}`;
 };
 
 export const generatePDF = (invoice: Invoice | null) => {
@@ -59,7 +83,8 @@ export const generatePDF = (invoice: Invoice | null) => {
     const cellY = startY;
     const rowData = [
       `${product.saleUnitQuantity} ${product.saleUnitType}`,
-      `${formatCurrency(product.measureUnitQuantity)} ${product.measureType}`,
+      dimensionsTotal(product) ??
+        `${formatCurrency(product.measureUnitQuantity)} ${product.measureType}`,
       product.dimensions ?? "N/A",
       product.name,
       `$ ${formatCurrency(product.priceByMeasureUnit)} / ${product.measureType}`,
