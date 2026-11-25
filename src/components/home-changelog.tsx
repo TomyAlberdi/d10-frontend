@@ -18,47 +18,41 @@ type Release = {
  * ones of the new update, keeping each description user-facing.
  */
 const LATEST_RELEASE: Release = {
-  date: "2026-11-02",
+  date: "2026-11-25",
   changes: [
     {
       area: "Ventas",
       description:
-        "El cobro se registra desde el carrito y desde la edición de una venta, sin pantalla aparte: se elige la caja y el monto recibido (precargado con lo que se debe, editable para redondear), y la venta y su cobro se guardan juntos.",
+        "Al agregar un producto al carrito, la cantidad se puede escribir en la unidad de venta (por ejemplo, CAJA) o en la de medida (por ejemplo, M2). Al escribir una medida se muestran las cantidades que la cubren, con el sobrante y el precio de cada una, y se elige la menor.",
     },
     {
       area: "Ventas",
       description:
-        "El estado de la venta se elige con un botón por estado, con los mismos colores que la lista de ventas. \"Pago parcial\" registra un cobro menor al total y deja la venta como deuda; si el cobro cubre el total, se guarda como Pago.",
+        "El descuento al agregar un producto al carrito se elige con los mismos botones del carrito: 5%, 10%, 15% o \"Personalizado\".",
     },
     {
       area: "Ventas",
       description:
-        "Al editar una venta se pueden cambiar las cantidades de los productos, el descuento se elige con los botones 5%, 10%, 15% o \"Personalizado\", y al cancelarla se ofrece devolver en caja lo ya cobrado.",
-    },
-    {
-      area: "Ventas",
-      description:
-        "El detalle y la edición de una venta muestran sus \"Movimientos en caja\", y en Caja cada movimiento de una venta muestra su número como enlace a ella.",
-    },
-    {
-      area: "Ventas",
-      description:
-        "En el celular, los filtros de la lista de ventas se abren desde un botón \"Filtros\" en un panel desde abajo. Las ventas de un producto se muestran de la más reciente a la más antigua.",
+        "En el PDF de una venta, los precios de cada producto se muestran con su descuento aplicado. En los productos que se venden por unidad, la cantidad muestra el total de su medida: 15 unidades de 25kg se muestran como 375kg.",
     },
     {
       area: "Productos",
       description:
-        "Nuevo botón de \"Filtros avanzados\" junto a la búsqueda de productos: filtra por medida, fabricante, categoría y subcategoría, y rango de precio, combinado con el texto de búsqueda.",
+        "\"Lista Stock\" y \"Movimientos Stock\" se unen en una sola página \"Stock\", con las pestañas Existencias y Movimientos.",
     },
     {
       area: "Productos",
       description:
-        "En el detalle de un producto, el costo y la ganancia quedan ocultos y se muestran con el botón del ojo.",
+        "El stock valorizado, en la página de Stock y en el detalle de un producto, se calcula con el costo del producto en lugar del precio de venta. Los productos sin costo muestran \"-\".",
+    },
+    {
+      area: "Productos",
+      description:
+        "En Precios, los proveedores se eligen con botones (con \"Todos\" y \"Ninguno\") y el porcentaje de aumento se escribe, con decimales. Si falla la actualización de un proveedor, los ya actualizados se desmarcan, para no aumentarlos dos veces al reintentar.",
     },
     {
       area: "General",
-      description:
-        "La aplicación pide una contraseña al abrirla. Se vuelve a pedir al cerrar la pestaña.",
+      description: "\"Agenda\" ya no aparece en el menú lateral.",
     },
   ],
 };
