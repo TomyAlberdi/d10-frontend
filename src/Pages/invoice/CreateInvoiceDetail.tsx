@@ -38,6 +38,17 @@ const dimensionsTotal = (product: CartProduct): string | null => {
   return `${formatted}${space}${unit}`;
 };
 
+/**
+ * What is left of the prices after the line's own discount: 0.9 for 10% off.
+ * Taken from the subtotal, which already has the discount applied, so the
+ * prices shown add up to it.
+ */
+const discountFactor = (product: CartProduct): number => {
+  const rawSubtotal = product.saleUnitQuantity * product.priceBySaleUnit;
+  if (!(product.individualDiscount > 0) || !(rawSubtotal > 0)) return 1;
+  return Math.min(1, Math.max(0, product.subtotal / rawSubtotal));
+};
+
 export const generatePDF = (invoice: Invoice | null) => {
   const doc = new jsPDF();
   // Title
@@ -81,14 +92,15 @@ export const generatePDF = (invoice: Invoice | null) => {
   invoice?.products.forEach((product: CartProduct) => {
     let rowHeight = 0;
     const cellY = startY;
+    const factor = discountFactor(product);
     const rowData = [
       `${product.saleUnitQuantity} ${product.saleUnitType}`,
       dimensionsTotal(product) ??
         `${formatCurrency(product.measureUnitQuantity)} ${product.measureType}`,
       product.dimensions ?? "N/A",
       product.name,
-      `$ ${formatCurrency(product.priceByMeasureUnit)} / ${product.measureType}`,
-      `$ ${formatCurrency(product.priceBySaleUnit)} / ${product.saleUnitType}`,
+      `$ ${formatCurrency(product.priceByMeasureUnit * factor)} / ${product.measureType}`,
+      `$ ${formatCurrency(product.priceBySaleUnit * factor)} / ${product.saleUnitType}`,
       `$ ${formatCurrency(product.subtotal)}`,
     ];
     rowData.forEach((text, index) => {
